@@ -105,6 +105,9 @@ CLEP7312           ep7312_config      Cirrus Logic EP7312 Dev. Board
 S3C2400X           samsung_config     Samsung S3C2400X
 SMDK2410X          smdk2410_config    Samsung SMDK2410X Eval Board
 EPXA1DB            epxa1db_config     Altera EPXA1 Development Board
+Cradle             cradle_config      HHP PXA250 Infrared to Ethernet router
+Lubbock            lubbock_config     Intel PXA250 Development Platform
+
 
 Testing of ARMBoot Modifications, Ports to New Hardware, etc.:
 ==============================================================

@@ -2,6 +2,15 @@
 Recent Modifications
 ======================================================================
 
+* Patches by Robert Kaiser <rob@sysgo.de>:
+
+  - Added Lubbock & Cradle to MAINTAINES and README
+  - Patch from Robert Schwebel: more verbose messages if decompression fails
+  - Fixed bugs in ramdisk image relocation spotted by Mladen Barjaktarevic
+  - Allow setting of clock frequency (only on shannon, so far)
+  - Changes for Shannon (aka Tuxscreen) to run stand-alone
+  - Added pagelength environment variable to pause scrolling
+
 * Patch by Rolf Offermanns <rof@sysgo.de>
 
   - Added support for flash & stand-alone boot on DNP1110

@@ -1,6 +1,6 @@
 #########################################################################
 #									#
-# Regular Maintainers for PPCBoot board support:			#
+# Regular Maintainers for ARMBoot board support:			#
 #									#
 # For any board without permanent maintainer, please contact		#
 #	Marius Gröger <mag@sysgo.de>					#
@@ -36,6 +36,12 @@ David Müller <d.mueller@elsoft.ch>
 Iain Scott <i.scott@altera.com>
 
         epxa1db                 ARM922T (EPXA1)
+
+Kyle Harris <kharris@nexus-tech.net>
+
+        cradle                  PXA250
+        lubbock                 PXA250
+
 
 #########################################################################
 # End of MAINTAINERS list						#
