@@ -386,14 +386,7 @@ int _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 
     if (strcmp(argv[1],"ipaddr") == 0) {
 	char *s = argv[2];	/* always use only one arg */
-	char *e;
-	bd->bi_ip_addr = 0;
-	for (i=0; i<4; ++i) {
-	    ulong val = s ? simple_strtoul(s, &e, 10) : 0;
-	    bd->bi_ip_addr <<= 8;
-	    bd->bi_ip_addr  |= (val & 0xFF);
-	    if (s) s = (*e) ? e+1 : e;
-	}
+	bd->bi_ip_addr = string_to_ip(s);
 	return 0;
     }
 

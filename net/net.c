@@ -130,8 +130,7 @@ void		NetPrintEther(volatile uchar * addr);
 int
 NetLoop(bd_t *bis, proto_t protocol)
 {
-	char	*s, *e;
-	ulong	reg;
+	char	*s;
 
   	Net_bd = bis;
 	if (!NetTxPacket) {
@@ -163,14 +162,8 @@ restart:
 
 	if (protocol == TFTP) {			/* TFTP */
 		NetCopyIP(&NetOurIP, (IPaddr_t*)&bis->bi_ip_addr);
-		NetServerIP = 0;
 		s = getenv (bis, "serverip");
-		for (reg=0; reg<4; ++reg) {
-			ulong val = s ? simple_strtoul(s, &e, 10) : 0;
-			NetServerIP <<= 8;
-			NetServerIP |= (val & 0xFF);
-			if (s) s = (*e) ? e+1 : e;
-		}
+		NetServerIP = string_to_ip(s);
 
 		if (net_check_prereq (protocol) != 0) {
 			return 0;
@@ -691,6 +684,22 @@ void print_IPaddr (IPaddr_t x)
     puts(tmp);
 }
 
+
+IPaddr_t string_to_ip (const char *s)
+{
+	IPaddr_t ip = 0;
+	char *e;
+	int i;
+
+	for (i = 0; i < sizeof(ip); ++i)
+	{
+		ulong val = s ? simple_strtoul(s, &e, 10) : 0;
+		ip <<= 8;
+		ip |= (val & 0xFF);
+		if (s) s = (*e) ? e+1 : e;
+	}
+	return(htonl(ip));
+}
 
 void
 NetPrintEther(volatile uchar * addr)

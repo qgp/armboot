@@ -310,8 +310,11 @@ extern void	NetReceive(volatile uchar *, int);
 /* Print an IP address on the console */
 extern void	print_IPaddr (IPaddr_t);
 
-/* Convert a IP address to a string */
+/* Convert a IP address to a string .. */
 extern void	ip_to_string (IPaddr_t x, char *s);
+
+/* ... and vice versa */
+IPaddr_t string_to_ip (const char *s);
 
 /* copy a filename (allow for "..." notation, limit length) */
 extern void	copy_filename (uchar *dst, uchar *src, int size);
