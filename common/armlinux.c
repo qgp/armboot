@@ -28,7 +28,7 @@
 #include "malloc.h"
 #include "zlib.h"
 
-#include <asm-arm/setup.h>
+#include <asm/setup.h>
 #define tag_size(type)  ((sizeof(struct tag_header) + sizeof(struct type)) >> 2)
 #define tag_next(t)     ((struct tag *)((u32 *)(t) + (t)->hdr.size))
 

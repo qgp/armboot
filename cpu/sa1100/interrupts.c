@@ -27,7 +27,7 @@
  */
 
 #include "armboot.h"
-#include "sa1100.h"
+#include "SA-1100.h"
 #include "ptregs.h"
 
 extern void reset_cpu(ulong addr);

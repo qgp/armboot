@@ -1,0 +1,106 @@
+#
+# (C) Copyright 2002
+# SYSGO Real-Time Solutions GmbH
+#
+# http://www.sysgo.de
+# http://www.elinos.com
+#
+# See file CREDITS for list of people who contributed to this
+# project.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA 02111-1307 USA
+
+
+Overview
+========
+
+ARMboot is a firmware monitor/bootloader for embedded systems based 
+on ARM or StrongARM CPUs. The primary objectives for this software is 
+to be easily portable to new platforms while being as powerful as possible.
+To date it is the only GPL'ed ARM firmware capable of supporting multiple
+types of flash memory, network download via bootp, dhcp, tftp, PCMCIA CF
+booting and more.
+
+ARMboot is heavily based on the sister project PPCboot. It is planned, to
+move both projects even close together to increase their robustness and 
+mutual benefit.
+
+
+Getting ARMboot
+===============
+
+ARMboot is hosted on Sourceforge:
+
+    http://www.sourceforge.net/projects/armboot
+
+The lastest version can always be obtained via the anonymous CVS access of
+Sourceforge. Tarballs are released sporadically, and can be downloaded from
+the same site.
+
+
+Mailing List
+============
+
+Questions regarding the use and porting of ARMboot should be posted to the
+ARMboot mailing list. You can subscibe here:
+
+    http://lists.sourceforge.net/lists/listinfo/armboot-users/
+
+If you want to get help on a certin issue, please go first to the 
+mailing list's archive to whether that question has been discussed in the
+past. 
+
+
+Building ARMboot
+================
+
+To configure and build ARMboot you will need a GNU cross development
+tool-chain configured for arm-linux. You should NOT need any linux header
+files. If so, please report this on the mailing list. 
+
+The cross development tools usually have a target specific prefix. For
+instance, your cross compiler may be called "arm-linux-gcc" or
+"arm_armv4-gcc". This prefix can be passed to the Makefile by setting the
+CROSS_COMPILE variable, which defaults to "arm-linux-".
+
+The following example is for the "LART" board:
+
+1. Configure
+
+    sh# make lart_config
+    rm -f include/config.h include/config.mk
+    Configuring for lart Board...
+
+2. Build
+
+    sh# make all
+    ...
+    arm_armv4-objcopy  -O srec armboot armboot.srec
+    arm_armv4-objcopy  -O binary armboot armboot.bin
+
+
+Supported Hardware
+==================
+
+Board              Configuration      Notes
+--------------------------------------------------------------------------
+LART               lart_config        "Linux ARM Radio Terminal"
+SSV DNP1110        dnp1110_config     SSV DilNET PC (no flash support)
+Shannon            shannon_config     Tuxscreen (no support for 
+                                      IrDA keyboard, LCD screen)
+implementa impA7   impa7_config       EP7211 based
+CLEP7312           ep7312_config      Cirrus Logic EP7312 Dev. Board
+

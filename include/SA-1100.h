@@ -18,12 +18,6 @@
  */
 
 
-/* Be sure that virtual mapping is defined right */
-#ifndef __ASM_ARCH_HARDWARE_H
-#error You must include hardware.h not SA-1100.h
-#endif
-
-
 #ifndef LANGUAGE
 # ifdef __ASSEMBLY__
 #  define LANGUAGE Assembly
@@ -36,7 +30,7 @@
 #define io_p2v(PhAdd)	(PhAdd)
 #endif
 
-#include <asm-arm/arch-sa1100/bitfield.h>
+#include <asm/arch-sa1100/bitfield.h>
 
 #define C       	0
 #define Assembly	1

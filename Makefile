@@ -31,12 +31,10 @@ HOSTARCH := $(shell uname -m | \
 	    -e s/arm.*/arm/ \
 	    -e s/sa110/arm/)
 
-HOSTOS := $(shell uname -s | tr A-Z a-z)
-
 ifeq ($(HOSTARCH),arm)
 CROSS_COMPILE =
 else
-CROSS_COMPILE = arm-$(HOSTOS)-
+CROSS_COMPILE = arm-linux-
 endif
 
 export	CROSS_COMPILE HOSTARCH

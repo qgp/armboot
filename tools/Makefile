@@ -27,14 +27,6 @@ BINS	= img2srec mkimage envcrc gen_eth_addr
 
 OBJS	= img2srec.o mkimage.o crc32.o envcrc.o gen_eth_addr.o
 
-HOSTARCH := $(shell uname -m | \
-	sed -e s/i.86/i386/ \
-	    -e s/sun4u/sparc64/ \
-	    -e s/arm.*/arm/ \
-	    -e s/sa110/arm/)
-
-HOSTOS := $(shell uname -s | tr A-Z a-z)
-
 TOOLSUBDIRS =
 
 #

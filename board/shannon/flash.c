@@ -22,7 +22,6 @@
  * MA 02111-1307 USA
  */
 
-
 #include "armboot.h"
 
 ulong myflush(void);

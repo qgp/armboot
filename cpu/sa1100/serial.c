@@ -26,7 +26,7 @@
  */
 
 #include "armboot.h"
-#include "sa1100.h"
+#include "SA-1100.h"
 
 void serial_setbrg(bd_t *bd, int baudrate)
 {
