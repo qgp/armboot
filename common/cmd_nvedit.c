@@ -572,7 +572,8 @@ void env_init(bd_t *bd)
 void env_relocate(bd_t *bd)
 {
     char *s, *e;
-    int reg;
+	int reg;
+
    
     bd->bi_env = malloc(sizeof(env_t));
 
@@ -596,15 +597,8 @@ void env_relocate(bd_t *bd)
     }
 
     /* IP address */
-    bd->bi_ip_addr = 0;
     s = getenv(bd, "ipaddr");
-    for (reg=0; reg<4; ++reg) {    
-        ulong val = s ? simple_strtoul(s, &e, 10) : 0;
-        bd->bi_ip_addr <<= 8;
-        bd->bi_ip_addr  |= (val & 0xFF);
-        if (s)
-	  s = (*e) ? e+1 : e;
-    }
+    bd->bi_ip_addr = string_to_ip(s);
     
     if ((s = getenv(bd, "loadaddr")) != NULL) {    
         load_addr = simple_strtoul(s, NULL, 16);
