@@ -25,6 +25,6 @@
 #ifndef	__VERSION_H__
 #define	__VERSION_H__
 
-#define	ARMBOOT_VERSION	"ARMboot 1.0.2"
+#define	ARMBOOT_VERSION	"ARMboot 1.1.1"
 
 #endif	/* __VERSION_H__ */

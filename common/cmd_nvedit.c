@@ -418,6 +418,17 @@ int _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
     }
 #endif	/* CONFIG_KEYBOARD */
 
+#ifdef CONFIG_ADJUST_LCD
+    if (strcmp(argv[1],"contrast") == 0) {
+	lcd_contrast(simple_strtoul(argv[2], NULL, 10));
+	return 0;
+	}
+    if (strcmp(argv[1],"brightness") == 0) {
+	lcd_brightness(simple_strtoul(argv[2], NULL, 10));
+	return 0;
+	}
+#endif	/* CONFIG_ADJUST_LCD */
+
     return 0;
 }
 
@@ -624,4 +635,20 @@ void env_relocate(bd_t *bd)
         copy_filename (BootFile, s, sizeof(BootFile));
     }
 #endif  /* CFG_CMD_NET */
+
+#ifdef CONFIG_KEYBOARD
+    if ((s = getenv(bd, "keymap")) != NULL) {
+		kbd_mapping (s);
+    }
+#endif	/* CONFIG_KEYBOARD */
+
+#ifdef CONFIG_ADJUST_LCD
+    if ((s = getenv(bd, "contrast")) != NULL) {
+		lcd_contrast(simple_strtoul(s, NULL, 10));
+	}
+    if ((s = getenv(bd, "brightness")) != NULL) {
+		lcd_brightness(simple_strtoul(s, NULL, 10));
+	}
+#endif	/* CONFIG_ADJUST_LCD */
+
 }

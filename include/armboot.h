@@ -251,6 +251,11 @@ int     kbd_tstc(void);
 void    kbd_mapping(const char *name);
 #endif
 
+#ifdef CONFIG_ADJUST_LCD
+int lcd_contrast(int);
+int lcd_brightness(int);
+#endif
+
 
 /* Byte swapping stuff */
 #define SWAP16(x)	((((x) & 0xff) << 8) | ((x) >> 8))
