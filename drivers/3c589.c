@@ -1,14 +1,10 @@
 /*------------------------------------------------------------------------
- . smc91111.c
- . This is a driver for SMSC's 91C111 single-chip Ethernet device.
+ . 3c589.c
+ . This is a driver for 3Com's 3C589 (Etherlink III) PCMCIA Ethernet device.
  .
  . (C) Copyright 2002
  . Sysgo Real-Time Solutions, GmbH <www.elinos.com>
  . Rolf Offermanns <rof@sysgo.de>
- .
- . Copyright (C) 2001 Standard Microsystems Corporation (SMSC)
- .       Developed by Simple Network Magic Corporation (SNMC)
- . Copyright (C) 1996 by Erik Stahlman (ES)
  .
  . This program is free software; you can redistribute it and/or modify
  . it under the terms of the GNU General Public License as published by
@@ -24,38 +20,6 @@
  . along with this program; if not, write to the Free Software
  . Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  .
- . Information contained in this file was obtained from the LAN91C111
- . manual from SMC.  To get a copy, if you really want one, you can find 
- . information under www.smsc.com.
- . 
- .
- . "Features" of the SMC chip:
- .   Integrated PHY/MAC for 10/100BaseT Operation
- .   Supports internal and external MII
- .   Integrated 8K packet memory
- .   EEPROM interface for configuration
- .
- . Arguments:
- . 	io	= for the base address
- .	irq	= for the IRQ
- .
- . author:
- . 	Erik Stahlman				( erik@vt.edu )
- . 	Daris A Nevil				( dnevil@snmc.com )
- .
- .
- . Hardware multicast code from Peter Cammaert ( pc@denkart.be )
- .
- . Sources:
- .    o   SMSC LAN91C111 databook (www.smsc.com)
- .    o   smc9194.c by Erik Stahlman
- .    o   skeleton.c by Donald Becker ( becker@cesdis.gsfc.nasa.gov )
- .
- . History:
- .	10/17/01  Marco Hasewinkel Modify for DNP/1110
- .	07/25/01  Woojung Huh      Modify for ADS Bitsy
- .	04/25/01  Daris A Nevil    Initial public release through SMSC
- .	03/16/01  Daris A Nevil    Modified smc9194.c for use with LAN91C111
  ----------------------------------------------------------------------------*/
 
 #include "armboot.h"
@@ -147,7 +111,7 @@ typedef unsigned long int dword;
 /*------------------------------------------------------------------------
  .
  . The internal workings of the driver.  If you are changing anything
- . here with the SMC stuff, you should have the datasheet and know
+ . here with the 3Com stuff, you should have the datasheet and know
  . what you are doing.
  .
  -------------------------------------------------------------------------*/
@@ -210,21 +174,34 @@ static word read_eeprom(dword ioaddr, int index)
     return inw(ioaddr + 0xc);
 }
 
-static void el_get_mac_addr( word *mac_addr )
+static void el_get_mac_addr( unsigned char *mac_addr )
 {
 	int i;
+	union
+	{
+		word w;
+		unsigned char b[2];
+	} wrd;
 	unsigned char old_window = inw( EL_BASE_ADDR + EL3_STATUS ) >> 13;
 	GO_WINDOW(0);
 	VX_BUSY_WAIT;
 	for (i = 0; i < 3; i++)
 	{
-		*(mac_addr+i) = read_eeprom(EL_BASE_ADDR, 0xa+i);
+		wrd.w = read_eeprom(EL_BASE_ADDR, 0xa+i);
+#ifdef __BIG_ENDIAN
+		mac_addr[2*i]   = wrd.b[0];
+		mac_addr[2*i+1] = wrd.b[1];
+#else
+		mac_addr[2*i]   = wrd.b[1];
+		mac_addr[2*i+1] = wrd.b[0];
+#endif
 	}
 	GO_WINDOW(old_window);
 	VX_BUSY_WAIT;
 }
 
 
+#if EL_DEBUG > 1
 static void print_packet( byte * buf, int length )
 {
         int i;
@@ -257,6 +234,7 @@ static void print_packet( byte * buf, int length )
         }
         PRINTK2("\n");
 }
+#endif /* EL_DEBUG > 1 */
 
 
 
@@ -283,16 +261,8 @@ static void el_reset(bd_t *bd)
 	udelay(100000000);
 
 	/* set mac addr */
-/*
-	outw(0xfeca, BASE + VX_W2_ADDR_0);
-	VX_BUSY_WAIT;
-	outw(0xadde, BASE + VX_W2_ADDR_2);
-	VX_BUSY_WAIT;
-	outw(0xefbe, BASE + VX_W2_ADDR_4);
-	VX_BUSY_WAIT;
-*/
 	{
-		word *mac_addr = (word *)bd->bi_enetaddr;
+		unsigned char *mac_addr = bd->bi_enetaddr;
 		int i;
 		
 		el_get_mac_addr( mac_addr );
@@ -301,10 +271,10 @@ static void el_reset(bd_t *bd)
 		VX_BUSY_WAIT;
 
 		printf("3C589 MAC Addr.: ");
-		for (i = 0; i < 3; i++)
+		for (i = 0; i < 6; i++)
 		{
-			printf("%04x", mac_addr[i]);
-			outw(mac_addr[i], BASE + VX_W2_ADDR_0 + i*2);
+			printf("%02x", mac_addr[i]);
+			outb(mac_addr[i], BASE + VX_W2_ADDR_0 + i);
 			VX_BUSY_WAIT;
 		}
 		printf("\n\n");
@@ -362,6 +332,8 @@ static void el_reset(bd_t *bd)
 	GO_WINDOW(1);
 	VX_BUSY_WAIT;
 
+	/* wait for another 1ms */
+	udelay(100000000);
 }
 
 	
@@ -418,6 +390,9 @@ int eth_rx()
 	if ( rx_status & ERR_RX )
 	{
 		/* error in packet -> discard */
+		PRINTK("[ERROR] Invalid packet -> discarding\n");
+		PRINTK("-- error code 0x%02x\n", rx_status & ERR_MASK);
+		PRINTK("-- rx bytes 0x%04d\n", rx_status & ((1<<11) - 1));
 		PRINTK("[ERROR] Invalid packet -> discarding\n");
 		outw( RX_DISCARD_TOP_PACK, BASE + VX_COMMAND );
 		return 0;
@@ -509,18 +484,23 @@ int eth_send(volatile void *packet, int length) {
 	/* Second dword meaningless */
 	outw(0x0, EL_BASE_ADDR + VX_W1_TX_PIO_WR_1);	
 	
+#if EL_DEBUG > 1
 	print_packet((byte *)buf, length);
+#endif
+
 	/* write packet */
 	{
-		unsigned int i, totdw;
+		unsigned int i, totw;
 		
-		totdw = ((length + 3) >> 1);
-		PRINTK("Buffer: (totdw = %d)\n", totdw);
-		for (i = 0; i < totdw; i++) {
+		totw = ((length + 1) >> 1);
+		PRINTK("Buffer: (totw = %d)\n", totw);
+		for (i = 0; i < totw; i++) {
 			outw( *(buf+i), EL_BASE_ADDR + VX_W1_TX_PIO_WR_1);
-			PRINTK("%04x ", *(buf+i));
-			if ( ((i % 8) == 0) && (i != 0) )
-				PRINTK("\n"); 
+			udelay(10);
+		}
+		if(totw & 1)
+		{	/* pad to double word length */
+			outw( 0, EL_BASE_ADDR + VX_W1_TX_PIO_WR_1);
 			udelay(10);
 		}
 		PRINTK("\n\n");
@@ -528,11 +508,11 @@ int eth_send(volatile void *packet, int length) {
 
         /* wait for Tx complete */
 	PRINTK("Waiting for Tx to complete...\n");
-        while((inw(EL_BASE_ADDR + VX_STATUS) & S_COMMAND_IN_PROGRESS) != 0)
+        while(((status = inw(EL_BASE_ADDR + VX_STATUS)) & S_COMMAND_IN_PROGRESS) != 0)
 	{
 		udelay(10);
 	}
-	PRINTK("   ---> Tx completed\n");
+	PRINTK("   ---> Tx completed, status = 0x%04x\n", status);
 
 	return length;
 }

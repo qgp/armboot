@@ -341,13 +341,13 @@ NetReceive(volatile uchar * pkt, int len)
 	NetRxPktLen = len;
 	et = (Ethernet_t *)pkt;
 
-	x = SWAP16(et->et_protlen);
+	x = ntohs(et->et_protlen);
 
 	if (x < 1514) {
 		/*
 		 *	Got a 802 packet.  Check the other protocol field.
 		 */
-		x = SWAP16(et->et_prot);
+		x = ntohs(et->et_prot);
 		ip = (IP_t *)(pkt + E802_HDR_SIZE);
 		len -= E802_HDR_SIZE;
 #ifdef ET_DEBUG
@@ -382,10 +382,10 @@ NetReceive(volatile uchar * pkt, int len)
 			printf("bad length %d < %d\n", len, ARP_HDR_SIZE);
 			return;
 		}
-		if (SWAP16(arp->ar_hrd) != ARP_ETHER) {
+		if (ntohs(arp->ar_hrd) != ARP_ETHER) {
 			return;
 		}
-		if (SWAP16(arp->ar_pro) != PROT_IP) {
+		if (ntohs(arp->ar_pro) != PROT_IP) {
 			return;
 		}
 		if (arp->ar_hln != 6) {
@@ -413,13 +413,13 @@ NetReceive(volatile uchar * pkt, int len)
 			}
 		}
 
-		switch (SWAP16(arp->ar_op)) {
+		switch (ntohs(arp->ar_op)) {
 		case ARPOP_REQUEST:		/* reply with our Ether address	*/
 #ifdef ET_DEBUG
 			printf("Got ARP REQUEST, return our EtherAddr.\n");
 #endif
 			NetSetEther((uchar *)et, et->et_src, PROT_ARP);
-			arp->ar_op = SWAP16(ARPOP_REPLY);
+			arp->ar_op = htons(ARPOP_REPLY);
 			NetCopyEther(&arp->ar_data[0],  NetOurEther);
 			NetWriteIP(  &arp->ar_data[6],  NetOurIP);
 			NetCopyEther(&arp->ar_data[10], NetOurEther);
@@ -445,7 +445,7 @@ NetReceive(volatile uchar * pkt, int len)
 			return;
 		default:
 #ifdef ET_DEBUG
-			printf("Unexpected ARP opcode 0x%x\n", SWAP16(arp->ar_op));
+			printf("Unexpected ARP opcode 0x%x\n", ntohs(arp->ar_op));
 #endif
 			return;
 		}
@@ -460,9 +460,9 @@ NetReceive(volatile uchar * pkt, int len)
 			return;
 		}
 
-		if ((SWAP16(arp->ar_op) != RARPOP_REPLY) ||
-			(SWAP16(arp->ar_hrd) != ARP_ETHER)   ||
-			(SWAP16(arp->ar_pro) != PROT_IP)     ||
+		if ((ntohs(arp->ar_op) != RARPOP_REPLY) ||
+			(ntohs(arp->ar_hrd) != ARP_ETHER)   ||
+			(ntohs(arp->ar_pro) != PROT_IP)     ||
 			(arp->ar_hln != 6) || (arp->ar_pln != 4)) {
 
 			printf("invalid RARP header\n");
@@ -483,11 +483,11 @@ NetReceive(volatile uchar * pkt, int len)
 			debug ("len bad %d < %d\n", len, IP_HDR_SIZE);
 			return;
 		}
-		if (len < SWAP16(ip->ip_len)) {
-			printf("len bad %d < %d\n", len, SWAP16(ip->ip_len));
+		if (len < ntohs(ip->ip_len)) {
+			printf("len bad %d < %d\n", len, ntohs(ip->ip_len));
 			return;
 		}
-		len = SWAP16(ip->ip_len);
+		len = ntohs(ip->ip_len);
 #ifdef ET_DEBUG
 		printf("len=%d, v=%02x\n", len, ip->ip_hl_v & 0xff);
 #endif
@@ -495,7 +495,7 @@ NetReceive(volatile uchar * pkt, int len)
 			printf("version bad %x\n", ip->ip_hl_v & 0xf0);
 			return;
 		}
-		if (ip->ip_off & SWAP16c(0x1fff)) { /* Can't deal w/ fragments */
+		if (ip->ip_off & htons(0x1fff)) { /* Can't deal w/ fragments */
 			printf("can't deal with fragments\n");
 			return;
 		}
@@ -549,9 +549,9 @@ NetReceive(volatile uchar * pkt, int len)
 		 *	IP header OK.  Pass the packet to the current handler.
 		 */
 		(*packetHandler)((uchar *)ip +IP_HDR_SIZE,
-						SWAP16(ip->udp_dst),
-						SWAP16(ip->udp_src),
-						SWAP16(ip->udp_len) - 8);
+						ntohs(ip->udp_dst),
+						ntohs(ip->udp_src),
+						ntohs(ip->udp_len) - 8);
 
 		break;
 	default:
@@ -665,7 +665,7 @@ NetSetEther(volatile uchar * xet, uchar * addr, uint prot)
 
 	NetCopyEther(et->et_dest, addr);
 	NetCopyEther(et->et_src, NetOurEther);
-	et->et_protlen = SWAP16(prot);
+	et->et_protlen = htons(prot);
 }
 
 
@@ -688,17 +688,17 @@ NetSetIP(volatile uchar * xip, IPaddr_t dest, int dport, int sport, int len)
 	 */
 	ip->ip_hl_v  = 0x45;		/* IP_HDR_SIZE / 4 (not including UDP) */
 	ip->ip_tos   = 0;
-	ip->ip_len   = SWAP16(IP_HDR_SIZE + len);
-	ip->ip_id    = SWAP16(NetIPID++);
-	ip->ip_off   = SWAP16c(0x4000);	/* No fragmentation */
+	ip->ip_len   = htons(IP_HDR_SIZE + len);
+	ip->ip_id    = htons(NetIPID++);
+	ip->ip_off   = htons(0x4000);	/* No fragmentation */
 	ip->ip_ttl   = 255;
 	ip->ip_p     = 17;		/* UDP */
 	ip->ip_sum   = 0;
 	NetWriteIP((uchar*)&ip->ip_src, NetOurIP);
 	NetWriteIP((uchar*)&ip->ip_dst, dest);
-	ip->udp_src  = SWAP16(sport);
-	ip->udp_dst  = SWAP16(dport);
-	ip->udp_len  = SWAP16(8 + len);
+	ip->udp_src  = htons(sport);
+	ip->udp_dst  = htons(dport);
+	ip->udp_len  = htons(8 + len);
 	ip->udp_xsum = 0;
 	ip->ip_sum   = ~NetCksum((uchar *)ip, IP_HDR_SIZE_NO_UDP / 2);
 }

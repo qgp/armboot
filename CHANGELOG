@@ -1,4 +1,21 @@
 ======================================================================
+Recent Modifications
+======================================================================
+
+* Big network patch by Robert Kaiser <rob@sysgo.de>:
+
+  - Bugfixes in bootp code: need to swap Netmask, Gateway IP, etc.
+
+  -  Change to (hopefully consistent) usage of htons/ntohs/htonl/ntohl
+     instead of SWAP16/SWAP32
+
+  - Bugfixes in 3c589 driver:
+    + set correct MAC address (instead of swapped one)
+    + additional delay required after init to make sure board
+      is ready to transmit
+    + transmit data must be padded to *double* words (4 bytes)
+
+======================================================================
 Modifications for 1.1.0
 ======================================================================
 

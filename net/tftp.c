@@ -76,7 +76,7 @@ TftpSend (void)
 
 	case STATE_RRQ:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_RRQ);
+		*((ushort *)pkt)++ = htons(TFTP_RRQ);
 		strcpy ((char *)pkt, tftp_filename);
 		pkt += strlen(tftp_filename) + 1;
 		strcpy ((char *)pkt, "octet");
@@ -86,15 +86,15 @@ TftpSend (void)
 
 	case STATE_DATA:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_ACK);
-		*((ushort *)pkt)++ = SWAP16(TftpBlock);
+		*((ushort *)pkt)++ = htons(TFTP_ACK);
+		*((ushort *)pkt)++ = htons(TftpBlock);
 		len = pkt - xp;
 		break;
 
 	case STATE_TOO_LARGE:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_ERROR);
-		*((ushort *)pkt)++ = SWAP16(3);
+		*((ushort *)pkt)++ = htons(TFTP_ERROR);
+		*((ushort *)pkt)++ = htons(3);
 		strcpy ((char *)pkt, "File too large");
 		pkt += 14 /*strlen("File too large")*/ + 1;
 		len = pkt - xp;
@@ -102,8 +102,8 @@ TftpSend (void)
 
 	case STATE_BAD_MAGIC:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_ERROR);
-		*((ushort *)pkt)++ = SWAP16(2);
+		*((ushort *)pkt)++ = htons(TFTP_ERROR);
+		*((ushort *)pkt)++ = htons(2);
 		strcpy ((char *)pkt, "File has bad magic");
 		pkt += 18 /*strlen("File has bad magic")*/ + 1;
 		len = pkt - xp;
@@ -133,9 +133,9 @@ TftpHandler (uchar * pkt, unsigned dest, unsigned src, unsigned len)
 	}
 	len -= 2;
 
-    	/* warning: don't use increment (++) in SWAP() macros!! */
+    	/* warning: don't use increment (++) in ntohs() macros!! */
         proto = *((ushort *)pkt)++;
-    	proto = SWAP16(proto);
+    	proto = ntohs(proto);
 	switch (proto) {
 
 	case TFTP_RRQ:
@@ -149,7 +149,7 @@ TftpHandler (uchar * pkt, unsigned dest, unsigned src, unsigned len)
 		if (len < 2)
 			return;
 		len -= 2;
-		TftpBlock = SWAP16(*(ushort *)pkt);
+		TftpBlock = ntohs(*(ushort *)pkt);
 		if (((TftpBlock - 1) % 10) == 0) putc ('#');
 
 		if (TftpState == STATE_RRQ) {
@@ -197,7 +197,7 @@ TftpHandler (uchar * pkt, unsigned dest, unsigned src, unsigned len)
 
 	case TFTP_ERROR:
 		printf ("\nTFTP error: '%s' (%d)\n",
-					pkt + 2, SWAP16(*(ushort *)pkt));
+					pkt + 2, ntohs(*(ushort *)pkt));
 		puts ("Starting again\n\n");
 		NetStartAgain ();
 		break;

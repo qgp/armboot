@@ -76,23 +76,28 @@ static int BootpCheckPkt(uchar *pkt, unsigned dest, unsigned src, unsigned len)
 
 	if (dest != PORT_BOOTPC || src != PORT_BOOTPS)
 		retval = -1;
-	if (len < sizeof (Bootp_t) - OPT_SIZE)
+	/* note: use "else if" instead of "if" or the debug message
+	   below shows a wrong retval */
+	else if (len < sizeof (Bootp_t) - OPT_SIZE)
 		retval = -2;
-	if (bp->bp_op != OP_BOOTREQUEST &&
+	else if (bp->bp_op != OP_BOOTREQUEST &&
 	    bp->bp_op != OP_BOOTREPLY &&
 	    bp->bp_op != DHCP_OFFER &&
 	    bp->bp_op != DHCP_ACK &&
 	    bp->bp_op != DHCP_NAK ) {
 		retval = -3;
 	}
-	if (bp->bp_htype != HWT_ETHER)
+	else if (bp->bp_htype != HWT_ETHER)
 		retval = -4;
-	if (bp->bp_hlen != HWL_ETHER)
+	else if (bp->bp_hlen != HWL_ETHER)
 		retval = -5;
-	memcpy(&id, &bp->bp_id, sizeof(bp->bp_id));
-	if (id != BootpID)
-		retval = -6;
-
+	else
+	{
+		memcpy(&id, &bp->bp_id, sizeof(id));
+		id = ntohl(id);
+		if (id != BootpID)
+			retval = -6;
+	}
 	debug ("Filtering pkt = %d\n", retval);
 
 	return retval;
@@ -138,14 +143,14 @@ static void BootpVendorFieldProcess(u8 *ext)
     /* Fixed length fields */
 	case 1:		/* Subnet mask					*/
 		if (NetOurSubnetMask == 0)
-		    memcpy(&NetOurSubnetMask, ext+2, 4);
+			NetOurSubnetMask = NetReadIP(ext+2);
 		break;
 	case 2:		/* Time offset - Not yet supported		*/
 		break;
     /* Variable length fields */
 	case 3:		/* Gateways list				*/
 		if (NetOurGatewayIP == 0) {
-		    memcpy(&NetOurGatewayIP, ext+2, 4);
+		    NetOurGatewayIP = NetReadIP(ext+2);
 		}
 		break;
 	case 4:		/* Time server - Not yet supported		*/
@@ -154,7 +159,7 @@ static void BootpVendorFieldProcess(u8 *ext)
 		break;
 	case 6:
 		if (NetOurDNSIP == 0) {
-		    memcpy(&NetOurDNSIP, ext+2, 4);
+		    NetOurDNSIP = NetReadIP(ext+2);
 		}
 		break;
 	case 7:		/* Log server - Not yet supported		*/
@@ -175,7 +180,10 @@ static void BootpVendorFieldProcess(u8 *ext)
 		}
 		break;
 	case 13:	/* Boot file size				*/
-		memcpy(&NetBootFileSize, ext+2, size);
+		if(size == 2)
+			NetBootFileSize = ntohs(*(ushort*)(ext+2));
+		else if(size == 4)
+			NetBootFileSize = ntohl(*(ulong*)(ext+2));
 		break;
 	case 14:	/* Merit dump file - Not yet supported		*/
 		break;
@@ -264,6 +272,10 @@ static void BootpVendorProcess(u8 *ext, int size)
     if (NetOurNISDomain[0]) {
         printf("NetOurNISDomain : %s\n", NetOurNISDomain);
     }
+
+	if (NetBootFileSize) {
+        printf("NetBootFileSize: %d\n", NetBootFileSize);
+    }
 #endif
 }
 
@@ -295,8 +307,8 @@ BootpHandler(uchar * pkt, unsigned dest, unsigned src, unsigned len)
 	BootpCopyNetParams(bp);		/* Store net parameters from reply */
 
 	/* Retrieve extended informations (we must parse the vendor area) */
-	memcpy(&vendmagic, bp->bp_vend, 4);
-	if (SWAP32(vendmagic) == BOOTP_VENDOR_MAGIC)
+	memcpy(&vendmagic, bp->bp_vend, sizeof(vendmagic));
+	if (ntohl(vendmagic) == BOOTP_VENDOR_MAGIC)
 	    BootpVendorProcess(&bp->bp_vend[4], len);
 
 	NetSetTimeout(0, (thand_f *)0);
@@ -484,6 +496,7 @@ BootpRequest (void)
 	volatile uchar *pkt, *iphdr;
 	Bootp_t *bp;
 	int ext_len, pktlen, iplen;
+	ulong id;
 
 #if (CONFIG_COMMANDS & CFG_CMD_DHCP)
 	dhcp_state = INIT;
@@ -511,7 +524,7 @@ BootpRequest (void)
 	bp->bp_htype = HWT_ETHER;
 	bp->bp_hlen = HWL_ETHER;
 	bp->bp_hops = 0;
-	bp->bp_secs = SWAP16( get_timer(0) / CFG_HZ);
+	bp->bp_secs = htons( get_timer(0) / CFG_HZ);
 	NetWriteIP((vuchar*)&bp->bp_ciaddr, 0);
 	NetWriteIP((vuchar*)&bp->bp_yiaddr, 0);
 	NetWriteIP((vuchar*)&bp->bp_siaddr, 0);
@@ -535,7 +548,9 @@ BootpRequest (void)
 		| ((ulong)NetOurEther[4] << 8)
 		| (ulong)NetOurEther[5];
 	BootpID += get_timer(0);
-	memcpy(&bp->bp_id, &BootpID, sizeof(bp->bp_id));
+
+	id = htonl(BootpID);
+	memcpy(&bp->bp_id, &id, sizeof(id));
 
 	/*
 	 * Calculate proper packet lengths taking into account the
@@ -613,8 +628,8 @@ void DhcpOptionsProcess(char *popt)
 static int DhcpMessageType(unsigned char *popt)
 {
 	ulong vendmagic;
-	memcpy(&vendmagic, popt, 4);
-	if (SWAP32(vendmagic) != BOOTP_VENDOR_MAGIC)
+	memcpy(&vendmagic, popt, sizeof(vendmagic));
+	if (ntohl(vendmagic) != BOOTP_VENDOR_MAGIC)
 		return -1;
 
 	popt += 4;
@@ -647,7 +662,7 @@ void DhcpSendRequestPkt(Bootp_t *bp_offer)
 	bp->bp_htype = HWT_ETHER;
 	bp->bp_hlen = HWL_ETHER;
 	bp->bp_hops = 0;
-	bp->bp_secs = SWAP16( get_timer(0) / CFG_HZ);
+	bp->bp_secs = htons( get_timer(0) / CFG_HZ);
 	NetCopyIP((vuchar*)&bp->bp_ciaddr, (vuchar*)&bp_offer->bp_ciaddr);
 	NetCopyIP((vuchar*)&bp->bp_yiaddr, (vuchar*)&bp_offer->bp_yiaddr);
 	NetCopyIP((vuchar*)&bp->bp_siaddr, (vuchar*)&bp_offer->bp_siaddr);
@@ -658,7 +673,7 @@ void DhcpSendRequestPkt(Bootp_t *bp_offer)
 	 * ID is the id of the OFFER packet
 	 */
 
-	memcpy(bp->bp_id, bp_offer->bp_id, sizeof(bp->bp_id);
+	memcpy(&bp->bp_id, &bp_offer->bp_id, sizeof(bp->bp_id));
 
 	/*
 	 * Copy options from OFFER packet if present
@@ -679,6 +694,7 @@ void DhcpSendRequestPkt(Bootp_t *bp_offer)
 static void
 DhcpHandler(uchar * pkt, unsigned dest, unsigned src, unsigned len)
 {
+	ulong vendmagic;
 	Bootp_t *bp = (Bootp_t *)pkt;
 
 	debug ("DHCPHandler: got packet: (src=%d, dst=%d, len=%d) state: %d\n",
@@ -708,7 +724,8 @@ DhcpHandler(uchar * pkt, unsigned dest, unsigned src, unsigned len)
 			debug ("TRANSITIONING TO REQUESTING STATE\n");
 			dhcp_state = REQUESTING;
 #if 0
-			if ((*(uint *)bp->bp_vend) == BOOTP_VENDOR_MAGIC)
+			memcpy(&vendmagic, bp->bp_vend, sizeof(vendmagic));
+			if (ntohl(vendmagic) == BOOTP_VENDOR_MAGIC)
 				DhcpOptionsProcess(&bp->bp_vend[4]);
 
 #endif
@@ -726,7 +743,8 @@ DhcpHandler(uchar * pkt, unsigned dest, unsigned src, unsigned len)
 		debug ("DHCP State: REQUESTING\n");
 
 		if ( DhcpMessageType(bp->bp_vend) == DHCP_ACK ) {
-			if ((*(uint *)bp->bp_vend) == BOOTP_VENDOR_MAGIC)
+			memcpy(&vendmagic, bp->bp_vend, sizeof(vendmagic));
+			if (ntohl(vendmagic) == BOOTP_VENDOR_MAGIC)
 				DhcpOptionsProcess(&bp->bp_vend[4]);
 			BootpCopyNetParams(bp);	/* Store net params from reply */
 			dhcp_state = BOUND;

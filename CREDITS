@@ -43,3 +43,7 @@ D: Initial support for the Altera XA1 development board
 N: Kyle Harris
 E: kharris@nexus-tech.net
 D: Support for the Xscale Lubbock and Cradle boards
+
+N: Robert Kaiser
+E: rob@sysgo.de
+D: Improvement for some of the networking code and 3c589 driver

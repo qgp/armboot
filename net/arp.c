@@ -75,11 +75,11 @@ ArpRequest (void)
 
 	arp = (ARP_t *)pkt;
 
-	arp->ar_hrd = SWAP16(ARP_ETHER);
-	arp->ar_pro = SWAP16(PROT_IP);
+	arp->ar_hrd = htons(ARP_ETHER);
+	arp->ar_pro = htons(PROT_IP);
 	arp->ar_hln = 6;
 	arp->ar_pln = 4;
-	arp->ar_op  = SWAP16(ARPOP_REQUEST);
+	arp->ar_op  = htons(ARPOP_REQUEST);
 
 	NetCopyEther(&arp->ar_data[0], NetOurEther);	/* source ET addr	*/
 	NetWriteIP((uchar*)&arp->ar_data[6], NetOurIP);   /* source IP addr	*/

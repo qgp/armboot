@@ -233,12 +233,16 @@ int	fgetc(int file);
 
 /* Byte swapping stuff */
 #define SWAP16(x)	((((x) & 0xff) << 8) | ((x) >> 8))
-#define SWAP16c(x)	((((x) & 0xff) << 8) | ((x) >> 8))
 #define SWAP32(x)       ( \
 	                (((x) >> 24) & 0x000000ff) | \
         		(((x) >>  8) & 0x0000ff00) | \
 		        (((x) <<  8) & 0x00ff0000) | \
 		        (((x) << 24) & 0xff000000) )
+
+#define htons(x)	SWAP16(x)
+#define ntohs(x)	SWAP16(x)
+#define htonl(x)	SWAP32(x)
+#define ntohl(x)	SWAP32(x)
 
 #endif /* HOST_TOOLS */
 
