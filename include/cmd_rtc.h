@@ -37,7 +37,7 @@
 	"  - with argument: set the system date & time\n"			\
 ),
 
-void do_date (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_date (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #else
 

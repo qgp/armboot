@@ -1,4 +1,17 @@
 ======================================================================
+Modifications for 1.0.1:
+======================================================================
+
+* Cleanup (remove some obsolete files and CVS keys
+
+* Remove flashasm.S for DNP1110 - DNP doesn't require data puzzling.
+  Flash still not working on DNP
+
+* Add Support for JFFS2 boot
+
+* Import PPCboot: Change command functions to have a return value
+
+======================================================================
 Modifications for 1.0:
 ======================================================================
 

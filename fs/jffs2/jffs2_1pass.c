@@ -1,7 +1,6 @@
 /*
 -------------------------------------------------------------------------
  * Filename:      jffs2.c
- * Version:       $Id: jffs2_1pass.c,v 1.1 2002/03/14 16:44:04 mariusgroeger Exp $
  * Copyright:     Copyright (C) 2001, Russ Dill
  * Author:        Russ Dill <Russ.Dill@asu.edu>
  * Description:   Module to load kernel from jffs2
@@ -41,9 +40,6 @@
  * other provisions required by the GPL.  If you do not delete the
  * provisions above, a recipient may use your version of this file
  * under either the RHEPL or the GPL.
- *
- * $Id: jffs2_1pass.c,v 1.1 2002/03/14 16:44:04 mariusgroeger Exp $
- *
  */
 
 /* Ok, so anyone who knows the jffs2 code will probably want to get a papar

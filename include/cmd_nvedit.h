@@ -34,7 +34,7 @@
 	"printenv name ...\n"							\
 	"    - print value of environment variable 'name'\n"			\
 ),
-void do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #define CMD_TBL_SETENV		MK_CMD_TBL_ENTRY(				\
 	"setenv",	6,	CFG_MAXARGS,	0,	do_setenv,		\
@@ -44,7 +44,7 @@ void do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 	"setenv name\n"								\
 	"    - delete environment variable 'name'\n"				\
 ),
-void do_setenv   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_setenv   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #if ((CONFIG_COMMANDS & (CFG_CMD_ENV|CFG_CMD_FLASH)) == (CFG_CMD_ENV|CFG_CMD_FLASH))
 #define	CMD_TBL_SAVEENV		MK_CMD_TBL_ENTRY(				\
@@ -52,7 +52,7 @@ void do_setenv   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 	"saveenv - save environment variables to persistent storage\n",		\
 	NULL									\
 ),
-void do_saveenv  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_saveenv  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #else
 #define CMD_TBL_SAVEENV
 #endif	/* CFG_CMD_ENV */
@@ -71,7 +71,7 @@ void do_saveenv  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 	"    - display 'message' string and get environment variable 'name'"	\
 	"from stdin (max 'size' chars)\n"					\
 ),
-void do_askenv   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_askenv   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #else
 #define CMD_TBL_ASKENV
 #endif	/* CFG_CMD_ASKENV */
@@ -83,7 +83,7 @@ void do_askenv   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 	"var [...]\n"								\
 	"    - run the commands in the environment variable(s) 'var'\n"		\
 ),
-void do_run (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_run (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #else
 #define CMD_TBL_RUN
 #endif  /* CFG_CMD_RUN */

@@ -679,17 +679,20 @@ int run_command (const char *cmd, bd_t *bd, int flag)
 /****************************************************************************/
 
 #if (CONFIG_COMMANDS & CFG_CMD_RUN)
-void do_run (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc, char *argv[])
+int do_run (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc, char *argv[])
 {
 	int i;
+	int rc = 0;
 
 	if (argc < 2) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
-	for (i=1; i<argc; ++i) {
-		run_command (getenv (bd, argv[i]), bd, flag);
+	for (i=1; rc == 0 && i<argc; ++i) {
+		rc = run_command (getenv (bd, argv[i]), bd, flag);
 	}
+
+	return rc;
 }
 #endif

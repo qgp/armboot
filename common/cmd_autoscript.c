@@ -44,20 +44,21 @@
 
 extern image_header_t header;           /* from cmd_bootm.c */
 
-void
+int
 autoscript(bd_t *bd, ulong addr)
 {
 	ulong crc, data, len;
 	image_header_t *hdr = &header;
 	ulong *len_ptr;
 	char *cmd = 0;
+	int rc;
 
 	memcpy (hdr, (char *)addr, sizeof(image_header_t));
 
 	if (SWAP32(hdr->ih_magic) != IH_MAGIC)
 	{
 		printf("Bad magic number\n");
-		return;
+		return 1;
 	}
 
 	crc = SWAP32(hdr->ih_hcrc);
@@ -67,7 +68,7 @@ autoscript(bd_t *bd, ulong addr)
 	if (crc32(0, (char *)data, len) != crc)
 	{
 		printf("Bad header crc\n");
-		return;
+		return 1;
 	}
 
 	data = addr + sizeof(image_header_t);
@@ -75,13 +76,13 @@ autoscript(bd_t *bd, ulong addr)
 	if (crc32(0, (char *)data, len) != SWAP32(hdr->ih_dcrc))
 	{
 		printf("Bad data crc\n");
-		return;
+		return 1;
 	}
 
 	if (hdr->ih_type != IH_TYPE_SCRIPT)
 	{
 		printf("Bad image type\n");
-		return;
+		return 1;
 	}
 
 	/* get len of script and make sure cmd is null terminated */
@@ -94,7 +95,7 @@ autoscript(bd_t *bd, ulong addr)
 		cmd = malloc (len + 1);
 		if (!cmd)
 		{
-			return;
+			return 1;
 		}
 		while (*len_ptr++);
 		memcpy(cmd,(char *)len_ptr,len);
@@ -108,15 +109,17 @@ autoscript(bd_t *bd, ulong addr)
 			}
 		}
 	}
-	run_command(cmd, bd, 0);
+	rc = run_command(cmd, bd, 0);
 	free(cmd);
+
+	return rc;
 }
 
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_AUTOSCRIPT)
 
-void 
+int
 do_autoscript (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong addr;
@@ -131,9 +134,8 @@ do_autoscript (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	}
 
 	printf("## Executing script at %08lx\n",addr);
-		
-	autoscript(bd,addr);
 
+	return autoscript(bd,addr);
 }
 #endif
 

@@ -42,8 +42,8 @@
 	"    - enable or disable data (writethrough) cache\n"			\
 ),
 
-void do_icache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_dcache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_icache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_dcache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #else
 #define CMD_TBL_ICACHE
 #define CMD_TBL_DCACHE

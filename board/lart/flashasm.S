@@ -19,12 +19,6 @@
  *
  */
 
-.ident "$Id: flashasm.S,v 1.1 2002/03/14 16:44:04 mariusgroeger Exp $"
-
-//#ifdef HAVE_CONFIG_H
-//# include <blob/config.h>
-//#endif
-
 .text
 
 
@@ -34,7 +28,6 @@
 	/* the correct order for the internal flash */
 	/* used for LART only */
 data_to_flash:
-//#if defined LART
 	mov	r1, #0x0
 
 	tst	r0, #0x00000001
@@ -106,12 +99,10 @@ data_to_flash:
 	orrne	r1, r1, #0x10000000
 
 	mov	r0, r1
-//#endif
 	mov	pc, lr
 
 	/* Takes data received from the flash, and unshuffles it. */
 data_from_flash:
-//#if defined LART
 	mov	r1, #0x00
 
 	tst	r0, #0x00000001
@@ -183,5 +174,4 @@ data_from_flash:
 	orrne	r1, r1, #0x00400000
 
 	mov	r0, r1
-//#endif
 	mov	pc, lr

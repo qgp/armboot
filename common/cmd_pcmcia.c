@@ -93,12 +93,11 @@ const char *indent = "\t   ";
 
 #if (CONFIG_COMMANDS & CFG_CMD_PCMCIA)
 
-void do_pinit (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_pinit (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-
 	if (argc != 2) {
 		printf ("Usage: pinit {on | off}\n");
-		return;
+		return 1;
 	}
 	if (strcmp(argv[1],"on") == 0) {
 		pcmcia_on ();
@@ -106,10 +105,10 @@ void do_pinit (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		pcmcia_off ();
 	} else {
 		printf ("Usage: pinit {on | off}\n");
-		return;
+		return 1;
 	}
 
-	return;
+	return 0;
 }
 #endif	/* CFG_CMD_PCMCIA */
 

@@ -34,7 +34,7 @@
 	"[loadAddress] [bootfilename]\n" 		 			\
 ),
 
-void do_bootp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_bootp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #define	CMD_TBL_TFTPB	MK_CMD_TBL_ENTRY(					\
 	"tftpboot",	4,	3,	1,	do_tftpb,			\
@@ -44,7 +44,7 @@ void do_bootp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 ),
 
 
-void do_tftpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_tftpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 
 #define	CMD_TBL_RARPB	MK_CMD_TBL_ENTRY(					\
@@ -54,7 +54,7 @@ void do_tftpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 ),
 
 
-void do_rarpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_rarpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #if (CONFIG_COMMANDS & CFG_CMD_DHCP)
 #define	CMD_TBL_DHCP	MK_CMD_TBL_ENTRY(					\
@@ -64,7 +64,7 @@ void do_rarpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 ),
 
 
-void do_dhcp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_dhcp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #else
 #define CMD_TBL_DHCP
 #endif	/* CFG_CMD_DHCP */

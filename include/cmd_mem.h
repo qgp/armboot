@@ -85,16 +85,16 @@
 	"\n    - simple SDRAM read/write test\n"				\
 ),
 
-void do_mem_md    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_mm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_nm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_mw    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_cp    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_cmp   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_crc   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_base  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_loop  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_mem_mtest (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_md    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_mm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_nm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_mw    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_cp    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_cmp   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_crc   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_base  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_loop  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_mem_mtest (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #else
 #define CMD_TBL_MD

@@ -30,9 +30,6 @@
  * other provisions required by the GPL.  If you do not delete the
  * provisions above, a recipient may use your version of this file
  * under either the RHEPL or the GPL.
- *
- * $Id: compr_zlib.c,v 1.1 2002/03/14 16:44:04 mariusgroeger Exp $
- *
  */
 
 #include <armboot.h>

@@ -34,7 +34,7 @@
 	NULL									\
 ),
 
-void do_bdinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_bdinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #else
 #define CMD_TBL_BDINFO
@@ -48,7 +48,7 @@ void do_bdinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 	"      passing 'arg' as arguments\n"					\
 ),
 
-void do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #if (CONFIG_COMMANDS & CFG_CMD_LOADS)
 #ifdef	CFG_LOADS_BAUD_CHANGE
@@ -68,7 +68,7 @@ void do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 ),
 #endif	/* CFG_LOADS_BAUD_CHANGE */
 
-void do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #else	/* ! CFG_CMD_LOADS */
 #define CMD_TBL_LOADS
@@ -84,7 +84,7 @@ void do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[
 	" with offset 'off' and baudrate 'baud'\n"				\
 ),
 
-void do_load_serial_bin (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_load_serial_bin (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #else
 #define CMD_TBL_LOADB
@@ -97,6 +97,6 @@ void do_load_serial_bin (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *a
 ),
 
 /* Implemented in $(CPU)/cpu.c */
-void do_reset (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_reset (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #endif	/* _CMD_BOOT_H */

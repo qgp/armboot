@@ -92,7 +92,7 @@ abbrev_spec(char *str, flash_info_t **pinfo, int *psf, int *psl)
     return 1;
 }
 
-void do_flinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_flinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
     ulong bank;
     
@@ -102,20 +102,21 @@ void do_flinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	    
 	    flash_print_info (&flash_info[bank]);
 	}
-	return;
+	return 0;
     }
     
     bank = simple_strtoul(argv[1], NULL, 16);
     if ((bank < 1) || (bank > CFG_MAX_FLASH_BANKS)) {
 	printf ("Only FLASH Banks # 1 ... # %d supported\n",
 		CFG_MAX_FLASH_BANKS);
-	return;
+	return 1;
     }
     printf ("\nBank # %ld: ", bank);
     flash_print_info (&flash_info[bank-1]);
+    return 0;
 }
 
-void do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
     flash_info_t *info;
     ulong bank, addr_first, addr_last;
@@ -123,7 +124,7 @@ void do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
     
     if (argc < 2) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     
     if (strcmp(argv[1], "all") == 0) {
@@ -133,32 +134,34 @@ void do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	    n = flash_erase (info, 0, info->sector_count-1);
 	    if (n < 0) {
 		flash_perror(n);
-		break;
+		return 1;
 	    }
 	    else
 	      printf("Done.\n");
 	}
-	return;
+	return 0;
     }
     
     if ((n = abbrev_spec(argv[1], &info, &sect_first, &sect_last)) != 0) {
 	if (n < 0) {
 	    printf("Bad sector specification\n");
-	    return;
+	    return 1;
 	}
 	printf ("Erase Flash Sectors %d-%d in Bank # %d:\n",
 		sect_first, sect_last, (info-flash_info)+1);
 	n = flash_erase(info, sect_first, sect_last);
-	if (n < 0)
+	if (n < 0) {
 	  flash_perror(n);
+	  return 1;
+	}
 	else
 	  printf("Done.\n");
-	return;
+	return 0;
     }
     
     if (argc != 3) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     
     if (strcmp(argv[1], "bank") == 0) {
@@ -166,16 +169,18 @@ void do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	if ((bank < 1) || (bank > CFG_MAX_FLASH_BANKS)) {
 	    printf ("Only FLASH Banks # 1 ... # %d supported\n",
 		    CFG_MAX_FLASH_BANKS);
-	    return;
+	    return 1;
 	}
 	printf ("Erase Flash Bank # %ld:\n", bank);
 	info = &flash_info[bank-1];
 	n = flash_erase (info, 0, info->sector_count-1);
-	if (n < 0)
+	if (n < 0) {
 	  flash_perror(n);
+	  return 1;
+	}
 	else
 	  printf("done.\n");
-	return;
+	return 0;
     }
     
     addr_first = simple_strtoul(argv[1], NULL, 16);
@@ -183,18 +188,21 @@ void do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
     
     if (addr_first >= addr_last) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     
     printf ("Erase Flash from 0x%08lx to 0x%08lx... ", addr_first, addr_last);
     n = flash_sect_erase(addr_first, addr_last);
-    if (n < 0)
+    if (n < 0) {
       flash_perror(n);
+      return 1;
+    }
     else
       printf("done.\nErased %d sectors.\n", n);
+    return 0;
 }
 
-void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
     flash_info_t *info;
     ulong bank, addr_first, addr_last;
@@ -202,7 +210,7 @@ void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
     
     if (argc < 3) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     
     if (strcmp(argv[1], "off") == 0)
@@ -211,7 +219,7 @@ void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
       p = 1;
     else {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     
     if (strcmp(argv[2], "all") == 0) {
@@ -227,13 +235,13 @@ void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		info->protect[i] = p;
 	    }
 	}
-	return;
+	return 0;
     }
     
     if ((n = abbrev_spec(argv[2], &info, &sect_first, &sect_last)) != 0) {
 	if (n < 0) {
 	    printf("Bad sector specification\n");
-	    return;
+	    return 1;
 	}
 	printf("%sProtect Flash Sectors %d-%d in Bank # %d\n",
 	       p ? "" : "Un-", sect_first, sect_last,
@@ -241,12 +249,12 @@ void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	for (i = sect_first; i <= sect_last; i++) {
 	    info->protect[i] = p;
 	}
-	return;
+	return 0;
     }
     
     if (argc != 4) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     
     if (strcmp(argv[2], "bank") == 0) {
@@ -254,7 +262,7 @@ void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	if ((bank < 1) || (bank > CFG_MAX_FLASH_BANKS)) {
 	    printf ("Only FLASH Banks # 1 ... # %d supported\n",
 		    CFG_MAX_FLASH_BANKS);
-	    return;
+	    return 1;
 	}
 	printf ("%sProtect Flash Bank # %ld\n",
 		p ? "" : "Un-", bank);
@@ -262,12 +270,12 @@ void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	
 	if (info->flash_id == FLASH_UNKNOWN) {
 	    printf ("missing or unknown FLASH type\n");
-	    return;
+	    return 1;
 	}
 	for (i=0; i<info->sector_count; ++i) {
 	    info->protect[i] = p;
 	}
-	return;
+	return 0;
     }
     
     addr_first = simple_strtoul(argv[2], NULL, 16);
@@ -275,10 +283,10 @@ void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
     
     if (addr_first >= addr_last) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     
-    flash_sect_protect (p, addr_first, addr_last);
+    return flash_sect_protect (p, addr_first, addr_last) ? 1 : 0;
 }
 
 int flash_sect_protect (int p, ulong addr_first, ulong addr_last)

@@ -35,7 +35,7 @@
 	"pinit off - power off PCMCIA socket\n"					\
 ),
 
-void do_pinit (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_pinit (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #else
 #define CMD_TBL_PINIT
 #endif

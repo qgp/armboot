@@ -26,7 +26,7 @@ include $(TOPDIR)/config.mk
 LIB	= lib$(BOARD).a
 
 OBJS	:= dnp1110.o flash.o env.o
-SOBJS	:= flashasm.o memsetup.o
+SOBJS	:= memsetup.o
 
 $(LIB):	$(OBJS) $(SOBJS)
 	$(AR) crv $@ $^

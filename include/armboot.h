@@ -81,6 +81,15 @@ typedef struct bd_info {
 #define bi_env_data bi_env->data
 #define bi_env_crc  bi_env->crc
 
+/* arm/crc32.c */
+ulong	crc32		(ulong, const unsigned char *, uint);
+ulong	crc32_no_comp	(ulong crc, const unsigned char *, uint);
+
+/*
+ * Don't define some stuff private to armboot target code
+ */
+#ifndef HOST_TOOLS
+
 /* board/.../env.c */
 int 	board_env_getchar(bd_t * bd, int index, uchar *c);
 int 	board_env_save	(bd_t * bd, env_t *data, int size);
@@ -142,17 +151,12 @@ void	panic		(const char *fmt, ...);
 int	sprintf		(char * buf, const char *fmt, ...);
 int 	vsprintf	(char *buf, const char *fmt, va_list args);
 
-/* arm/crc32.c */
-ulong	crc32		(ulong, const unsigned char *, uint);
-ulong	crc32_no_comp	(ulong crc, const unsigned char *, uint);
-
 void    udelay		(unsigned long);
 
 int	ctrlc		(void);
 int	had_ctrlc 	(void);
 void	clear_ctrlc	(void);
 int	disable_ctrlc	(int);
-
 
 int	console_assign	(int file, char *devname);
 
@@ -236,5 +240,6 @@ int	fgetc(int file);
 		        (((x) <<  8) & 0x00ff0000) | \
 		        (((x) << 24) & 0xff000000) )
 
+#endif /* HOST_TOOLS */
 
 #endif	/* _ARMBOOT_H_ */

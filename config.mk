@@ -72,7 +72,7 @@ OPTFLAGS= -Os -fomit-frame-pointer
 LDSCRIPT := board/$(BOARDDIR)/armboot.lds
 
 CPPFLAGS := $(DBGFLAGS) $(OPTFLAGS) $(RELFLAGS)			\
-	-D__arm__ -DTEXT_BASE=$(TEXT_BASE)		\
+	-D__arm__ -DTEXT_BASE=$(TEXT_BASE)			\
 	-I$(TOPDIR)/include					\
 	-fno-builtin						\
 	-pipe $(PLATFORM_CPPFLAGS)

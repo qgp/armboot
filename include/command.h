@@ -42,7 +42,7 @@ struct cmd_tbl_s {
 	int		maxargs;	/* maximum number of arguments	*/
 	int		repeatable;	/* autorepeat allowed?		*/
 					/* Implementation function	*/
-	void		(*cmd)(struct cmd_tbl_s *, bd_t *, int, int, char *[]);
+	int		(*cmd)(struct cmd_tbl_s *, bd_t *, int, int, char *[]);
 	char		*usage;		/* Usage message	(short)	*/
 #ifdef	CFG_LONGHELP
 	char		*help;		/* Help  message	(long)	*/
@@ -72,7 +72,7 @@ cmd_tbl_t *find_cmd(const char *cmd);
  * void function (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
  */
 
-typedef	void 	command_t (cmd_tbl_t *, bd_t *, int, int, char *[]);
+typedef	int 	command_t (cmd_tbl_t *, bd_t *, int, int, char *[]);
 
 #endif	/* __ASSEMBLY__ */
 

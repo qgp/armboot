@@ -43,7 +43,7 @@ static void *zalloc(void *, unsigned, unsigned);
 static void zfree(void *, void *, unsigned);
 
 #if (CONFIG_COMMANDS & CFG_CMD_IMI)
-static void image_info (unsigned long addr);
+static int image_info (unsigned long addr);
 #endif
 static void print_type (image_header_t *hdr);
 
@@ -57,7 +57,7 @@ extern void boot_linux(cmd_tbl_t *cmdtp,
 		       ulong *len_ptr,
 		       int   verify);
 
-void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	iflag;
 	ulong	addr, ram_addr;
@@ -84,7 +84,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 	if (SWAP32(hdr->ih_magic)  != IH_MAGIC) {
 		printf ("Bad Magic Number\n");
-		return;
+		return 1;
 	}
 
 	data = (ulong)&header;
@@ -95,7 +95,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 	if (crc32 (0, (char *)data, len) != checksum) {
 		printf ("Bad Header Checksum\n");
-		return;
+		return 1;
 	}
 
 	/************************************************************/
@@ -125,7 +125,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		printf ("   Verifying Checksum ... ");
 		if (crc32 (0, (char *)data, len) != SWAP32(hdr->ih_dcrc)) {
 			printf ("Bad Data CRC\n");
-			return;
+			return 1;
 		}
 		printf ("OK\n");
 	}
@@ -134,7 +134,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 	if (hdr->ih_arch != IH_CPU_ARM) {
 		printf ("Unsupported Architecture\n");
-		return;
+		return 1;
 	}
 
 	switch (hdr->ih_type) {
@@ -150,7 +150,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 						data += 4;
 					break;
 	default: printf ("Wrong Image Type for %s command\n", cmdtp->name);
-		 return;
+		 return 1;
 	}
 
 	/*
@@ -178,7 +178,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		if (iflag)
 			enable_interrupts();
 		printf ("Unimplemented compression type %d\n", hdr->ih_comp);
-		return;
+		return 1;
 	}
 	printf ("OK\n");
 
@@ -199,7 +199,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		if (iflag)
 			enable_interrupts();
 		printf ("Can't boot image type %d\n", hdr->ih_type);
-		return;
+		return 1;
 	}
 
 	switch (hdr->ih_os)
@@ -211,39 +211,43 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	    break;
 	}
 
+	printf ("\n## Control returned to monitor\n");
 #ifdef DEBUG
-	printf ("\n## Control returned to monitor - resetting...\n");
+	printf ("\nResetting Hardware ... \n");
 	do_reset (cmdtp, bd, flag, argc, argv);
 #endif
+	return 0;
 }
 
 
 #if (CONFIG_COMMANDS & CFG_CMD_BOOTD)
-void do_bootd (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_bootd (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-	run_command (getenv (bd, "bootcmd"), bd, flag);
+	return run_command (getenv (bd, "bootcmd"), bd, flag);
 }
 #endif
 
 
 #if (CONFIG_COMMANDS & CFG_CMD_IMI)
-void do_iminfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_iminfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	int	arg;
 	ulong	addr;
+	int rc = 0;
 
 	if (argc < 2) {
-		image_info (load_addr);
-		return;
+		rc = image_info (load_addr);
 	}
-
-	for (arg=1; arg <argc; ++arg) {
-		addr = simple_strtoul(argv[arg], NULL, 16);
-		image_info (addr);
+	else {
+		for (arg = 1; arg < argc && rc == 0; ++arg) {
+			addr = simple_strtoul(argv[arg], NULL, 16);
+			rc = image_info (addr);
+		}
 	}
+	return rc;
 }
 
-static void image_info (ulong addr)
+static int image_info (ulong addr)
 {
 	ulong	data, len, checksum;
 	image_header_t *hdr = &header;
@@ -255,7 +259,7 @@ static void image_info (ulong addr)
 
 	if (SWAP32(hdr->ih_magic)  != IH_MAGIC) {
 		printf ("   Bad Magic Number\n");
-		return;
+		return 1;
 	}
 
 	data = (ulong)&header;
@@ -266,7 +270,7 @@ static void image_info (ulong addr)
 
 	if (crc32 (0, (char *)data, len) != checksum) {
 		printf ("   Bad Header Checksum\n");
-		return;
+		return 1;
 	}
 
 	/* for multi-file images we need the data part, too */
@@ -278,9 +282,10 @@ static void image_info (ulong addr)
 	printf ("   Verifying Checksum ... ");
 	if (crc32 (0, (char *)data, len) != SWAP32(hdr->ih_dcrc)) {
 		printf ("   Bad Data CRC\n");
-		return;
+		return 1;
 	}
 	printf ("OK\n");
+	return 0;
 }
 #endif	/* CFG_CMD_IMI */
 

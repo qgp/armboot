@@ -33,7 +33,7 @@
 
 #if (CONFIG_COMMANDS & CFG_CMD_MEMORY)
 
-static void mod_mem(cmd_tbl_t *, int, int, int, char *[]);
+static int mod_mem(cmd_tbl_t *, int, int, int, char *[]);
 
 /* Display values from last command.
  * Memory modify remembered values are different from display memory.
@@ -51,7 +51,7 @@ static	ulong	base_address = 0;
  */
 #define DISP_LINE_LEN	16
 
-void do_mem_md    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_md    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	addr, size, length;
 	ulong	i, nbytes, linebytes;
@@ -66,7 +66,7 @@ void do_mem_md    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 	if (argc < 2) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	if ((flag & CMD_FLAG_REPEAT) == 0) {
@@ -134,28 +134,30 @@ void do_mem_md    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	dp_last_addr = addr;
 	dp_last_length = length;
 	dp_last_size = size;
+
+	return 0;
 }
 
 
-void do_mem_mm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_mm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-	mod_mem (cmdtp, 1, flag, argc, argv);
+	return mod_mem (cmdtp, 1, flag, argc, argv);
 }
 
 
-void do_mem_nm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_nm    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-	mod_mem (cmdtp, 0, flag, argc, argv);
+	return mod_mem (cmdtp, 0, flag, argc, argv);
 }
 
 
-void do_mem_mw    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_mw    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	addr, size, writeval, count;
 
 	if ((argc < 3) || (argc > 4)) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	/* Check for size specification.
@@ -194,16 +196,18 @@ void do_mem_mw    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 			*((uchar *)addr) = (uchar)writeval;
 		addr += size;
 	}
+
+	return 0;
 }
 
 
-void do_mem_cmp   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_cmp   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	size, addr1, addr2, count, ngood;
 
 	if (argc != 4) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	/* Check for size specification.
@@ -266,16 +270,18 @@ void do_mem_cmp   (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	printf("Total of %ld %s%s were the same\n",
 		ngood, size == 4 ? "word" : size == 2 ? "halfword" : "byte",
 		ngood == 1 ? "" : "s");
+
+	return 0;
 }
 
 
-void do_mem_cp    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_cp    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	addr, size, dest, count;
 
 	if (argc != 4) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	/* Check for size specification.
@@ -303,12 +309,14 @@ void do_mem_cp    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 		printf ("Copy to Flash... ");
 		rc = flash_write ((uchar *)addr, dest, count*size);
-	    	if (rc < 0)
+	    	if (rc < 0) {
 	      		flash_perror(rc);
+			return 1;
+		}
       		else
       			printf("done.\n");
 
-                return;
+                return 0;
 	}
 
 	while (count-- > 0) {
@@ -321,10 +329,12 @@ void do_mem_cp    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		addr += size;
 		dest += size;
 	}
+
+	return 0;
 }
 
 
-void do_mem_base  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_base  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	if (argc > 1) {
 		/* Set new base address.
@@ -334,10 +344,11 @@ void do_mem_base  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	/* Print the current base address.
 	*/
 	printf("Base Address: 0x%08lx\n", base_address);
+	return 0;
 }
 
 
-void do_mem_loop  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_loop  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	addr, size, length, i, junk;
 	volatile uint	*longp;
@@ -346,7 +357,7 @@ void do_mem_loop  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 	if (argc < 3) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	/* Check for a size spefication.
@@ -409,20 +420,21 @@ void do_mem_loop  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		while (i-- > 0)
 			junk = *cp++;
 	}
+	return 0;
 }
 
 /* Just a quickie to walk through some memory.
  */
 uint baseval = 0;
 
-void do_mem_mtest (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_mtest (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	int	*memaddr;
 	int	memval;
 
 	for (;;) {
 		if (ctrlc()) {
-			return;
+			return 1;
 		}
 
 		memaddr = (uint *)CFG_MEMTEST_START;
@@ -447,6 +459,7 @@ void do_mem_mtest (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 		baseval++;
 	}
+	return 0;
 }
 
 
@@ -459,7 +472,7 @@ void do_mem_mtest (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
  *	nm{.b, .w, .l} {addr}
  */
 
-static void
+static int
 mod_mem(cmd_tbl_t *cmdtp, int incrflag, int flag, int argc, char *argv[])
 {
 	ulong	addr, size, i;
@@ -468,7 +481,7 @@ mod_mem(cmd_tbl_t *cmdtp, int incrflag, int flag, int argc, char *argv[])
 
 	if (argc != 2) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 #ifdef CONFIG_BOOT_RETRY_TIME
@@ -552,16 +565,18 @@ mod_mem(cmd_tbl_t *cmdtp, int incrflag, int flag, int argc, char *argv[])
 
 	mm_last_addr = addr;
 	mm_last_size = size;
+
+	return 0;
 }
 
-void do_mem_crc (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_mem_crc (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	addr, length;
 	ulong	crc;
 
 	if (argc < 3) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	addr = simple_strtoul(argv[1], NULL, 16);
@@ -573,6 +588,8 @@ void do_mem_crc (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 	printf ("CRC32 for %08lx ... %08lx ==> %08lx\n",
 		addr, addr + length -1, crc);
+
+	return 0;
 }
 
 #endif	/* CFG_CMD_MEMORY */

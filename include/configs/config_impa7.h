@@ -68,7 +68,7 @@
 
 #define CONFIG_BOOTP_MASK       (CONFIG_BOOTP_DEFAULT|CONFIG_BOOTP_BOOTFILESIZE)
 
-#define CONFIG_COMMANDS		(CONFIG_CMD_DFL)
+#define CONFIG_COMMANDS		(CONFIG_CMD_DFL | CFG_CMD_JFFS2)
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
@@ -167,5 +167,10 @@ struct bd_info_ext
 
 #define CFG_ENV_ADDR		(PHYS_FLASH_1 + 0x1C000)	/* Addr of Environment Sector	*/
 #define CFG_ENV_SIZE		0x4000	/* Total Size of Environment Sector	*/
+
+/* Flash banks JFFS2 should use */
+#define CFG_JFFS2_FIRST_BANK    0
+#define CFG_JFFS2_FIRST_SECTOR	8
+#define CFG_JFFS2_NUM_BANKS     2
 
 #endif	/* __CONFIG_H */

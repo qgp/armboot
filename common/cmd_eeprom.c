@@ -38,12 +38,9 @@ extern void eeprom_write (unsigned offset, uchar *buffer, unsigned cnt);
 
 #if (CONFIG_COMMANDS & CFG_CMD_EEPROM)
 
-void do_eeprom (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_eeprom (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
     switch (argc) {
-    default:
-	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
     case 5:
 	/* 4 args */
 
@@ -61,7 +58,7 @@ void do_eeprom (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		eeprom_read (off, (uchar *)addr, cnt);
 
 		printf ("done\n");
-		return;
+		return 0;
 
 	} else if (strcmp(argv[1],"write") == 0) {
 		ulong addr = simple_strtoul(argv[2], NULL, 16);
@@ -77,14 +74,12 @@ void do_eeprom (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		eeprom_write(off, (uchar *)addr, cnt);
 
 		printf ("done\n");
-		return;
+		return 0;
 
-	} else {
-		printf ("Usage:\n%s\n", cmdtp->usage);
 	}
-
-	return;
     }
+    printf ("Usage:\n%s\n", cmdtp->usage);
+    return 1;
 }
 #endif	/* CFG_CMD_EEPROM */
 

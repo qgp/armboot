@@ -40,7 +40,7 @@
 	"       - read/write `cnt' bytes at EEPROM offset `off'\n"		\
 ),
 
-void do_eeprom (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_eeprom (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #else
 

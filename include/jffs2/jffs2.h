@@ -30,9 +30,6 @@
  * other provisions required by the GPL.  If you do not delete the
  * provisions above, a recipient may use your version of this file
  * under either the RHEPL or the GPL.
- *
- * $Id: jffs2.h,v 1.1 2002/03/14 16:44:03 mariusgroeger Exp $
- *
  */
 
 #ifndef __LINUX_JFFS2_H__

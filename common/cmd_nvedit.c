@@ -180,7 +180,7 @@ static uchar *get_env_addr(bd_t *bd, int index)
  * Command interface: print one or all environment variables
  */
 
-void do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
     int i, j, k, nxt;
     
@@ -194,13 +194,13 @@ void do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	    
 	    if (ctrlc()) {
 		printf ("\n ** Abort\n");
-		return;
+		return 1;
 	    }
 	}
 	
 	printf("\nEnvironment size: %d/%d bytes\n", i, sizeof(bd->bi_env_data));
 	
-	return;
+	return 0;
     }
     
     for (i=1; i<argc; ++i) {	/* print single env variables	*/
@@ -224,8 +224,12 @@ void do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	    break;
 	}
 	if (k < 0)
+	{
 	  printf ("## Error: \"%s\" not defined\n", name);
+	  return 1;
+	}
     }
+    return 0;
 }
 
 /************************************************************************
@@ -235,7 +239,7 @@ void do_printenv (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
  * This function will ONLY work with a in-RAM copy of the environment
  */
 
-void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
+int _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 {
     int   i, len, oldval;
     uchar *env, *nxt = 0;
@@ -243,7 +247,7 @@ void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
     
     /* need writable copy in RAM */
     if (!bd->bi_env_data)
-      return;
+      return 1;
 
     name = argv[1];
     
@@ -274,7 +278,7 @@ void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 # endif	/* CONFIG_OVERWRITE_ETHADDR_ONCE && CONFIG_ETHADDR */
 	     ) ) {
 	    printf ("Can't overwrite \"%s\"\n", name);
-	    return;
+	    return 1;
 	}
 #endif
 	
@@ -291,7 +295,7 @@ void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 	    if (i == N_BAUDRATES) {
 		printf ("## Baudrate %d bps not supported\n",
 			baudrate);
-		return;
+		return 1;
 	    }
 	    printf ("## Switch baudrate to %d bps and press ENTER ...\n",
 		    baudrate);
@@ -325,7 +329,7 @@ void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
     if ((argc < 3) || argv[2] == NULL) {    
 	/* Update CRC */
 	bd->bi_env_crc = crc32(0, bd->bi_env_data, sizeof(bd->bi_env_data));
-	return;
+	return 0;
     }
 
     /*
@@ -347,7 +351,7 @@ void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
     }
     if (len > sizeof(bd->bi_env_data)) {
 	printf ("## Error: environment overflow, \"%s\" deleted\n", name);
-	return;
+	return 1;
     }
     while ((*env = *name++) != '\0')
       env++;
@@ -377,9 +381,9 @@ void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 	    bd->bi_enetaddr[i] = s ? simple_strtoul(s, &e, 16) : 0;
 	    if (s) s = (*e) ? e+1 : e;
 	}
-	return;
+	return 0;
     }
-    
+
     if (strcmp(argv[1],"ipaddr") == 0) {
 	char *s = argv[2];	/* always use only one arg */
 	char *e;
@@ -390,18 +394,22 @@ void _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 	    bd->bi_ip_addr  |= (val & 0xFF);
 	    if (s) s = (*e) ? e+1 : e;
 	}
-	return;
+	return 0;
     }
+
     if (strcmp(argv[1],"loadaddr") == 0) {
 	load_addr = simple_strtoul(argv[2], NULL, 16);
-	return;
+	return 0;
     }
+
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
     if (strcmp(argv[1],"bootfile") == 0) {
 	copy_filename (BootFile, argv[2], sizeof(BootFile));
-	return;
+	return 0;
     }
 #endif	/* CFG_CMD_NET */
+
+    return 0;
 }
 
 void setenv (bd_t * bd, char *varname, char *varvalue)
@@ -410,15 +418,15 @@ void setenv (bd_t * bd, char *varname, char *varvalue)
     _do_setenv (bd, 0, 3, argv);
 }
 
-void do_setenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
+int do_setenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
 		char *argv[])
 {
     if (argc < 2) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
 
-    _do_setenv (bd, flag, argc, argv);
+    return _do_setenv (bd, flag, argc, argv);
 }
 
 /************************************************************************
@@ -426,7 +434,7 @@ void do_setenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
  */
 
 #if (CONFIG_COMMANDS & CFG_CMD_ASKENV)
-void do_askenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
+int do_askenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
 		char *argv[])
 {
     extern char console_buffer[CFG_CBSIZE];
@@ -442,13 +450,13 @@ void do_askenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
     
     if (argc < 2) {
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
     }
     /* Check the syntax */
     switch (argc) {
     case 1:
 	printf ("Usage:\n%s\n", cmdtp->usage);
-	return;
+	return 1;
 	
     case 2:		/* askenv envname */
 	sprintf (message, "Please enter '%s':", argv[1]);
@@ -478,16 +486,16 @@ void do_askenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
     
     if (size >= CFG_CBSIZE)
       size = CFG_CBSIZE - 1;
-    
+
     if (size <= 0)
-      return;
-    
+      return 1;
+
     /* prompt for input */
     len = readline (message);
-    
+
     if (size < len)
       console_buffer[size] = '\0';
-    
+
     len = 2;
     if (console_buffer[0] != '\0') {
 	local_args[2] = console_buffer;
@@ -495,7 +503,7 @@ void do_askenv (cmd_tbl_t * cmdtp, bd_t * bd, int flag, int argc,
     }
     
     // Continue calling setenv code
-    _do_setenv (bd, flag, len, local_args);
+    return _do_setenv (bd, flag, len, local_args);
 }
 #endif	/* CFG_CMD_ASKENV */
 
@@ -548,9 +556,9 @@ static int envmatch (bd_t *bd, uchar *s1, int i2)
 
 #if (CONFIG_COMMANDS & CFG_CMD_ENV)
 
-void do_saveenv  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_saveenv  (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-    board_env_save(bd, bd->bi_env, sizeof(env_t));
+    return (board_env_save(bd, bd->bi_env, sizeof(env_t))) ? 1 : 0;
 }
 
 #endif	/* CFG_CMD_ENV */

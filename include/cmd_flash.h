@@ -62,9 +62,9 @@
 	"protect off all\n    - make all FLASH banks writable\n"		\
 ),
 
-void do_flinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
-void do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_flinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_flerase(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_protect(cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #else
 #define CMD_TBL_FLINFO
 #define CMD_TBL_FLERASE

@@ -1,6 +1,5 @@
 /*-------------------------------------------------------------------------
  * Filename:      serial.h
- * Version:       $Id: serial.h,v 1.1 2002/03/14 16:44:03 mariusgroeger Exp $
  * Copyright:     Copyright (C) 1999, Erik Mouw
  * Author:        Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
  * Description:   Header file for serial.c
@@ -29,12 +28,6 @@
  *
  */
 
-#ident "$Id: serial.h,v 1.1 2002/03/14 16:44:03 mariusgroeger Exp $"
-
-#ifndef BLOB_SERIAL_H
-#define BLOB_SERIAL_H
-
-
 #include "types.h"
 
 /* Function protos */
@@ -44,4 +37,3 @@ void serial_putc(const char c);
 void serial_getc(const char c);
 int serial_tstc(void);
 
-#endif

@@ -27,7 +27,7 @@
 #ifndef	_CMD_BOOTM_H
 #define	_CMD_BOOTM_H
 
-void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #define	CMD_TBL_BOOTM	MK_CMD_TBL_ENTRY(					\
 	"bootm",	5,	CFG_MAXARGS,	1,	do_bootm,		\
@@ -38,7 +38,7 @@ void do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 ),
 
 #if (CONFIG_COMMANDS & CFG_CMD_BOOTD)
-void do_bootd (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_bootd (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #define CMD_TBL_BOOTD	MK_CMD_TBL_ENTRY(					\
 	"bootd",	4,	1,	1,	do_bootd,			\
@@ -50,7 +50,7 @@ void do_bootd (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 #endif
 
 #if (CONFIG_COMMANDS & CFG_CMD_IMI)
-void do_iminfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int do_iminfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #define	CMD_TBL_IMINFO	MK_CMD_TBL_ENTRY(					\
 	"iminfo",	3,	CFG_MAXARGS,	1,	do_iminfo,		\

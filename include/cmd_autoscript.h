@@ -35,8 +35,8 @@
 	"A valid autoscr header must be present\n" \
 ),
 
-void autoscript (bd_t *bd, ulong addr);
-void do_autoscript (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+int autoscript (bd_t *bd, ulong addr);
+int do_autoscript (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 #else
 

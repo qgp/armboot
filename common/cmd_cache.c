@@ -32,7 +32,7 @@
 
 static int on_off (const char *);
 
-void do_icache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_icache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	switch (argc) {
 	case 2:			/* on / off	*/
@@ -50,13 +50,13 @@ void do_icache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	case 1:			/* get status */
 		printf ("Instruction Cache is %s\n",
 			icache_status() ? "ON" : "OFF");
-		return;
-	default:
-		printf ("Usage:\n%s\n", cmdtp->usage);
+		return 0;
 	}
+	printf ("Usage:\n%s\n", cmdtp->usage);
+	return 1;
 }
 
-void do_dcache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_dcache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	switch (argc) {
 	case 2:			/* on / off	*/
@@ -74,10 +74,10 @@ void do_dcache (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	case 1:			/* get status */
 		printf ("Data (writethrough) Cache is %s\n",
 			dcache_status() ? "ON" : "OFF");
-		return;
-	default:
-		printf ("Usage:\n%s\n", cmdtp->usage);
+		return 0;
 	}
+	printf ("Usage:\n%s\n", cmdtp->usage);
+	return 1;
 }
 
 static int on_off (const char *s)

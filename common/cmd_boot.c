@@ -45,7 +45,7 @@ static int do_echo = 1;
 
 
 #if (CONFIG_COMMANDS & CFG_CMD_BDI)
-void do_bdinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_bdinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	int i;
 
@@ -65,16 +65,17 @@ void do_bdinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		printf ("DRAM:%02d.start = %08lX\n", i, bd->bi_dram[i].start);
 		printf ("DRAM:%02d.size  = %08lX\n", i, bd->bi_dram[i].size);
 	}
+	return 0;
 }
 #endif	/* CFG_CMD_BDI */
 
-void do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	addr, rc;
 
 	if (argc < 2) {
 		printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	addr = simple_strtoul(argv[1], NULL, 16);
@@ -88,10 +89,11 @@ void do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	rc = ((ulong (*)(bd_t *, int, char *[]))addr) (bd, --argc, &argv[1]);
 
 	printf ("## Application terminated, rc = 0x%lx\n", rc);
+	return 0;
 }
 
 #if (CONFIG_COMMANDS & CFG_CMD_LOADS)
-void do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong offset = 0;
 	ulong addr;
@@ -173,6 +175,7 @@ void do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[
 		}
 	}
 #endif
+	return 0;
 }
 
 static ulong
@@ -323,12 +326,13 @@ char his_pad_char;   /* pad chars he needs */
 char his_quote;      /* quote chars he'll use */
 
 
-void do_load_serial_bin (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_load_serial_bin (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong offset = 0;
 	ulong addr;
 	int i;
 	int loadb_baudrate = bd->bi_baudrate;
+	int rc = 0;
 
 	if (argc >= 2) {
 		offset = simple_strtoul(argv[1], NULL, 16);
@@ -394,10 +398,11 @@ void do_load_serial_bin (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *a
 
 		if (((s = getenv(bd, "autoscript")) != NULL) && (strcmp(s,"yes") == 0)) {
 			printf("Running autoscript at addr 0x%08lX ...\n", load_addr);
-			autoscript (bd, load_addr);
+			rc = autoscript (bd, load_addr);
 		}
 	}
 #endif
+	return rc;
 }
 
 

@@ -41,7 +41,7 @@ TOOLSUBDIRS =
 # Use native tools and options
 #
 CPPFLAGS   = -Wall -I../include -I.. -DTEXT_BASE=$(TEXT_BASE)
-CFLAGS     = $(CPPFLAGS) -O
+CFLAGS     = $(CPPFLAGS) -O -DHOST_TOOLS
 AFLAGS	   = -D__ASSEMBLY__ $(CPPFLAGS)
 CC	   = $(HOSTCC)
 MAKEDEPEND = makedepend

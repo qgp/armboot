@@ -35,29 +35,29 @@
 # include <cmd_autoscript.h>
 # endif
 
-extern void do_bootm (cmd_tbl_t *, bd_t *, int, int, char *[]);
+extern int do_bootm (cmd_tbl_t *, bd_t *, int, int, char *[]);
 
-static void netboot_common (int, cmd_tbl_t *, bd_t *, int , char *[]);
+static int netboot_common (int, cmd_tbl_t *, bd_t *, int , char *[]);
 
-void do_bootp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_bootp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-	netboot_common (BOOTP, cmdtp, bd, argc, argv);
+	return netboot_common (BOOTP, cmdtp, bd, argc, argv);
 }
 
-void do_tftpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_tftpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-	netboot_common (TFTP, cmdtp, bd, argc, argv);
+	return netboot_common (TFTP, cmdtp, bd, argc, argv);
 }
 
-void do_rarpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_rarpb (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-	netboot_common (RARP, cmdtp, bd, argc, argv);
+	return netboot_common (RARP, cmdtp, bd, argc, argv);
 }
 
 #if (CONFIG_COMMANDS & CFG_CMD_DHCP)
-void do_dhcp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_dhcp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
-	netboot_common(DHCP, cmdtp, bd, argc, argv);
+	return netboot_common(DHCP, cmdtp, bd, argc, argv);
 }
 #endif	/* CFG_CMD_DHCP */
 
@@ -97,11 +97,12 @@ static void netboot_update_env(void)
     }
 }
 
-static void
+static int
 netboot_common (int proto, cmd_tbl_t *cmdtp, bd_t *bd, int argc, char *argv[])
 {
 	char *s;
-
+	int rc = 0;
+   
 	switch (argc) {
 	case 1:
 		break;
@@ -123,11 +124,11 @@ netboot_common (int proto, cmd_tbl_t *cmdtp, bd_t *bd, int argc, char *argv[])
 		break;
 
 	default: printf ("Usage:\n%s\n", cmdtp->usage);
-		return;
+		return 1;
 	}
 
 	if (NetLoop(bd, proto) == 0)
-		return;
+		return 0;
 
 	/* NetLoop ok, update environment */
 	netboot_update_env();
@@ -141,16 +142,18 @@ netboot_common (int proto, cmd_tbl_t *cmdtp, bd_t *bd, int argc, char *argv[])
 		printf ("Automatic boot of image at addr 0x%08lX ...\n",
 			load_addr);
 
-		do_bootm (cmdtp, bd, 0, 1, local_args);
+		rc = do_bootm (cmdtp, bd, 0, 1, local_args);
 	}
 
 #ifdef CONFIG_AUTOSCRIPT
-	if (((s = getenv(Net_bd, "autoscript")) != NULL) && (strcmp(s,"yes") == 0)) {
+	if (rc == 0 && 
+	    ((s = getenv(Net_bd, "autoscript")) != NULL) && (strcmp(s,"yes") == 0)) {
 		printf("Running autoscript at addr 0x%08lX ...\n", load_addr);
-		autoscript (bd, load_addr);
+		rc = autoscript (bd, load_addr);
 	}
 #endif
 
+	return rc;
 }
 
 #endif	/* CFG_CMD_NET */

@@ -39,8 +39,8 @@ ulong myflush(void);
 extern u32 data_from_flash(u32);
 extern u32 data_to_flash(u32);
 
-#define PUZZLE_FROM_FLASH(x)	data_from_flash((x))
-#define PUZZLE_TO_FLASH(x)	data_to_flash((x))
+#define PUZZLE_FROM_FLASH(x)	(x)
+#define PUZZLE_TO_FLASH(x)	(x)
 
 flash_info_t    flash_info[CFG_MAX_FLASH_BANKS];
 

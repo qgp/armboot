@@ -78,15 +78,14 @@
 	"    - echo args to console; \\c suppresses newline\n"			\
     ),
 
-void
-do_version (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_version (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	extern char version_string[];
 	printf ("\n%s\n", version_string);
+	return 0;
 }
 
-void
-do_echo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_echo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	int i, putnl = 1;
 
@@ -106,14 +105,15 @@ do_echo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 	if (putnl)
 		putc('\n');
+
+	return 0;
 }
 
 /*
  * Use puts() instead of printf() to avoid printf buffer overflow
  * for long help messages
  */
-void
-do_help (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+int do_help (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	int i;
 
@@ -122,14 +122,14 @@ do_help (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		for (cmdtp=&cmd_tbl[0]; cmdtp->name; cmdtp++) {
 			/* allow user abort */
 			if (ctrlc())
-				return;
+				return 1;
 
 			if (cmdtp->usage == NULL)
 				continue;
 			puts (cmdtp->usage);
 		}
 
-		return;
+		return 0;
 	}
 
 	/*
@@ -160,6 +160,7 @@ do_help (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 			);
 		}
 	}
+ 	return 0;
 }
 
 /***************************************************************************
