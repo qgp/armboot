@@ -81,6 +81,9 @@ struct state
 	const unsigned char			*sequenceptr;
 	const struct keyboardmap	*kbd_header;
 	unsigned char				composebuffer[2];
+#ifdef CFG_DEBOUNCE_TOUT
+	unsigned char               lastkey;
+#endif
 };
 
 #define Status			(pSB->status)
@@ -94,6 +97,9 @@ struct state
 #define LookAheadValid	(pSB->lookaheadvalid)
 #define LookAhead		(pSB->lookahead)
 #define KbMapping		(pSB->kbd_header)
+#ifdef CFG_DEBOUNCE_TOUT
+#define LastKey         (pSB->lastkey)
+#endif
 
 static struct state kbdencode_stateblock;
 #define GetStateBlockAddr()	(&kbdencode_stateblock)
@@ -331,7 +337,27 @@ nextk:	if(!Kbd_tstc())			/* any  key available ?   */
 				c &= ~MkBrkMask;	/* strip break bit(s) from keycode */
 		}
 		else if((c = encode(pSB, pKB, c, Released, &SequencePtr)) >= 0)
+		{
+			/*
+			** debouncing: some keyboards need this...
+			*/
+#ifdef CFG_DEBOUNCE_TOUT
+			if(c == LastKey)
+			{
+				if(get_timer_masked() < CFG_DEBOUNCE_TOUT)
+				{	/* skip this key */
+					goto nextk;
+				}
+				
+			}
+			else
+			{
+				reset_timer_masked();
+				LastKey = c;
+			}
+#endif
 			return(c);			/* normal character: return it */
+		}
 	}
 	if(SequencePtr)	/* a sequence of characters being output ? */
 	{
