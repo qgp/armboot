@@ -2,7 +2,7 @@
 #define load_kernel_h
 /*-------------------------------------------------------------------------
  * Filename:      load_kernel.h
- * Version:       $Id: load_kernel.h,v 1.1 2002/03/14 16:44:03 mariusgroeger Exp $
+ * Version:       $Id: load_kernel.h,v 1.1.1.1 2002/03/14 16:44:03 mariusgroeger Exp $
  * Copyright:     Copyright (C) 2001, Russ Dill
  * Author:        Russ Dill <Russ.Dill@asu.edu>
  * Description:   header for load kernel modules

@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------
  * Filename:      mini_inflate.c
- * Version:       $Id: mini_inflate.c,v 1.1 2002/03/14 16:44:04 mariusgroeger Exp $
+ * Version:       $Id: mini_inflate.c,v 1.1.1.1 2002/03/14 16:44:04 mariusgroeger Exp $
  * Copyright:     Copyright (C) 2001, Russ Dill
  * Author:        Russ Dill <Russ.Dill@asu.edu>
  * Description:   Mini inflate implementation (RFC 1951)

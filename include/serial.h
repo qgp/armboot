@@ -1,6 +1,6 @@
 /*-------------------------------------------------------------------------
  * Filename:      serial.h
- * Version:       $Id: serial.h,v 1.1 2002/03/14 16:44:03 mariusgroeger Exp $
+ * Version:       $Id: serial.h,v 1.1.1.1 2002/03/14 16:44:03 mariusgroeger Exp $
  * Copyright:     Copyright (C) 1999, Erik Mouw
  * Author:        Erik Mouw <J.A.K.Mouw@its.tudelft.nl>
  * Description:   Header file for serial.c
@@ -29,7 +29,7 @@
  *
  */
 
-#ident "$Id: serial.h,v 1.1 2002/03/14 16:44:03 mariusgroeger Exp $"
+#ident "$Id: serial.h,v 1.1.1.1 2002/03/14 16:44:03 mariusgroeger Exp $"
 
 #ifndef BLOB_SERIAL_H
 #define BLOB_SERIAL_H

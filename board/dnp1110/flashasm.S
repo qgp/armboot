@@ -19,7 +19,7 @@
  *
  */
 
-.ident "$Id: flashasm.S,v 1.1 2002/03/14 16:44:04 mariusgroeger Exp $"
+.ident "$Id: flashasm.S,v 1.1.1.1 2002/03/14 16:44:04 mariusgroeger Exp $"
 
 //#ifdef HAVE_CONFIG_H
 //# include <blob/config.h>
