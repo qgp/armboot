@@ -65,8 +65,15 @@ ulong flash_init(bd_t *bd)
     {
 	ulong flashbase = 0;
 	flash_info[i].flash_id =
+#if defined(CONFIG_AMD_LV400)
 	  (AMD_MANUFACT & FLASH_VENDMASK) |
 	  (AMD_ID_LV400B & FLASH_TYPEMASK);
+#elif defined(CONFIG_AMD_LV800)
+	  (AMD_MANUFACT & FLASH_VENDMASK) |
+	  (AMD_ID_LV800B & FLASH_TYPEMASK);
+#else
+#error "Unknown flash configured"
+#endif
 	flash_info[i].size = FLASH_BANK_SIZE;
 	flash_info[i].sector_count = CFG_MAX_FLASH_SECT;
 	memset(flash_info[i].protect, 0, CFG_MAX_FLASH_SECT);
@@ -76,7 +83,6 @@ ulong flash_init(bd_t *bd)
 	  panic("configured to many flash banks!\n");
 	for (j = 0; j < flash_info[i].sector_count; j++)
 	{
-
 	    if (j <= 3)
 	    {
 		/* 1st one is 16 KB */

@@ -9,17 +9,17 @@
 #
 
 #
-# SMDK2410 has 1 bank of 32 MB DRAM
+# SMDK2410 has 1 bank of 64 MB DRAM
 #
-# 3000'0000 to 3200'0000
+# 3000'0000 to 3400'0000
 #
-# Linux-Kernel is expected to be at 3000'0000, entry 3000'0000
+# Linux-Kernel is expected to be at 3000'8000, entry 3000'8000
 # optionally with a ramdisk at 3080'0000
 #
-# we load ourself to 31F0'0000
+# we load ourself to 33F0'0000
 #
-# download areas is 3100'0000
+# download areas is 3300'0000
 #
 
 
-TEXT_BASE = 0x31F00000
+TEXT_BASE = 0x33F00000

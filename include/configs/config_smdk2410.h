@@ -41,7 +41,7 @@
  */
 #define CONFIG_ARM920T		1	/* This is an ARM920T Core	*/
 #define	CONFIG_S3C2410		1	/* in a SAMSUNG S3C2410 SoC     */
-#define CONFIG_SMDK2410		1	/* on an SAMSUNG SMDK2410 Board */
+#define CONFIG_SMDK2410		1	/* on a SAMSUNG SMDK2410 Board  */
 
 #define USE_920T_MMU		1
 #undef CONFIG_USE_IRQ			/* we don't need IRQ/FIQ stuff */
@@ -103,11 +103,11 @@
 #define CFG_BARGSIZE		CFG_CBSIZE	/* Boot Argument Buffer Size	*/
 
 #define CFG_MEMTEST_START	0x30000000	/* memtest works on	*/
-#define CFG_MEMTEST_END		0x31F00000	/* 31 MB in DRAM	*/
+#define CFG_MEMTEST_END		0x33F00000	/* 63 MB in DRAM	*/
 
 #undef  CFG_CLKS_IN_HZ		/* everything, incl board info, in Hz */
 
-#define	CFG_LOAD_ADDR		0x31000000	/* default load address	*/
+#define	CFG_LOAD_ADDR		0x33000000	/* default load address	*/
 
 /* the PWM TImer 4 uses a counter of 15625 for 10 ms, so we need */
 /* it to wrap 100 times (total 1562500) to get 1 sec. */
@@ -152,24 +152,35 @@ struct bd_info_ext
  */
 #define CONFIG_NR_DRAM_BANKS	1	   /* we have 1 bank of DRAM */
 #define PHYS_SDRAM_1		0x30000000 /* SDRAM Bank #1 */
-#define PHYS_SDRAM_1_SIZE	0x02000000 /* 32 MB */
+#define PHYS_SDRAM_1_SIZE	0x04000000 /* 64 MB */
 
 #define PHYS_FLASH_1		0x00000000 /* Flash Bank #1 */
-#define PHYS_FLASH_SIZE		0x00100000 /* 1 MB */
 
 #define CFG_FLASH_BASE		PHYS_FLASH_1
 
 /*-----------------------------------------------------------------------
  * FLASH and environment organization
  */
+
+#define CONFIG_AMD_LV400	1	/* uncomment this if you have a LV400 flash */
+//#define CONFIG_AMD_LV800	1	/* uncomment this if you have a LV800 flash */
+
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks */
+#ifdef CONFIG_AMD_LV800
+#define PHYS_FLASH_SIZE		0x00100000 /* 1MB */
 #define CFG_MAX_FLASH_SECT	(19)	/* max number of sectors on one chip */
+#define CFG_ENV_ADDR		(CFG_FLASH_BASE + 0x0F0000) /* addr of environment */
+#endif
+#ifdef CONFIG_AMD_LV400
+#define PHYS_FLASH_SIZE		0x00080000 /* 512KB */
+#define CFG_MAX_FLASH_SECT	(11)	/* max number of sectors on one chip */
+#define CFG_ENV_ADDR		(CFG_FLASH_BASE + 0x070000) /* addr of environment */
+#endif
 
 /* timeout values are in ticks */
 #define CFG_FLASH_ERASE_TOUT	(5*CFG_HZ) /* Timeout for Flash Erase */
 #define CFG_FLASH_WRITE_TOUT	(5*CFG_HZ) /* Timeout for Flash Write */
 
-#define CFG_ENV_ADDR		(CFG_FLASH_BASE + 0x0F0000)	/* Addr of Environment Sector	*/
 #define CFG_ENV_SIZE		0x10000	/* Total Size of Environment Sector */
 
 #endif	/* __CONFIG_H */

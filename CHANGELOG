@@ -2,6 +2,11 @@
 Recent Modifications
 ======================================================================
 
+* Patch by David Müller <d.mueller@elsoft.ch>:
+
+ - fix some little bugs and typos in the code for the SMDK2410 eval board
+ - add (compile time selectable) support for LV400 and LV800 flashs.
+
 * Big network patch by Robert Kaiser <rob@sysgo.de>:
 
   - Bugfixes in bootp code: need to swap Netmask, Gateway IP, etc.

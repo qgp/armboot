@@ -108,6 +108,9 @@ int board_init(bd_t *bd)
     /* adress of boot parameters */
     bd->bi_boot_params = 0x30000100;
 
+    icache_enable();
+    dcache_enable();
+    
     return 1;
 }
 
@@ -117,4 +120,3 @@ int dram_init(bd_t *bd)
     bd->bi_dram[0].size  = PHYS_SDRAM_1_SIZE;
     return PHYS_SDRAM_1_SIZE;
 }
-
