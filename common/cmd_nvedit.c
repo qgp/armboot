@@ -384,11 +384,13 @@ int _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 	return 0;
     }
 
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
     if (strcmp(argv[1],"ipaddr") == 0) {
 	char *s = argv[2];	/* always use only one arg */
 	bd->bi_ip_addr = string_to_ip(s);
 	return 0;
     }
+#endif
 
     if (strcmp(argv[1],"loadaddr") == 0) {
 	load_addr = simple_strtoul(argv[2], NULL, 16);
@@ -597,8 +599,10 @@ void env_relocate(bd_t *bd)
     }
 
     /* IP address */
+#if (CONFIG_COMMANDS & CFG_CMD_NET)
     s = getenv(bd, "ipaddr");
     bd->bi_ip_addr = string_to_ip(s);
+#endif
     
     if ((s = getenv(bd, "loadaddr")) != NULL) {    
         load_addr = simple_strtoul(s, NULL, 16);
