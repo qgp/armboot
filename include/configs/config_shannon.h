@@ -28,16 +28,20 @@
 #define __CONFIG_H
 
 /*
- * If we are developing, we might want to start armboot from ram
- * so we MUST NOT initialize critical regs like mem-timing ...
+ * If we want to rely on the Inferno Loader to bring us to life, 
+ * we must use a different flash ROM layout, and we must initialze
+ * a few more things..
  */
+/*#undef CONFIG_INFERNO*/			/* we are not using the inferno bootldr */
+#define CONFIG_INFERNO		/* we are using the inferno bootldr */
 
 /*
- * we just run in non-critical mode now, because we use the Inferno-Loader to
- * bring us to live
+ * If we are developing, we might want to start armboot from ram
+ * so we MUST NOT initialize critical regs like mem-timing in this case
  */
-#define CONFIG_INFERNO			/* we are using the inferno bootldr */
-#undef CONFIG_INIT_CRITICAL		/* undef for developing */
+
+/*#define CONFIG_INIT_CRITICAL*/	/* undef for developing */
+#undef CONFIG_INIT_CRITICAL	/* undef for developing */
 
 /*
  * High Level Configuration Options
@@ -69,24 +73,16 @@
  * There are two possible drivers for the shannon's LCD screen,
  * select one of these:
  */
-#define CONFIG_ANSI_CONSOLE     /* ansi terminal emulation */
-#undef  CONFIG_CFB_CONSOLE      /* framebuffer console with std input */
-
-#ifdef CONFIG_ANSI_CONSOLE
-/* this set of defines will enable the generic frame buffer driver */
-#define CONFIG_FRAMEBUFFER			/* use framebuffer */
-#define CONFIG_FRAMEBUFFER_BPP	8	/* 8 bits per pixel */
-#define CONFIG_FRAMEBUFFER_CLUT		/* h/w has color lookup table */
-#endif
-
-#ifdef CONFIG_CFB_CONSOLE
-#define CONFIG_CONSOLE_CURSOR   /* display cursor */
-#define CONFIG_VIDEO_LOGO       /* display linux logo */
-#define CONFIG_VIDEO_SHANNON	/* enable Shannon video driver */
-#endif
+#undef CONFIG_ANSI_CONSOLE     /* ansi terminal emulation */
+//#define CONFIG_ANSI_CONSOLE     /* ansi terminal emulation */
+#define CONFIG_CFB_CONSOLE      /* framebuffer console with std input */
+//#undef CONFIG_CFB_CONSOLE      /* framebuffer console with std input */
 
 /*
  * Keyboard device
+ *
+ * If you have enabled one of the LCD screen drivers above, you will
+ * most likely want to enable this as well ...
  */
 #define CONFIG_KEYBOARD			/* enable generic keyboard driver */
 #define CONFIG_KEYBOARD_IRDA	/* use IrDA keyboard */
@@ -99,14 +95,19 @@
 
 #define CONFIG_COMMANDS		(CONFIG_CMD_DFL	| \
 				 CFG_CMD_PCMCIA	| \
+				 CFG_CMD_BSP | \
 				 CFG_CMD_IDE)
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
 #define CONFIG_BOOTDELAY	3
+#ifdef CONFIG_KEYBOARD
+#define CONFIG_BOOTARGS    	"root=ramfs devfs=mount"
+#else
 #define CONFIG_BOOTARGS    	"root=ramfs devfs=mount console=ttySA0,115200"
-#define CONFIG_NETMASK          255.255.0.0
+#endif
+#define CONFIG_NETMASK      255.255.0.0
 #define CONFIG_BOOTCOMMAND	"help"
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
@@ -132,7 +133,15 @@
 #define	CFG_LOAD_ADDR		0xd0000000	/* default load address	*/
 
 #define	CFG_HZ			3686400		/* incrementer freq: 3.6864 MHz */
-#define CFG_CPUSPEED		0x09		/* 190 MHz for Shannon */
+
+/*
+** CPU clock selection: The inferno firmware initializes the
+** shanonn to 103MHz, however, in our experience, many tuxscreens
+** can be safely overclocked to 190 MHz, some even to 206 MHz.
+*/
+#define CFG_CPUSPEED		0x03		/* 103 MHz for Shannon */
+//#define CFG_CPUSPEED		0x09		/* 190 MHz for Shannon */
+//#define CFG_CPUSPEED		0x0a		/* 206 MHz for Shannon */
 
 						/* valid baudrates */
 #define CFG_BAUDRATE_TABLE	{ 9600, 19200, 38400, 57600, 115200 }
@@ -205,8 +214,8 @@ struct bd_info_ext
 #define CFG_ENV_ADDR		(PHYS_FLASH_1 + 0x003E0000)	/* Addr of Environment Sector	*/
 #define CFG_ENV_SIZE		0x4000	/* Total Size of Environment Sector	*/
 #else
-#define CFG_ENV_ADDR		(PHYS_FLASH_1 + 0x1C000)	/* Addr of Environment Sector	*/
-#define CFG_ENV_SIZE		0x4000	/* Total Size of Environment Sector	*/
+#define CFG_ENV_ADDR		(PHYS_FLASH_1 + 0x20000)	/* Addr of Environment Sector	*/
+#define CFG_ENV_SIZE		0x20000	/* Total Size of Environment Sector	*/
 #endif
 
 /*-----------------------------------------------------------------------
@@ -257,6 +266,36 @@ struct bd_info_ext
 
 /* Offset for alternate registers	*/
 #define CFG_ATA_ALT_OFFSET	(CFG_ATA_BASE_ADDR)
+
+/*-----------------------------------------------------------------------
+ * Further parameters for framebuffer driver
+ *-----------------------------------------------------------------------
+ */
+
+/* no need normally to change anything here */
+
+#ifdef CONFIG_ANSI_CONSOLE
+/* this set of defines will enable the generic frame buffer driver */
+#define CONFIG_FRAMEBUFFER			/* use framebuffer */
+#define CONFIG_FRAMEBUFFER_BPP	8	/* 8 bits per pixel */
+#define CONFIG_FRAMEBUFFER_CLUT		/* h/w has color lookup table */
+#define CONFIG_ADJUST_LCD			/* enable adjustment of LCD contrast/brightness*/
+#define CONFIG_PAGELENGTH	24		/* stop scrolling every 24 lines */
+#endif
+
+#ifdef CONFIG_CFB_CONSOLE
+#define CONFIG_CONSOLE_CURSOR   /* display cursor */
+#define CONFIG_VIDEO_LOGO       /* display linux logo */
+#define CONFIG_VIDEO_SHANNON	/* enable Shannon video driver */
+#define CONFIG_ADJUST_LCD		/* enable adjustment of LCD contrast/brightness*/
+#define CONFIG_PAGELENGTH	24	/* stop scrolling every 24 lines */
+#endif
+
+#ifdef CONFIG_KEYBOARD
+#define CFG_DEBOUNCE_TOUT	(CFG_HZ/10)	/* keyboard debounce timeout : 100 ms*/
+#endif
+
+#define CONFIG_CMD_SETCLOCK			/* enable setting of CPU clock */
 
 /*-----------------------------------------------------------------------
  */

@@ -29,6 +29,19 @@
 
 #if (CONFIG_COMMANDS & CFG_CMD_BSP)
 
+#ifdef CONFIG_CMD_SETCLOCK
+
+extern int do_setclock (cmd_tbl_t *, bd_t *, int , int, char **);
+
+#define CMD_TBL_BSP    MK_CMD_TBL_ENTRY(                   \
+    "setclock", 5,  2,  2,  do_setclock,            \
+    "setclock- set processor clock\n",               \
+    "N\n"                                   \
+    "    - set processor clock to N MHz (N is _decimal_ !!!)\n"     \
+),
+
+#endif	/* CFG_CMD_BSP */
+
 #else
 
 #define CMD_TBL_BSP

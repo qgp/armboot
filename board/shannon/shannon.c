@@ -23,6 +23,8 @@
  */
 
 #include "armboot.h"
+#include "command.h"
+#include <SA-1100.h>
 
 /* ------------------------------------------------------------------------- */
 
@@ -30,6 +32,57 @@
 /*
  * Miscelaneous platform dependent initialisations
  */
+
+struct clocksetup
+{
+	int           clockspeed;	/* frequency in MHz */
+	unsigned long ppcr;			/* value for core clock config */
+	unsigned long mdcas0;		/* CAS timing ... */
+	unsigned long mdcas1;
+	unsigned long mdcas2;
+	unsigned long mdcnfg;
+	unsigned long msc0;
+	unsigned long mecr;			/* PCMCIA timing */
+	unsigned long lccr3;		/* pixel clock divider */
+};
+
+
+const static struct clocksetup speeds[] =
+{
+	{
+		103,
+		0x00000003,
+		0xcccccccf,
+		0xfffffffc,
+		0xffffffff,
+		0x0326991f,
+		0x42304230,
+		0x00c600c6,
+		0x00000008
+	},
+	{
+		190,
+		0x00000009,
+		0xc71c703f,
+		0xffc71c71,
+		0xffffffff,
+		0x01b4b21f,
+		0x44584458,
+		0x016b016b,
+		0x0000000f
+	},
+	{
+		206,
+		0x0000000a,
+		0xc71c703f,
+		0xffc71c71,
+		0xffffffff,
+		0x0194b21f,
+		0x84c084c0,
+		0x018c018c,
+		0x00000010
+	}
+};
 
 int board_init(bd_t *bd)
 {
@@ -58,7 +111,7 @@ int board_init(bd_t *bd)
         *(unsigned long *)temp = 0x00060006;
 
     }
-    #endif /* CONFIG_INIT_CRITICAL */
+    #endif /* CONFIG_INFERNO */
 
     /* arch number for shannon */
     bd->bi_arch_number = 97;
@@ -97,3 +150,43 @@ int dram_init(bd_t *bd)
     #endif
     ;
 }
+
+#ifdef CONFIG_CMD_SETCLOCK
+int set_clock(int clockspeed)
+{
+	int i;
+
+	for(i = 0; i < sizeof(speeds) / sizeof(speeds[0]); i++)
+	{
+		if(speeds[i].clockspeed == clockspeed)
+		{
+			PPCR     = speeds[i].ppcr;
+			MSC0     = speeds[i].msc0;
+			MDCAS0   = speeds[i].mdcas0;
+			MDCAS1   = speeds[i].mdcas1;
+			MDCAS2   = speeds[i].mdcas2;
+			MDCNFG   = speeds[i].mdcnfg;
+			MECR     = speeds[i].mecr;
+			LCCR3    = speeds[i].lccr3;
+			return(0);
+		}
+	}
+	printf("Available clockspeeds are:\n");
+	for(i = 0; i < sizeof(speeds) / sizeof(speeds[0]); i++)
+		printf("   %d\n", speeds[i].clockspeed);
+	return(-1);
+}
+
+
+int do_setclock (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+{
+    if (argc != 2) {
+        printf ("Usage:\n%s\n", cmdtp->usage);
+        return 1;
+    }
+
+    return(set_clock(simple_strtoul(argv[1], NULL, 10)));
+}
+
+
+#endif			
