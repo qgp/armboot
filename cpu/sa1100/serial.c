@@ -89,6 +89,10 @@ void serial_init(bd_t *bd)
  */
 void serial_putc(const char c)
 {
+    /* If \n, also do \r */
+    if(c == '\n')
+      serial_putc('\r');
+
 #ifdef CONFIG_SERIAL1
     /* wait for room in the tx FIFO on SERIAL1 */
     while((Ser1UTSR0 & UTSR0_TFS) == 0) ;
@@ -100,10 +104,6 @@ void serial_putc(const char c)
 
     Ser3UTDR = c;
 #endif
-
-    /* If \n, also do \r */
-    if(c == '\n')
-      serial_putc('\r');
 }
 
 /*

@@ -84,6 +84,10 @@ void serial_init(bd_t *bd)
  */
 void serial_putc(const char c)
 {
+    /* If \n, also do \r */
+    if(c == '\n')
+      serial_putc('\r');
+
 #ifdef CONFIG_FFUART
     /* wait for room in the tx FIFO on FFUART */
     while((FFLSR & LSR_TEMT) == 0) ;
@@ -91,10 +95,6 @@ void serial_putc(const char c)
     FFTHR = c;
 #elif CONFIG_STUART
 #endif
-
-    /* If \n, also do \r */
-    if(c == '\n')
-      serial_putc('\r');
 }
 
 /*

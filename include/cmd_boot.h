@@ -72,6 +72,25 @@ int do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
 int do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
 
+#ifdef	CFG_LOADS_BAUD_CHANGE
+#define	CMD_TBL_SAVES	MK_CMD_TBL_ENTRY(					\
+	"saves",	5,	4,	0,	do_save_serial,			\
+	"saves   - save S-Record file over serial line\n",			\
+	"[ off ] [size] [ baud ]\n"							\
+	"    - save S-Record file over serial line"				\
+	" with offset 'off', size 'size' and baudrate 'baud'\n"				\
+),
+#else	/* ! CFG_LOADS_BAUD_CHANGE */
+#define	CMD_TBL_SAVES	MK_CMD_TBL_ENTRY(					\
+	"saves",	5,	3,	0,	do_save_serial,			\
+	"saves   - save S-Record file over serial line\n",			\
+	"[ off ] [size]\n"								\
+	"    - save S-Record file over serial line with offset 'off' and size 'size'\n"		\
+),
+#endif	/* CFG_LOADS_BAUD_CHANGE */
+
+int do_save_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]);
+
 #else	/* ! CFG_CMD_LOADS */
 #define CMD_TBL_LOADS
 #endif	/* CFG_CMD_LOADS */

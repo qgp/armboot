@@ -75,14 +75,14 @@ void serial_init(bd_t *bd)
  */
 void serial_putc(const char c)
 {
+	/* If \n, also do \r */
+	if(c == '\n')
+		serial_putc('\r');
+
 	/* Wait for space in the fifo */
         while(((*UART_TSR(EXC_UART00_BASE) & UART_TSR_TX_LEVEL_MSK)==15));
 
 	*UART_TD(EXC_UART00_BASE)=c;
-
-	/* If \n, also do \r */
-	if(c == '\n')
-		serial_putc('\r');
 }
 
 /*

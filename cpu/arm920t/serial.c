@@ -130,6 +130,10 @@ int serial_getc(void)
  */
 void serial_putc(const char c)
 {
+    /* If \n, also do \r */
+    if(c == '\n')
+      serial_putc('\r');
+
 #ifdef CONFIG_SERIAL1
     /* wait for room in the tx FIFO on SERIAL1 */
     while(!(rUTRSTAT0 & 0x2))
@@ -143,10 +147,6 @@ void serial_putc(const char c)
 
     rUTXH1= c;
 #endif
-
-    /* If \n, also do \r */
-    if(c == '\n')
-      serial_putc('\r');
 }		
 
 /*

@@ -4,6 +4,13 @@ Recent Modifications
 
 * Patch by Robert Kaiser <rob@sysgo.de>:
 
+  - Changed the various serial_putc()'s to output <CR>-<LF> on 
+    '\n' (rather than <LF>-<CR>.
+  - Added new "saves" command to dump memory contents to serial
+    line in S-record form.
+
+* Patch by Robert Kaiser <rob@sysgo.de>:
+
   - one more network code cleanup. Code is now mostly in sync
     with PPCboot
 

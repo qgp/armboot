@@ -38,7 +38,9 @@
 
 #if (CONFIG_COMMANDS & CFG_CMD_LOADS)
 static ulong load_serial (ulong offset);
+static int save_serial (ulong offset, ulong size);
 static int read_record (char *buf, ulong len);
+static int write_record (char *buf);
 
 static int do_echo = 1;
 #endif
@@ -156,7 +158,7 @@ int do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]
 		printf ("## Switch baudrate to %d bps and press ENTER ...\n",
 			loads_baudrate);
 		udelay(50000);
-		serial_setbrg (bd->bi_intfreq, loads_baudrate);
+		serial_setbrg (bd, loads_baudrate);
 		udelay(50000);
 		for (;;) {
 			if (getc() == '\r')
@@ -192,7 +194,7 @@ int do_load_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]
 		printf ("## Switch baudrate to %d bps and press ESC ...\n",
 			(int)bd->bi_baudrate);
 		udelay (50000);
-		serial_setbrg (bd->bi_intfreq, bd->bi_baudrate);
+		serial_setbrg (bd, bd->bi_baudrate);
 		udelay (50000);
 		for (;;) {
 			if (getc() == 0x1B) /* ESC */
@@ -335,6 +337,159 @@ read_record (char *buf, ulong len)
 	*p = '\0';
 	return (p - buf);
 }
+
+
+
+int do_save_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
+{
+	ulong offset = 0;
+	ulong size   = 0;
+	char *env_echo;
+#ifdef	CFG_LOADS_BAUD_CHANGE
+	int saves_baudrate = bd->bi_baudrate;
+#endif
+
+	if (argc >= 2) {
+		offset = simple_strtoul(argv[1], NULL, 16);
+	}
+#ifdef	CFG_LOADS_BAUD_CHANGE
+	if (argc >= 3) {
+		size = simple_strtoul(argv[2], NULL, 16);
+	}
+	if (argc == 4) {
+		saves_baudrate = (int)simple_strtoul(argv[3], NULL, 10);
+
+		/* default to current baudrate */
+		if (saves_baudrate == 0)
+			saves_baudrate = bd->bi_baudrate;
+	}
+#else	/* ! CFG_LOADS_BAUD_CHANGE */
+	if (argc == 3) {
+		size = simple_strtoul(argv[2], NULL, 16);
+	}
+#endif	/* CFG_LOADS_BAUD_CHANGE */
+
+#ifdef	CFG_LOADS_BAUD_CHANGE
+	if (saves_baudrate != bd->bi_baudrate) {
+		printf ("## Switch baudrate to %d bps and press ENTER ...\n",
+			saves_baudrate);
+		udelay(50000);
+		serial_setbrg (bd, saves_baudrate);
+		udelay(50000);
+		for (;;) {
+			if (getc() == '\r')
+				break;
+		}
+	}
+#endif	/* CFG_LOADS_BAUD_CHANGE */
+	printf ("## Ready for S-Record upload, press ENTER to proceed ...\n");
+	for (;;) {
+		if (getc() == '\r')
+			break;
+	}
+	if(save_serial (offset, size)) {
+		printf ("## S-Record upload aborted\n");
+	} else {
+		printf ("## S-Record upload complete\n");
+	}
+#ifdef	CFG_LOADS_BAUD_CHANGE
+	if (saves_baudrate != bd->bi_baudrate) {
+		printf ("## Switch baudrate to %d bps and press ESC ...\n",
+			(int)bd->bi_baudrate);
+		udelay (50000);
+		serial_setbrg (bd, bd->bi_baudrate);
+		udelay (50000);
+		for (;;) {
+			if (getc() == 0x1B) /* ESC */
+				break;
+		}
+	}
+#endif
+	return 0;
+}
+
+#define SREC3_START				"S0030000FC\n"
+#define SREC3_FORMAT			"S3%02X%08X%s%02X\n"
+#define SREC3_END				"S70500000000FA\n"
+#define SREC_BYTES_PER_RECORD	16
+
+static int save_serial (ulong address, ulong count)
+{
+	int i, c, reclen, checksum, length;
+	char *hex = "0123456789ABCDEF";
+	char	record[2*SREC_BYTES_PER_RECORD+16];	/* buffer for one S-Record	*/
+	char	data[2*SREC_BYTES_PER_RECORD+1];	/* buffer for hex data	*/
+
+	reclen = 0;
+	checksum  = 0;
+
+	if(write_record(SREC3_START))			/* write the header */
+		return (-1);
+	do {
+		if(count) {						/* collect hex data in the buffer  */
+			c = *(volatile uchar*)(address + reclen);	/* get one byte    */
+			checksum += c;							/* accumulate checksum */
+			data[2*reclen]   = hex[(c>>4)&0x0f];
+			data[2*reclen+1] = hex[c & 0x0f];
+			data[2*reclen+2] = '\0';
+			++reclen;
+			--count;
+		}
+		if(reclen == SREC_BYTES_PER_RECORD || count == 0) {
+			/* enough data collected for one record: dump it */
+			if(reclen) {	/* build & write a data record: */
+				/* address + data + checksum */
+				length = 4 + reclen + 1;
+
+				/* accumulate length bytes into checksum */
+				for(i = 0; i < 2; i++)
+					checksum += (length >> (8*i)) & 0xff;
+
+				/* accumulate address bytes into checksum: */
+				for(i = 0; i < 4; i++)
+					checksum += (address >> (8*i)) & 0xff;
+
+				/* make proper checksum byte: */
+				checksum = ~checksum & 0xff;
+
+				/* output one record: */
+				sprintf(record, SREC3_FORMAT, length, address, data, checksum);
+				if(write_record(record))
+					return (-1);
+			}
+			address  += reclen;  /* increment address */
+			checksum  = 0;
+			reclen    = 0;
+		}
+	}
+	while(count);
+	if(write_record(SREC3_END))	/* write the final record */
+		return (-1);
+	return(0);
+}
+
+static int
+write_record (char *buf)
+{
+	char *p;
+	char c;
+
+	while((c = *buf++))
+		serial_putc(c);
+
+    // Check for the console hangup (if any different from serial)
+
+	if (ctrlc())
+	{
+	    return (-1);
+	}
+	return (0);
+}
+
+
+
+
+
 #endif	/* CFG_CMD_LOADS */
 
 
