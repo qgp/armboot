@@ -344,7 +344,6 @@ int do_save_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]
 {
 	ulong offset = 0;
 	ulong size   = 0;
-	char *env_echo;
 #ifdef	CFG_LOADS_BAUD_CHANGE
 	int saves_baudrate = bd->bi_baudrate;
 #endif
@@ -409,7 +408,7 @@ int do_save_serial (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[]
 }
 
 #define SREC3_START				"S0030000FC\n"
-#define SREC3_FORMAT			"S3%02X%08X%s%02X\n"
+#define SREC3_FORMAT			"S3%02X%08lX%s%02X\n"
 #define SREC3_END				"S70500000000FA\n"
 #define SREC_BYTES_PER_RECORD	16
 
@@ -471,7 +470,6 @@ static int save_serial (ulong address, ulong count)
 static int
 write_record (char *buf)
 {
-	char *p;
 	char c;
 
 	while((c = *buf++))
