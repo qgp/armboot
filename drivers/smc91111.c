@@ -73,9 +73,7 @@
 static const char version[] =
 	"smc91111.c:v1.0 04/25/01 by Daris A Nevil (dnevil@snmc.com)\n";
 
-
 #define SMC_DEBUG 0
-
 
 /*------------------------------------------------------------------------
  .
@@ -122,7 +120,10 @@ static const char version[] =
 // Memory sizing constant
 #define LAN91C111_MEMORY_MULTIPLIER	(1024*2)
 
-#define SMC_BASE_ADDRESS 0x20000300
+#ifndef SMC_BASE_ADDRESS
+#define SMC_BASE_ADDRESS 0x20000300 
+#endif
+
 #define SMC_DEV_NAME "SMC91111"
 #define SMC_PHY_ADDR 0x0000
 #define SMC_ALLOC_MAX_TRY 5
@@ -200,13 +201,27 @@ static int smc_rcv(void);
  ------------------------------------------------------------
 */
 
-/** This is hardcoded for now.
- * Once the flash works correctly the mac addr. can be
- * fetched from FLASHBLOCK 1 / OFFSET 0x10 using 
- * smc_get_macaddr( smc_mac_addr );
- */
-byte	smc_mac_addr[6] = {0x02, 0x80, 0xad, 0x20, 0x31, 0xb8};
+static char smc_mac_addr[] = {0x02, 0x80, 0xad, 0x20, 0x31, 0xb8}; 
 
+/*
+ * This function must be called before smc_open() if you want to override
+ * the default mac address.
+ */
+
+void smc_set_mac_addr(const char *addr) {
+	int i;
+
+	for (i=0; i < sizeof(smc_mac_addr); i++){
+	    smc_mac_addr[i] = addr[i];
+	}
+} 
+
+/*
+ * smc_get_macaddr is no longer used. If you want to override the default
+ * mac address, call smc_get_mac_addr as a part of the board initialisation.
+ */
+
+#if 0
 void smc_get_macaddr( byte *addr ) {
 	/* MAC ADDRESS AT FLASHBLOCK 1 / OFFSET 0x10 */
         unsigned char *dnp1110_mac = (unsigned char *) (0xE8000000 + 0x20010);
@@ -222,6 +237,7 @@ void smc_get_macaddr( byte *addr ) {
             addr[5] = *(dnp1110_mac+5);
         }
 }
+#endif
 
 /***********************************************
  * Show available memory                       *
@@ -636,12 +652,8 @@ static int smc_open()
 //	SMC_SELECT_BANK(0);
 //	SMC_outw(0, RPC_REG);
 
-	/*
-  		According to Becker, I have to set the hardware address
-		at this point, because the (l)user can set it with an
-		ioctl.  Easily done...
-	*/
 	SMC_SELECT_BANK( 1 );
+
 	for ( i = 0; i < 6; i ++ )
 		SMC_outb( smc_mac_addr[i], ADDR0_REG + i );
 
@@ -1112,7 +1124,7 @@ static void smc_write_phy_register(byte phyreg, word phydata)
  .-------------------------------------------------------------*/
 static void smc_wait_ms(unsigned int ms)
 {
-	udelay(ms*100000);
+	udelay(ms*1000);
 }
 
 

@@ -35,3 +35,7 @@ D: Support for Samsung ARM920T S3C2400X
 N: David Müller
 E: d.mueller@elsoft.ch
 D: Support for Samsung ARM920T SMDK2410 eval board
+
+N: Iain Scott
+E: iscott@altera.com
+D: Initial support for the Altera XA1 development board

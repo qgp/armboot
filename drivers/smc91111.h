@@ -44,6 +44,12 @@
 #include "types.h"
 #include "config.h"
 
+/*
+ * This function may be called by the board specific initialisation code
+ * in order to override the default mac address.
+ */
+
+void smc_set_mac_addr(const char *addr);
 
 /* I want some simple types */
 

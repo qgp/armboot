@@ -1,4 +1,7 @@
 #
+# Copyright (c) 2000-2002 Altera Corporation, San Jose, California, USA.  
+# All rights reserved.
+#
 # (C) Copyright 2000
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
@@ -23,42 +26,20 @@
 
 include $(TOPDIR)/config.mk
 
-LIB	= libcommon.a
+LIB	= lib$(CPU).a
 
-ifneq ($(BOARD),cpci405)
-AOBJS	= environment.o
-endif
-COBJS	= board.o main.o command.o \
-	  cmd_boot.o cmd_bootm.o cmd_cache.o \
-	  cmd_eeprom.o \
-	  cmd_flash.o cmd_mem.o cmd_net.o \
-	  cmd_nvedit.o cmd_autoscript.o cmd_misc.o cmd_jffs2.o \
-	  s_record.o dlmalloc.o \
-	  console.o lists.o devices.o flash.o \
-	  string.o ctype.o vsprintf.o string.o \
-	  display_options.o zlib.o crc32.o ldiv.o \
-	  armlinux.o
+START	= start.o
+OBJS	= serial.o interrupts.o cpu.o
+	  
+all:	.depend $(START) $(LIB)
 
-OBJS	= $(AOBJS) $(COBJS)
-
-ifneq ($(BOARD),epxa1db)
-COBJS += cmd_ide.o cmd_pcmcia.o
-endif
-
-CPPFLAGS += -I..
-
-all:	$(LIB) $(AOBJS)
-
-$(LIB):	.depend $(COBJS)
-	$(AR) crv $@ $(COBJS)
-
-environment.o: environment.S ../tools/envcrc
-	$(CC) $(AFLAGS) -DENV_CRC=$(shell ../tools/envcrc) -c -o $@ environment.S
+$(LIB):	$(OBJS)
+	$(AR) crv $@ $(OBJS)
 
 #########################################################################
 
-.depend:	Makefile $(AOBJS:.o=.S) $(COBJS:.o=.c)
-		$(CC) -M $(CFLAGS) $(AOBJS:.o=.S) $(COBJS:.o=.c) > $@
+.depend:	Makefile $(START:.o=.S) $(OBJS:.o=.c)
+		$(CC) -M $(CFLAGS) $(START:.o=.S) $(OBJS:.o=.c) > $@
 
 sinclude .depend
 

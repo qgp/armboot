@@ -140,6 +140,7 @@ void flash_perror(int err);
 #define INTEL_ID_28F160B3B  0x88918891	/*  16M = 1M x 16 bottom boot sector	*/
 #define INTEL_ID_28F320B3T  0x88968896	/*  32M = 2M x 16 top boot sector	*/
 #define INTEL_ID_28F320C3T  0x88C488C4	/*  32M = 2M x 16 top boot sector	*/
+#define INTEL_ID_28F320C3B  0x88C488C5	/*  32M = 2M x 16 bottom boot sector	*/
 #define INTEL_ID_28F320B3B  0x88978897	/*  32M = 2M x 16 bottom boot sector	*/
 #define INTEL_ID_28F640B3T  0x88988898	/*  64M = 4M x 16 top boot sector	*/
 #define INTEL_ID_28F640B3B  0x88998899	/*  64M = 4M x 16 bottom boot sector	*/

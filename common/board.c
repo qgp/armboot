@@ -34,6 +34,10 @@
 extern void cs8900_get_enetaddr(uchar *addr);
 #endif
 
+#ifdef CONFIG_EPXA1DB_MAC_ADDR
+extern void epxa1db_set_mac_addr(bd_t* bd);
+#endif
+
 /*
  * Begin and End of memory area for malloc(), and current "brk"
  */
@@ -116,12 +120,22 @@ void start_armboot(void)
 
     /* enable exceptions */
     enable_interrupts();
+
+/* 
+ * FIXME: this should probably be rationalised into a standard call for 
+ * each board, e.g. enet_mac_init() - but this'll do for now.
+ */
     
 #ifdef CONFIG_DRIVER_CS8900
     if (!getenv(&bd,"ethaddr") ) {
 	cs8900_get_enetaddr(bd.bi_enetaddr);
     }
-#endif    
+#endif
+
+#ifdef CONFIG_EPXA1DB_MAC_ADDR
+    epxa1db_set_mac_addr(&bd);
+#endif
+    
     /* main_loop() can return to retry autoboot, if so just run it again. */
     for (;;) {
 	main_loop(&bd);

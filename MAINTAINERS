@@ -33,6 +33,10 @@ David Müller <d.mueller@elsoft.ch>
 
         smdk2410                ARM920T
 
+Iain Scott <i.scott@altera.com>
+
+        epxa1db                 ARM922T (EPXA1)
+
 #########################################################################
 # End of MAINTAINERS list						#
 #########################################################################

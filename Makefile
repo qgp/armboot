@@ -1,4 +1,3 @@
-#
 # (C) Copyright 2000, 2002
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
@@ -83,7 +82,7 @@ OBJS +=	common/libcommon.a
 
 #########################################################################
 
-all:		armboot.srec armboot.bin
+all:		armboot.srec armboot.hex armboot.bin
 
 install:	all
 		cp armboot.bin /tftpboot/armboot.bin
@@ -91,11 +90,14 @@ install:	all
 armboot.srec:	armboot
 		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@
 
+armboot.hex:	armboot
+		$(OBJCOPY) ${OBJCFLAGS} -O ihex $< $@
+
 armboot.bin:	armboot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
 
 armboot:	depend subdirs $(OBJS) $(LDSCRIPT)
-		$(LD) $(LDFLAGS) $(OBJS) -Map armboot.map -o armboot $(LIBGCC)
+		$(LD) $(LDFLAGS) $(LDFLAGS_EXTRA) $(OBJS) $(LIBGCC) $(EXTERN_LIB) -Map armboot.map -o armboot 
 
 subdirs:
 		@for dir in $(SUBDIRS) ; do $(MAKE) -C $$dir || exit 1 ; done
@@ -117,7 +119,8 @@ endif
 #########################################################################
 
 unconfig:
-	rm -f include/config.h include/config.mk
+	rm -f include/config.h include/config.mk include/epxa/excalibur.h
+
 
 #########################################################################
 ## ARMv4 Systems
@@ -185,9 +188,23 @@ smdk2410_config	:	unconfig
 	echo "#include <configs/config_$(@:_config=).h>" >config.h
 
 #########################################################################
+## ARM922T Systems
+#########################################################################
+
+epxa1db_config	:	unconfig
+	@echo "Configuring for $(@:_config=) Board..." ; \
+	cd include ; \
+	echo "ARCH  = arm"	> config.mk ;	\
+	echo "BOARD = epxa1db"	>>config.mk ;	\
+	echo "CPU   = epxa"	>>config.mk ;	\
+	echo "#include <configs/config_$(@:_config=).h>" >config.h
+	@ln -sf ../../board/$(@:_config=)/quartus/excalibur.h include/epxa/excalibur.h 
+	@echo "** See the README in board/epxa1db for build instructions **"
+
+#########################################################################
 
 clean:
-	find . -type f \
+	find .  -path './tools/quartus' -prune -o -type f \
 		\( -name 'core' -o -name '*.bak' -o -name '*~' \
 		-o -name '*.o'  -o -name '*.a' -o -name '.depend' \) -print \
 		| xargs rm -f
@@ -199,7 +216,7 @@ clean:
 clobber:	clean
 	rm -f $(OBJS) *.bak tags TAGS
 	rm -fr *.*~
-	rm -f armboot armboot.bin armboot.elf armboot.srec armboot.map
+	rm -f armboot armboot.bin armboot.elf armboot.srec armboot.map armboot.hex
 	rm -f tools/crc32.c tools/environment.S
 
 mrproper \

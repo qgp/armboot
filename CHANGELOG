@@ -2,6 +2,19 @@
 Recent changes
 ======================================================================
 
+* Big Patch by Ian Scott <ISCOTT@altera.com>
+  - add creation of armboot.hex
+  - add Support for the Altera EPXA1 Development Board Excalibur
+  - add smc_set_mac_addr() capability to SMC91111 driver
+  - call epxa1db_set_mac_addr() from board.c (should be revised into
+    something more generic)
+
+* Fix endianess when loading uncompressed images (Ian Scott
+  <iscott@altera.com>)
+ 
+* Add support for the Altera XA1 Excalibur Development board
+  (Ian Scott <iscott@altera.com>)
+
 * Fix tmp string in cmd_net.c (Kyle Harris <kharris@nexus-tech.net>)
 
 * Added FAQ
