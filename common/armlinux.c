@@ -55,17 +55,17 @@ void boot_linux(cmd_tbl_t *cmdtp,
 		int   verify)
 {
     ulong len = 0, checksum;
-    ulong initrd_start, initrd_end;
+    ulong initrd_start = 0, initrd_end;
     ulong data;
     char *commandline = getenv(bd, "bootargs");
     void (*theKernel)(int zero, int arch);
     image_header_t *hdr = &header;
 
     /*
-     * get the kernel entry address *before* we possibly
-     * clobber the header buffer when verifying a ramdisk image
+     * get the kernel entry address and initrd address *before* we
+     * possibly clobber the header buffer when verifying a ramdisk image
      */
-    theKernel = (void (*)(int, int))SWAP32(hdr->ih_ep);
+    theKernel    = (void (*)(int, int))SWAP32(hdr->ih_ep);
    
     /*
      * Check if there is an initrd image
@@ -117,7 +117,15 @@ void boot_linux(cmd_tbl_t *cmdtp,
 	    printf ("No Linux ARM Ramdisk Image\n");
 	    do_reset (cmdtp, bd, flag, argc, argv);
 	}
-	
+
+	/* if the header specifies a load address, use it */
+	if(hdr->ih_load) {
+	    initrd_start = SWAP32(hdr->ih_load);
+	}
+	else {
+	    initrd_start = data;
+	}
+
 	/*
 	 * Now check if we have a multifile image
 	 */
@@ -136,6 +144,7 @@ void boot_linux(cmd_tbl_t *cmdtp,
 	    data += 4 - tail;
 	}
 	
+	initrd_start = data;
 	len   = SWAP32(len_ptr[1]);
 	
     } else {
@@ -152,12 +161,17 @@ void boot_linux(cmd_tbl_t *cmdtp,
 #endif
     
     if (data) {
-	initrd_start = SWAP32(hdr->ih_load);
+	/* if initrd is in flash, copy it to load_addr */
+	if (addr2info(initrd_start) != NULL) {
+	    initrd_start = load_addr;
+	}
 	initrd_end   = initrd_start + len;
-	printf ("   Loading Ramdisk to %08lx, end %08lx ... ",
+	if(initrd_start != data) {
+	    printf ("   Loading Ramdisk to %08lx, end %08lx ... ",
 		initrd_start, initrd_end);
-	memmove ((void *)initrd_start, (void *)data, len);
-	printf ("OK\n");
+	    memmove ((void *)initrd_start, (void *)data, len);
+	    printf ("OK\n");
+	}
     } else {
 	initrd_start = 0;
 	initrd_end = 0;

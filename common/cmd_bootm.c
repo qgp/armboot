@@ -60,7 +60,7 @@ extern void boot_linux(cmd_tbl_t *cmdtp,
 int do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 {
 	ulong	iflag;
-	ulong	addr, ram_addr;
+	ulong	addr;
 	ulong	data, len, checksum;
 	ulong  *len_ptr;
 	int	i, verify;
@@ -96,23 +96,6 @@ int do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	if (crc32 (0, (char *)data, len) != checksum) {
 		printf ("Bad Header Checksum\n");
 		return 1;
-	}
-
-	/************************************************************/
-	/* BIG FAT WARNING:                                         */
-	/* SOME PARTS OF THIS CODE WILL OVERWRITE THE IMAGE         */
-	/* IF THE IMAGE RESIDES IN FLASH, FLASH WILL BE OVERWRITTEN */
-	/* SO WE TRANSFER THE IMAGE TO RAM FIRST                    */
-	/************************************************************/
-
-	if (addr2info(addr) != NULL)
-	{
-		ram_addr = load_addr; /* should be a env-var ... */
-		printf ("## Copy image from flash %08lx to ram %08lx ...\n", addr, ram_addr);
-
-		/* we copy the whole to ram (load_addr) */
-		memcpy ((char *)ram_addr, (char *)addr, SWAP32(hdr->ih_size) + sizeof(image_header_t));
-		addr = ram_addr;
 	}
 
 	/* for multi-file images we need the data part, too */
