@@ -39,16 +39,37 @@ MEM_START:	.long	0xc0000000
 #define MDCAS1	0x08
 #define MDCAS2	0x0c
 #define MSC0	0x10
-#define MSC1	0x14
 #define MECR	0x18
 
-mdcas0:		.long	0xc71c703f @ cccccccf
-mdcas1:		.long	0xffc71c71 @ fffffffc
-mdcas2:		.long	0xffffffff @ ffffffff
-mdcnfg:		.long	0x0334b21f @ 9326991f
-msc0:		.long   0xfff84458 @ 42304230
-msc1:		.long	0xffffffff @ 20182018 // war nicht drin
-mecr:		.long	0x7fff7fff @ 01000000
+#if (CFG_CPUSPEED == 0x03)
+/* RAM timing for 103 MHz */
+mdcas0:		.long	0xcccccccf
+mdcas1:		.long	0xfffffffc
+mdcas2:		.long	0xffffffff
+mdcnfg:		.long	0x0326991f
+msc0:		.long   0x42304230
+mecr:		.long	0x00c600c6
+#endif
+
+#if (CFG_CPUSPEED == 0x09)
+/* RAM timing for 190 MHz */
+mdcas0:		.long	0xc71c703f
+mdcas1:		.long	0xffc71c71
+mdcas2:		.long	0xffffffff
+mdcnfg:		.long	0x01b4b21f
+msc0:		.long   0x44584458
+mecr:		.long	0x016b016b
+#endif
+
+#if (CFG_CPUSPEED == 0x0a)
+/* RAM timing for 206 MHz */
+mdcas0:		.long	0xc71c703f
+mdcas1:		.long	0xffc71c71
+mdcas2:		.long	0xffffffff
+mdcnfg:		.long	0x0194b21f
+msc0:		.long   0x84c084c0
+mecr:		.long	0x018c018c
+#endif
 
 /* setting up the memory */
 
