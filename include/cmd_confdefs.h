@@ -67,7 +67,7 @@
 			CFG_CMD_ASKENV	| \
 			CFG_CMD_ECHO	| \
 			CFG_CMD_DHCP    | \
-			CFG_CMD_JFF2    | \
+			CFG_CMD_JFFS2   | \
 			CFG_CMD_BSP	)
 
 /* Default configuration
