@@ -22,8 +22,13 @@ LIST_SA="lart shannon dnp1110"
 
 LIST_ARM7="impa7 ep7312"
 
+#########################################################################
+## ARM9 Systems
+#########################################################################
 
-LIST_all="${LIST_SA} ${LIST_ARM7}"
+LIST_ARM9="samsung"
+
+LIST_all="${LIST_SA} ${LIST_ARM7} ${LIST_ARM9}"
 
 [ $# = 0 ] && set $LIST_all
 

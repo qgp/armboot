@@ -1,7 +1,6 @@
 #
-# (C) Copyright 2002
-# Sysgo Real-Time Solutions, GmbH <www.elinos.com>
-# Marius Groeger <mgroeger@sysgo.de>
+# (C) Copyright 2000, 2001, 2002
+# Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -24,20 +23,25 @@
 
 include $(TOPDIR)/config.mk
 
-LIB	= libdrivers.a
+LIB	= lib$(BOARD).a
 
-OBJS	= cs8900.o smc91111.o 3c589.o
+OBJS	:= samsung.o flash.o env.o
+SOBJS	:= memsetup.o
 
-all:	.depend $(START) $(LIB)
+$(LIB):	$(OBJS) $(SOBJS)
+	$(AR) crv $@ $^
 
-$(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
+clean:
+	rm -f $(SOBJS) $(OBJS)
+
+distclean:	clean
+	rm -f $(LIB) core *.bak .depend
 
 #########################################################################
 
-.depend:	Makefile $(START:.o=.S) $(OBJS:.o=.c)
-		$(CC) -M $(CFLAGS) $(START:.o=.S) $(OBJS:.o=.c) > $@
+.depend:	Makefile $(SOBJS:.o=.S) $(OBJS:.o=.c)
+		$(CC) -M $(CPPFLAGS) $(SOBJS:.o=.S) $(OBJS:.o=.c) > $@
 
-sinclude .depend
+-include .depend
 
 #########################################################################

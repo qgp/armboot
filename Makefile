@@ -1,5 +1,5 @@
 #
-# (C) Copyright 2000
+# (C) Copyright 2000, 2002
 # Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # (C) Copyright 2002
@@ -31,10 +31,12 @@ HOSTARCH := $(shell uname -m | \
 	    -e s/arm.*/arm/ \
 	    -e s/sa110/arm/)
 
+ifndef CROSS_COMPILE
 ifeq ($(HOSTARCH),arm)
 CROSS_COMPILE =
 else
 CROSS_COMPILE = arm-linux-
+endif
 endif
 
 export	CROSS_COMPILE HOSTARCH
@@ -159,6 +161,18 @@ shannon_config	:	unconfig
 	echo "#include <configs/config_$(@:_config=).h>" >config.h
 
 #########################################################################
+## ARM920T Systems
+#########################################################################
+
+samsung_config	:	unconfig
+	@echo "Configuring for $(@:_config=) Board..." ; \
+	cd include ; \
+	echo "ARCH  = arm"	> config.mk ;	\
+	echo "BOARD = samsung"	>>config.mk ;	\
+	echo "CPU   = arm920t"	>>config.mk ;	\
+	echo "#include <configs/config_$(@:_config=).h>" >config.h
+
+#########################################################################
 
 clean:
 	find . -type f \
@@ -176,6 +190,7 @@ clobber:	clean
 	rm -f armboot armboot.bin armboot.elf armboot.srec armboot.map
 	rm -f tools/crc32.c tools/environment.S
 
+mrproper \
 distclean:	clobber unconfig
 
 backup:

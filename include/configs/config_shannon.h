@@ -56,9 +56,7 @@
 /*
  * Hardware drivers
  */
-#define CONFIG_DRIVER_CS8900	0	/* we DO NOT have a CS8900 on-board */
-#define CS8900_BASE		0x20008300
-#define CS8900_BUS16		1
+#define CONFIG_DRIVER_3C589	1 
 
 /*
  * select serial console configuration
@@ -79,11 +77,7 @@
 
 #define CONFIG_BOOTDELAY	3
 #define CONFIG_BOOTARGS    	"root=ramfs devfs=mount console=ttySA0,115200"
-#define CONFIG_ETHADDR		08:00:3e:26:0a:5b
 #define CONFIG_NETMASK          255.255.0.0
-#define CONFIG_IPADDR		172.22.2.131
-#define CONFIG_SERVERIP		172.22.2.126
-#define CONFIG_BOOTFILE		"elinos-shannon"
 #define CONFIG_BOOTCOMMAND	"help"
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)

@@ -1,7 +1,6 @@
 #
-# (C) Copyright 2002
-# Sysgo Real-Time Solutions, GmbH <www.elinos.com>
-# Marius Groeger <mgroeger@sysgo.de>
+# (C) Copyright 2000, 2001, 2002
+# Wolfgang Denk, DENX Software Engineering, wd@denx.de.
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -24,10 +23,11 @@
 
 include $(TOPDIR)/config.mk
 
-LIB	= libdrivers.a
+LIB	= lib$(CPU).a
 
-OBJS	= cs8900.o smc91111.o 3c589.o
-
+START	= start.o
+OBJS	= serial.o interrupts.o cpu.o
+	  
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)

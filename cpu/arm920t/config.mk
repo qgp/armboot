@@ -1,7 +1,6 @@
 #
 # (C) Copyright 2002
-# Sysgo Real-Time Solutions, GmbH <www.elinos.com>
-# Marius Groeger <mgroeger@sysgo.de>
+# Gary Jennejohn, DENX Software Engineering, <gj@denx.de>
 #
 # See file CREDITS for list of people who contributed to this
 # project.
@@ -22,22 +21,7 @@
 # MA 02111-1307 USA
 #
 
-include $(TOPDIR)/config.mk
+PLATFORM_RELFLAGS += -fno-strict-aliasing  -fno-common \
+	-mshort-load-bytes -msoft-float
 
-LIB	= libdrivers.a
-
-OBJS	= cs8900.o smc91111.o 3c589.o
-
-all:	.depend $(START) $(LIB)
-
-$(LIB):	$(OBJS)
-	$(AR) crv $@ $(OBJS)
-
-#########################################################################
-
-.depend:	Makefile $(START:.o=.S) $(OBJS:.o=.c)
-		$(CC) -M $(CFLAGS) $(START:.o=.S) $(OBJS:.o=.c) > $@
-
-sinclude .depend
-
-#########################################################################
+PLATFORM_CPPFLAGS += -mapcs-32 -march=armv4
