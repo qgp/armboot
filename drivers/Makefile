@@ -26,7 +26,8 @@ include $(TOPDIR)/config.mk
 
 LIB	= libdrivers.a
 
-OBJS	= cs8900.o smc91111.o 3c589.o
+OBJS	= cs8900.o smc91111.o 3c589.o ansi_console.o framebuffer.o \
+			font8x14.o keyboard.o cfb_console.o
 
 all:	.depend $(START) $(LIB)
 

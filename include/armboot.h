@@ -231,6 +231,27 @@ void	fputc(int file, const char c);
 int	ftstc(int file);
 int	fgetc(int file);
 
+#ifdef CONFIG_ANSI_CONSOLE
+/* drivers/ansi_console.c */
+void    ansi_console_init(void);
+void    ansi_console_putc(const char c);
+#endif
+
+#ifdef CONFIG_CFB_CONSOLE
+/* drivers/cfb_console.c */
+int     video_init(void);
+void    video_putc(const char c);
+#endif
+
+#ifdef CONFIG_KEYBOARD
+/* drivers/keyboard.c */
+void    kbd_init(bd_t *bd);
+int     kbd_getc(void);
+int     kbd_tstc(void);
+void    kbd_mapping(const char *name);
+#endif
+
+
 /* Byte swapping stuff */
 #define SWAP16(x)	((((x) & 0xff) << 8) | ((x) >> 8))
 #define SWAP32(x)       ( \

@@ -24,11 +24,32 @@
 #include <armboot.h>
 #include <stdarg.h>
 #include <malloc.h>
+#include <config.h>
+
+#if defined(CONFIG_ANSI_CONSOLE)
+#	define CONSOLE_PUTC	ansi_console_putc
+#elif defined (CONFIG_CFB_CONSOLE)
+#	define CONSOLE_PUTC	video_putc
+#else
+#	define CONSOLE_PUTC	serial_putc
+#endif
+
+#ifdef CONFIG_KEYBOARD
+extern int	kbd_tstc(void);
+extern int	kbd_getc(void);
+#	define CONSOLE_GETC	kbd_getc
+#	define CONSOLE_TSTC	kbd_tstc
+#else
+#	define CONSOLE_GETC	serial_getc
+#	define CONSOLE_TSTC	serial_tstc
+#endif
+
+
 
 void serial_puts (const char *s)
 {
 	while (*s) {
-		serial_putc (*s++);
+		CONSOLE_PUTC (*s++);
 	}
 }
 
@@ -52,19 +73,19 @@ void serial_printf(const char *fmt, ...)
 int	getc(void)
 {
     /* Send directly to the handler */
-    return serial_getc();
+	return CONSOLE_GETC();
 }
 
 int	tstc(void)
 {
     /* Send directly to the handler */
-    return serial_tstc();
+	return CONSOLE_TSTC();
 }
 
 void	putc(const char c)
 {
 	/* Send directly to the handler */
-	serial_putc(c);
+	CONSOLE_PUTC (c);
 }
 
 void	puts(const char *s)

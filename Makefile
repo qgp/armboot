@@ -80,6 +80,9 @@ OBJS +=	drivers/libdrivers.a
 # by the other libraries
 OBJS +=	common/libcommon.a
 
+# include board library unce again (circular references)
+OBJS +=	board/$(BOARDDIR)/lib$(BOARD).a
+
 #########################################################################
 
 all:		armboot.srec armboot.hex armboot.bin

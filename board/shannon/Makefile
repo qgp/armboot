@@ -25,7 +25,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= lib$(BOARD).a
 
-OBJS	:= shannon.o flash.o env.o
+OBJS	:= shannon.o flash.o env.o video.o irkbd.o kbd_map.o
 SOBJS	:= memsetup.o
 
 $(LIB):	$(OBJS) $(SOBJS)

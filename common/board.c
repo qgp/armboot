@@ -99,6 +99,18 @@ void start_armboot(void)
     /* serial communications setup */
     serial_init(&bd);
 
+#ifdef CONFIG_ANSI_CONSOLE
+	ansi_console_init();
+#endif
+
+#ifdef CONFIG_CFB_CONSOLE
+	video_init();
+#endif
+
+#ifdef CONFIG_KEYBOARD
+	kbd_init(&bd);
+#endif
+
     display_banner(&bd);
 
     /* set up execptions */

@@ -215,11 +215,15 @@ load_serial (ulong offset)
 	ulong	start_addr = ~0;
 	ulong	end_addr   =  0;
 	int	line_count =  0;
+	int spin_cnt = 0;
+	const char *spin = "|/-\\";
 
 	while (read_record(record, SREC_MAXRECLEN + 1) >= 0) {
 		type = srec_decode (record, &binlen, &addr, binbuf);
 
 		if (type < 0) {
+			if(spin_cnt)
+				putc('\b');
 			return (~0);		/* Invalid S-Record		*/
 		}
 
@@ -257,6 +261,8 @@ load_serial (ulong offset)
 		case SREC_END3:
 		case SREC_END4:
 		    udelay (10000);
+			if(spin_cnt)
+				putc('\b');
 		    printf ("\n"
 			    "## First Load Addr = 0x%08lx\n"
 			    "## Last  Load Addr = 0x%08lx\n"
@@ -271,12 +277,24 @@ load_serial (ulong offset)
 		default:
 		    break;
 		}
-		if (!do_echo) {	/* print a '.' every 100 lines */
-			if ((++line_count % 100) == 0)
-				putc ('.');
+		if (!do_echo) {
+		    /*
+		     * print a spinning dash every 100 lines
+		     *
+		     * Note: do not print anything here that might cause a
+		     *       linefeed, or configurations with a frame buffer
+		     *       console might miss bytes while scrolling.
+		     */
+		    if ((++line_count % 100) == 0) {
+				if(spin_cnt)
+					putc('\b');
+				putc(spin[spin_cnt++ & 3]);
+		    }
 		}
 	}
 
+	if(spin_cnt)
+		putc('\b');
 	return (~0);			/* Download aborted		*/
 }
 

@@ -63,6 +63,35 @@
  */
 #define CONFIG_SERIAL3          1	/* we use SERIAL 3  */
 
+/*
+ * LCD screen
+ *
+ * There are two possible drivers for the shannon's LCD screen,
+ * select one of these:
+ */
+#define CONFIG_ANSI_CONSOLE     /* ansi terminal emulation */
+#undef  CONFIG_CFB_CONSOLE      /* framebuffer console with std input */
+
+#ifdef CONFIG_ANSI_CONSOLE
+/* this set of defines will enable the generic frame buffer driver */
+#define CONFIG_FRAMEBUFFER			/* use framebuffer */
+#define CONFIG_FRAMEBUFFER_BPP	8	/* 8 bits per pixel */
+#define CONFIG_FRAMEBUFFER_CLUT		/* h/w has color lookup table */
+#endif
+
+#ifdef CONFIG_CFB_CONSOLE
+#define CONFIG_CONSOLE_CURSOR   /* display cursor */
+#define CONFIG_VIDEO_LOGO       /* display linux logo */
+#define CONFIG_VIDEO_SHANNON	/* enable Shannon video driver */
+#endif
+
+/*
+ * Keyboard device
+ */
+#define CONFIG_KEYBOARD			/* enable generic keyboard driver */
+#define CONFIG_KEYBOARD_IRDA	/* use IrDA keyboard */
+
+
 /* allow to overwrite serial and ethaddr */
 #define CONFIG_ENV_OVERWRITE
 

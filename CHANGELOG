@@ -4,6 +4,10 @@ Recent Modifications
 
 * Patch by Robert Kaiser <rob@sysgo.de>:
 
+  - add framebuffer/IrDA Keyboard support for Shannon (Tuxscreen)
+
+* Patch by Robert Kaiser <rob@sysgo.de>:
+
   - flush caches before executing code that may have been downloaded
   - fix bug request ID #589159: print_IPaddr bug
 

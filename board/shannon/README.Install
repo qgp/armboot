@@ -1,0 +1,121 @@
+#
+# (C) Copyright 2002
+# SYSGO Real-Time Solutions GmbH
+#
+# http://www.sysgo.de
+# http://www.elinos.com
+#
+# See file CREDITS for list of people who contributed to this
+# project.
+#
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2 of
+# the License, or (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+# MA 02111-1307 USA
+
+
+Installing ARMboot on the Shannon (aka Tuxscreen)
+=================================================
+
+1. Building ARMboot
+-------------------
+
+Please refer to the  top level README file for instructions on how to build
+ARMboot for any of the supported boards. For the Shannon board, there are
+some additional options that are discussed here:
+
+1.1. Frame buffer support
+
+ARMboot can now use the Shannon's LCD screen for console messages. There
+are two different drivers that can be used:
+
+ansi_console: This is a generic ANSI terminal emulation. It understands the
+usual escape codes and is quite versatile in that it can be used with different
+fonts (though the distribution contains only one).
+
+cfb_console:  A simple teletype-style terminal. It does not interpret escape
+codes, but it has a fancy Linux penguin logo option.
+
+Which one you choose depends on your taste ;-). By default, ansi_console
+is configured. To change to cfb_console, undefine CONFIG_ANSI_CONSOLE 
+in the shannon config file (include/configs/config_shannon.h) and define
+CONFIG_CFB_CONSOLE, then recompile.
+
+If you do not want framebuffer support, undefine both CONFIG_ANSI_CONSOLE
+and CONFIG_CFB_CONSOLE.
+
+
+1.2. IrDA keyboard support
+
+ARMboot can now use the Shannon's IrDA keyboard for console input.
+This is enabled by options CONFIG_KEYBOARD and CONFIG_KEYBOARD_IRDA
+in the shannon config file. The keyboard driver has the theoretical
+possiblity to switch between different keyboard mappings by setting
+the environment variable "keymap" to, e.g. "us", "de", "fr", etc.
+however, since -to my knowledge- there exist only "us"-Type keyboards
+for the Shannon, the keyboard map table (board/shannon/kbd_map.c)
+contains only a single mapping.
+
+If you do not want IrDA keyboard support, undefine both CONFIG_KEYBOARD
+and CONFIG_KEYBOARD_IRDA.
+
+2. Installing ARMboot on the Shannon
+------------------------------------
+
+ARMboot expects to be loaded by the Inferno bootloader. To make this
+happen, you must put the ARMboot binary in the board's flash and you
+must convert into a format suitable for Inferno. Specifically, the image
+must be preceeded by an Inferno-specific header and the whole image
+(header + ARMboot) must be compressed with gzip. The Inferno header
+is distributed with ARMboot under board/shannon/inferno.header.
+Thus, to obtain an inferno-bootable ARMboot image, run a command like
+this:
+
+    cat board/shannon/inferno.header armboot.bin|gzip> armboot.i
+
+To install Armboot in flash, you need the Inferno tools that you can
+download from:
+
+- Unpack the Inferno tools into a directory (e.g. /home/inferno).
+- Copy the armboot.i file into that directory
+- Make sure you have read/write access to your system's first serial port.
+- Connect the Shannon board's serial port to your host's serial port
+  with a so-called "nullmodem cable".
+- enter the commands:
+
+   export EMU="-r<Directory where you put Inferno>"
+   ./Linux/386/bin/emu
+
+The Inferno shell starts up and you should see it's prompt (";").
+Enter:
+
+	bind -a '#t' /dev
+	rdp -s38400 -r
+
+Now reset your Shannon, when the splash screen comes up, enter ESC and
+then CTRL+A. This should put the board into remote debug mode and the
+Inferno shell should indicate that it has a connection.
+
+By entering "c F!kern2 D!backup" you can save the contents of flash
+partition "kern2" (this is the one we are going to overwrite) into
+a file named "backup". Then, by entering "c S:armboot.i F!kern2" you
+install ARMboot in that partition. This takes a while (you can watch
+the download progress on the Shannon's screen). When done, disconnect
+the power supply from your Shannon (there seems to be no other way out
+of remote debug mode).
+
+Now, when you turn your Shannon back on, hit ESC when the spash screen
+comes up. Then enter CTRL+P. This will bring you into the Inferno monitor.
+From there, enter "B F!kern2" to invoke ARMboot.
+
+

@@ -409,6 +409,13 @@ int _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
     }
 #endif	/* CFG_CMD_NET */
 
+#ifdef CONFIG_KEYBOARD
+    if (strcmp(argv[1],"keymap") == 0) {
+	kbd_mapping (argv[2]);
+	return 0;
+    }
+#endif	/* CONFIG_KEYBOARD */
+
     return 0;
 }
 
