@@ -83,7 +83,6 @@ all:		armboot.srec armboot.bin
 
 install:	all
 		cp armboot.bin /tftpboot/armboot.bin
-		cp armboot.bin /net/sam/tftpboot/armboot.bin
 
 armboot.srec:	armboot
 		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@
@@ -174,10 +173,6 @@ clean:
 	rm -f tools/gdb/astest tools/gdb/gdbcont tools/gdb/gdbsend
 
 clobber:	clean
-	find . -type f \
-		\( -name .depend -o -name '*.srec' -o -name '*.bin' \) \
-		-print \
-		| xargs rm -f
 	rm -f $(OBJS) *.bak tags TAGS
 	rm -fr *.*~
 	rm -f armboot armboot.bin armboot.elf armboot.srec armboot.map
