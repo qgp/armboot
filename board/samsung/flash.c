@@ -309,9 +309,11 @@ int	flash_erase (flash_info_t *info, int s_first, int s_last)
 	    result1 = *addr;
 	    bsR5 = result1 & (1 << 5);
 	    bsR5_2 = result1 & (1 << 21);
+#ifdef SAMSUNG_FLASH_DEBUG
 	    printf("bsR5 %lx bsR5_2 %lx\n", bsR5, bsR5_2);
 	    if (bsR5 != 0 && bsR5_2 != 0)
 		printf("bsR5 %lx bsR5_2 %lx\n", bsR5, bsR5_2);
+#endif
 
 	    *addr = CMD_READ_ARRAY;
             *addr = CMD_RESUME;
