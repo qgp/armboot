@@ -164,7 +164,7 @@ int do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	switch (hdr->ih_comp) {
 	case IH_COMP_NONE:
 		printf ("   Loading %s ... ", name);
-		memcpy ((void *)hdr->ih_load, (uchar *)data, len);
+		memcpy ((void *) SWAP32(hdr->ih_load), (uchar *)data, len);
 		break;
 	case IH_COMP_GZIP:
 		printf ("   Uncompressing %s ... ", name);
