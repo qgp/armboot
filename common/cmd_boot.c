@@ -530,8 +530,6 @@ void send_nack(int n)
 
    if image is binary, no header is stored in os_data_header.
 */
-void (*os_data_init)(void);
-void (*os_data_char)(char new_char);
 static int os_data_state, os_data_state_saved;
 int os_data_count;
 static int os_data_count_saved;
@@ -544,7 +542,7 @@ void image_data_init(void)
    os_data_count = 32;
    os_data_addr = (char *) os_data_header;
 }
-void bin_data_init(void)
+void os_data_init(void)
 {
    os_data_state = 0;
    os_data_count = 0;
@@ -562,21 +560,18 @@ void os_data_restore(void)
    os_data_count = os_data_count_saved;
    os_data_addr = os_data_addr_saved;
 }
-void bin_data_char(char new_char)
-{
-   switch (os_data_state)
-   {
-      case 0: /* data */
-         *os_data_addr++ = new_char;
-         --os_data_count;
-         break;
-   }
+
+#define os_data_char(new_char)			\
+{										\
+   if (os_data_state == 0) /* data */	\
+   {									\
+       *os_data_addr++ = new_char;		\
+       --os_data_count;					\
+   }									\
 }
 void set_kerm_bin_mode(unsigned long *addr)
 {
    bin_start_address = (char *) addr;
-   os_data_init = bin_data_init;
-   os_data_char = bin_data_char;
 }
 
 
@@ -597,27 +592,28 @@ void k_data_restore(void)
    k_data_escape = k_data_escape_saved;
    os_data_restore();
 }
-void k_data_char(char new_char)
-{
-   if (k_data_escape)
-   {
-      /* last char was escape - translate this character */
-      os_data_char(ktrans(new_char));
-      k_data_escape = 0;
-   }
-   else
-   {
-      if (new_char == his_quote)
-      {
-         /* this char is escape - remember */
-         k_data_escape = 1;
-      }
-      else
-      {
-         /* otherwise send this char as-is */
-         os_data_char(new_char);
-      }
-   }
+
+#define k_data_char(new_char)								\
+{															\
+   if (k_data_escape)										\
+   {														\
+      /* last char was escape - translate this character */	\
+      os_data_char(ktrans(new_char));						\
+      k_data_escape = 0;									\
+   }														\
+   else														\
+   {														\
+      if (new_char == his_quote)							\
+      {														\
+         /* this char is escape - remember */				\
+         k_data_escape = 1;									\
+      }														\
+      else													\
+      {														\
+         /* otherwise send this char as-is */				\
+         os_data_char(new_char);							\
+      }														\
+   }														\
 }
 
 #define SEND_DATA_SIZE  20

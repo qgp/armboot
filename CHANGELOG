@@ -4,6 +4,11 @@ Recent Modifications
 
 * Patch by Robert Kaiser <rob@sysgo.de>:
 
+  - optimzation of kermit protocol loader: "loadb" now works
+    on SA1100 with baudrates up to 115200
+
+* Patch by Robert Kaiser <rob@sysgo.de>:
+
   - add framebuffer/IrDA Keyboard support for Shannon (Tuxscreen)
 
 * Patch by Robert Kaiser <rob@sysgo.de>:
