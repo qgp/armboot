@@ -43,10 +43,13 @@ int	ArpTry = 0;
 static void
 ArpHandler(uchar *pkt, unsigned dest, unsigned src, unsigned len)
 {
+	/* Check if the frame is really an ARP reply */
+	if (NetCmpEther(NetServerEther, NetBcastAddr) != 0) {
 #ifdef	DEBUG
-	printf("Got good ARP - start TFTP\n");
+		printf("Got good ARP - start TFTP\n");
 #endif
-	TftpStart ();
+		TftpStart ();
+	}
 }
 
 
@@ -81,12 +84,12 @@ ArpRequest (void)
 	arp->ar_pln = 4;
 	arp->ar_op  = htons(ARPOP_REQUEST);
 
-	NetCopyEther(&arp->ar_data[0], NetOurEther);	/* source ET addr	*/
-	NetWriteIP((uchar*)&arp->ar_data[6], NetOurIP);   /* source IP addr	*/
+	NetCopyEther(&arp->ar_data[0], NetOurEther);		/*source ET addr	*/
+	NetWriteIP((IPaddr_t*)&arp->ar_data[6], NetOurIP);	/* source IP addr	*/
 	for (i=10; i<16; ++i) {
 		arp->ar_data[i] = 0;			/* dest ET addr = 0	*/
 	}
-	NetWriteIP((uchar*)&arp->ar_data[16],		/* dest IP addr		*/
+	NetWriteIP((IPaddr_t*)&arp->ar_data[16],	/* dest IP addr		*/
 		   NetOurGatewayIP ? NetOurGatewayIP	/* => Gateway		*/
 				   : NetServerIP);	/* => TFTP server	*/
 

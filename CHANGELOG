@@ -4,6 +4,11 @@ Recent Modifications
 
 * Patch by Robert Kaiser <rob@sysgo.de>:
 
+  - one more network code cleanup. Code is now mostly in sync
+    with PPCboot
+
+* Patch by Robert Kaiser <rob@sysgo.de>:
+
   - optimzation of kermit protocol loader: "loadb" now works
     on SA1100 with baudrates up to 115200
 

@@ -235,17 +235,57 @@ extern void	NetStop(void);
 /* Load failed.	 Start again. */
 extern void	NetStartAgain(void);
 
+/*
+ * The following functions are a bit ugly, but necessary to deal with
+ * alignment restrictions on ARM.
+ *
+ * We're using inline functions, which had the smallest memory
+ * footprint in our tests.
+ */
 /* Copy ethernet address */
-extern void	NetCopyEther(volatile uchar *, uchar *);
+static inline void	NetCopyEther(volatile uchar *to, uchar *from)
+{
+	memcpy((void*)to, (void*)from, 6);
+}
 
-/* Write IP address to network data structure (outgoing traffic) */
-extern void	NetWriteIP(volatile uchar * to, IPaddr_t ip);
+static inline int NetCmpEther(uchar *a, uchar *b)
+{
+	return(memcmp((void*)a, (void*)b, 6));
+}
 
-/* Read IP address from network data structure (incoming traffic) */
-extern IPaddr_t	NetReadIP(volatile uchar * to);
+/* return IP *in network byteorder* */
+static inline IPaddr_t NetReadIP(IPaddr_t *from)
+{
+    IPaddr_t ip;
+    memcpy((void*)&ip, (void*)from, sizeof(ip));
+    return ip;
+}
 
-/* Copy IP address from one location to another */
-extern void	NetCopyIP(volatile uchar * to, volatile uchar *from);
+/* write IP *in network byteorder* */
+static inline void NetWriteIP(IPaddr_t *to, IPaddr_t ip)
+{
+    memcpy((void*)to, (void*)&ip, sizeof(ip));
+}
+
+/* copy IP */
+static inline void NetCopyIP(volatile IPaddr_t *to, IPaddr_t *from)
+{
+    memcpy((void*)to, (void*)from, sizeof(IPaddr_t));
+}
+
+/* return ulong *in network byteorder* */
+static inline ulong NetReadLong(ulong *from)
+{
+    ulong l;
+    memcpy((void*)&l, (void*)from, sizeof(l));
+    return l;
+}
+
+/* copy ulong */
+static inline void NetCopyLong(ulong *to, ulong *from)
+{
+    memcpy((void*)to, (void*)from, sizeof(ulong));
+}
 
 /* Set ethernet header */
 extern void	NetSetEther(volatile uchar *, uchar *, uint);

@@ -79,7 +79,7 @@ RarpRequest (void)
 	rarp->ar_pln = 4;
 	rarp->ar_op  = RARPOP_REQUEST;
 	NetCopyEther(&rarp->ar_data[0], NetOurEther);	/* source ET addr */
-	*(IPaddr_t *)(&rarp->ar_data[6]) = SWAP32(NetOurIP);	/* source IP addr */
+	NetCopyIP((IPaddr_t*)&rarp->ar_data[6], &NetOurIP);		/* source IP addr */
 	NetCopyEther(&rarp->ar_data[10], NetOurEther);	/* dest ET addr = source ET addr ??*/
 	/* dest. IP addr set to broadcast */
 	for (i = 0; i <= 3; i++) {

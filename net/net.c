@@ -162,7 +162,7 @@ restart:
 	 */
 
 	if (protocol == TFTP) {			/* TFTP */
-		NetOurIP = bis->bi_ip_addr;
+		NetCopyIP(&NetOurIP, (IPaddr_t*)&bis->bi_ip_addr);
 		NetServerIP = 0;
 		s = getenv (bis, "serverip");
 		for (reg=0; reg<4; ++reg) {
@@ -335,6 +335,7 @@ NetReceive(volatile uchar * pkt, int len)
 	Ethernet_t *et;
 	IP_t	*ip;
 	ARP_t	*arp;
+	IPaddr_t tmp;
 	int	x;
 
 	NetRxPkt = pkt;
@@ -403,14 +404,11 @@ NetReceive(volatile uchar * pkt, int len)
 		}
 
 		
-		{
-			IPaddr_t ip = NetReadIP((uchar*)&arp->ar_data[16]);
-			if (ip != NetOurIP) {
+		if (NetReadIP((IPaddr_t*)&arp->ar_data[16]) != NetOurIP) {
 #ifdef ET_DEBUG
-				printf("Requested IP is not ours\n");
+			printf("Requested IP is not ours\n");
 #endif			
-				return;
-			}
+			return;
 		}
 
 		switch (ntohs(arp->ar_op)) {
@@ -420,10 +418,10 @@ NetReceive(volatile uchar * pkt, int len)
 #endif
 			NetSetEther((uchar *)et, et->et_src, PROT_ARP);
 			arp->ar_op = htons(ARPOP_REPLY);
-			NetCopyEther(&arp->ar_data[0],  NetOurEther);
-			NetWriteIP(  &arp->ar_data[6],  NetOurIP);
-			NetCopyEther(&arp->ar_data[10], NetOurEther);
-			NetWriteIP(  &arp->ar_data[16], NetOurIP);
+			NetCopyEther(&arp->ar_data[10], &arp->ar_data[0]);
+			NetCopyIP((IPaddr_t*)&arp->ar_data[16], (IPaddr_t*)&arp->ar_data[6]);
+			NetCopyEther(&arp->ar_data[ 0], NetOurEther);
+			NetCopyIP((IPaddr_t*)&arp->ar_data[ 6], &NetOurIP);
 			NetSendPacket((uchar *)et,((uchar *)arp-pkt)+ARP_HDR_SIZE);
 			return;
 		case ARPOP_REPLY:		/* set TFTP server eth addr	*/
@@ -431,7 +429,7 @@ NetReceive(volatile uchar * pkt, int len)
 			printf("Got ARP REPLY, set server/gtwy eth addr\n");
 #endif
 			/* check if target ether is ours */
-			if ( memcmp(NetOurEther, &(arp->ar_data[10]), 6) != 0 )
+			if ( NetCmpEther(NetOurEther, &(arp->ar_data[10])) != 0 )
 			{
 #ifdef ET_DEBUG
 				printf("  Reply is not for us. Ignoring it...\n");
@@ -467,9 +465,9 @@ NetReceive(volatile uchar * pkt, int len)
 
 			printf("invalid RARP header\n");
 		} else {
-			NetOurIP = NetReadIP((uchar*)&arp->ar_data[16]);
-			NetServerIP = NetReadIP((uchar*)&arp->ar_data[6]);
-			NetCopyEther(NetServerEther, &arp->ar_data[0]);
+			NetCopyIP(&NetOurIP,    (IPaddr_t*)&arp->ar_data[16]);
+			NetCopyIP(&NetServerIP, (IPaddr_t*)&arp->ar_data[ 6]);
+			NetCopyEther(NetServerEther,       &arp->ar_data[ 0]);
 
 			(*packetHandler)(0,0,0,0);
 		}
@@ -503,16 +501,13 @@ NetReceive(volatile uchar * pkt, int len)
 			printf("checksum bad\n");
 			return;
 		}
-		if (NetOurIP) {
-		    IPaddr_t ipaddr = NetReadIP((uchar*)&ip->ip_dst);
-		    if (ipaddr != NetOurIP && ipaddr != 0xFFFFFFFF)
-		    {
+		tmp = NetReadIP((IPaddr_t*)&ip->ip_dst);
+		if (NetOurIP && tmp != NetOurIP && tmp != 0xFFFFFFFF) {
 #ifdef ET_DEBUG
 			printf("ip packet not for us\n");
-			print_IPaddr(ipaddr);
+			print_IPaddr(tmp);
 #endif
 			return;
-		    }
 		}
 		/*
 		 * watch for ICMP host redirects
@@ -585,7 +580,7 @@ static int net_check_prereq (proto_t protocol)
 	case DHCP:
 	case RARP:
 	case BOOTP:
-			if (memcmp(NetOurEther, "\0\0\0\0\0\0", 6) == 0) {
+			if (NetCmpEther(NetOurEther, "\0\0\0\0\0\0") == 0) {
 				puts ("*** ERROR: `ethaddr' not set\n");
 				return (1);
 			}
@@ -615,48 +610,6 @@ NetCksum(uchar * ptr, int len)
 	return (xsum & 0xffff);
 }
 
-
-void
-NetCopyEther(volatile uchar * to, uchar * from)
-{
-	int	i;
-
-	for (i = 0; i < 6; i++)
-		*to++ = *from++;
-}
-
-void
-NetWriteIP(volatile uchar * to, IPaddr_t ip)
-{
-	int	i;
-
-	for (i = 0; i < 4; i++) 
-	{
-		*to++ = ip >> 24;
-	    	ip <<= 8;
-	}
-}
-
-IPaddr_t
-NetReadIP(volatile uchar * from)
-{
-	IPaddr_t ip;
-	int i;
-
-	ip = 0;
-	for (i = 0; i < 4; i++) 
-		ip = (ip << 8) | *from++;
-
-	return ip;
-}
-
-void
-NetCopyIP(volatile uchar * to, volatile uchar *from)
-{
-	int i;
-	for (i = 0; i < 4; i++) 
-		*to++ = *from++;
-}
 
 void
 NetSetEther(volatile uchar * xet, uchar * addr, uint prot)
@@ -694,8 +647,8 @@ NetSetIP(volatile uchar * xip, IPaddr_t dest, int dport, int sport, int len)
 	ip->ip_ttl   = 255;
 	ip->ip_p     = 17;		/* UDP */
 	ip->ip_sum   = 0;
-	NetWriteIP((uchar*)&ip->ip_src, NetOurIP);
-	NetWriteIP((uchar*)&ip->ip_dst, dest);
+	NetCopyIP(&ip->ip_src, &NetOurIP);	/* already in network byte order */
+	NetCopyIP(&ip->ip_dst, &dest);		/* - "" - */
 	ip->udp_src  = htons(sport);
 	ip->udp_dst  = htons(dport);
 	ip->udp_len  = htons(8 + len);
@@ -720,6 +673,7 @@ void copy_filename (uchar *dst, uchar *src, int size)
 
 void ip_to_string (IPaddr_t x, char *s)
 {
+	x = ntohl(x);
     sprintf (s,"%d.%d.%d.%d",
     	(int)((x >> 24) & 0xff),
 	(int)((x >> 16) & 0xff),

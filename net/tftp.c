@@ -120,7 +120,7 @@ TftpSend (void)
 static void
 TftpHandler (uchar * pkt, unsigned dest, unsigned src, unsigned len)
 {
-    	ushort proto;
+	ushort proto;
 	if (dest != TftpOurPort) {
 		return;
 	}
@@ -133,10 +133,9 @@ TftpHandler (uchar * pkt, unsigned dest, unsigned src, unsigned len)
 	}
 	len -= 2;
 
-    	/* warning: don't use increment (++) in ntohs() macros!! */
-        proto = *((ushort *)pkt)++;
-    	proto = ntohs(proto);
-	switch (proto) {
+	/* warning: don't use increment (++) in ntohs() macros!! */
+	proto = *((ushort *)pkt)++;
+	switch (ntohs(proto)) {
 
 	case TFTP_RRQ:
 	case TFTP_WRQ:
@@ -234,11 +233,13 @@ TftpStart (void)
 #endif /* DEBUG */
 
 	if (BootFile[0] == '\0') {
+		IPaddr_t OurIP = ntohl(NetOurIP);
+
 		sprintf(default_filename, "%02lX%02lX%02lX%02lX.img",
-			NetOurIP & 0xFF,
-			(NetOurIP >>  8) & 0xFF,
-			(NetOurIP >> 16) & 0xFF,
-			(NetOurIP >> 24) & 0xFF	);
+			OurIP & 0xFF,
+			(OurIP >>  8) & 0xFF,
+			(OurIP >> 16) & 0xFF,
+			(OurIP >> 24) & 0xFF	);
 		tftp_filename = default_filename;
 
 		printf ("*** Warning: no boot file name; using '%s'\n",
@@ -256,7 +257,7 @@ TftpStart (void)
 	    IPaddr_t ServerNet 	= NetServerIP & NetOurSubnetMask;
 
 	    if (OurNet != ServerNet) {
-		puts ("; sending throught gateway ");
+		puts ("; sending through gateway ");
 		print_IPaddr (NetOurGatewayIP) ;
 	    }
 	}
