@@ -103,4 +103,4 @@ Shannon            shannon_config     Tuxscreen (no support for
                                       IrDA keyboard, LCD screen)
 implementa impA7   impa7_config       EP7211 based
 CLEP7312           ep7312_config      Cirrus Logic EP7312 Dev. Board
-
+S3C2400X           samsung_config     Samsung S3C2400X

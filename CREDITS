@@ -27,3 +27,7 @@ N: Wolfgang Denk
 E: wd@denx.de
 D: Maintainer of PPCboot
 W: http://www.denx.de
+
+N: Gary Jennejohn
+E: garyj@jennejohn.org, gj@denx.de
+D: Support for Samsung ARM920T S3C2400X
