@@ -120,9 +120,11 @@ static const char version[] =
 // Memory sizing constant
 #define LAN91C111_MEMORY_MULTIPLIER	(1024*2)
 
-#ifndef SMC_BASE_ADDRESS
-#define SMC_BASE_ADDRESS 0x20000300 
+#ifndef CONFIG_SMC91111_BASE
+#define CONFIG_SMC91111_BASE 0x20000300
 #endif
+
+#define SMC_BASE_ADDRESS CONFIG_SMC91111_BASE 
 
 #define SMC_DEV_NAME "SMC91111"
 #define SMC_PHY_ADDR 0x0000
@@ -132,8 +134,12 @@ static const char version[] =
 #define SMC_PHY_CLOCK_DELAY 1000
 
 #define ETH_ZLEN 60
-/* #define USE_32_BIT 1 */
+
+#ifdef  CONFIG_SMC_USE_32_BIT
+#define USE_32_BIT  
+#else
 #undef USE_32_BIT 
+#endif
 /*-----------------------------------------------------------------
  .
  .  The driver can be entered at any of the following entry points.
@@ -338,7 +344,11 @@ static void smc_reset( void )
 	/* by a soft reset */
 
 	SMC_SELECT_BANK( 1 );
+#if defined(CONFIG_SMC91111_EXT_PHY)
+	SMC_outw( CONFIG_DEFAULT | CONFIG_EXT_PHY, CONFIG_REG);
+#else
 	SMC_outw( CONFIG_DEFAULT, CONFIG_REG);
+#endif
 
 
 	/* Release from possible power-down state */
@@ -357,7 +367,6 @@ static void smc_reset( void )
 	/* set the control register */
 	SMC_SELECT_BANK( 1 );
 	SMC_outw( CTL_DEFAULT, CTL_REG );
-	
 
 	/* Reset the MMU */
 	SMC_SELECT_BANK( 2 );
@@ -552,9 +561,9 @@ again:
 	 . almost as much time as is saved?
 	*/
 #ifdef USE_32_BIT
-	outsl(ioaddr + DATA_REG, buf,  length >> 2 );
+	SMC_outsl(DATA_REG, buf,  length >> 2 );
 	if ( length & 0x2  )
-		SMC_outw(*((word *)(buf + (length & 0xFFFFFFFC))),DATA_REG);
+		SMC_outw(*((word *)(buf + (length & 0xFFFFFFFC))), DATA_REG);
 #else
 	SMC_outsw(DATA_REG , buf, (length ) >> 1);
 #endif // USE_32_BIT
@@ -637,7 +646,6 @@ static int smc_open()
 {
 	int	i;	/* used to set hw ethernet address */
 
-
 	PRINTK2("%s:smc_open\n", SMC_DEV_NAME);
 
 	/* reset the hardware */
@@ -646,7 +654,10 @@ static int smc_open()
 	smc_enable();
 
 	/* Configure the PHY */
+#ifndef CONFIG_SMC91111_EXT_PHY
 	smc_phy_configure();
+#endif
+
 
 	/* conservative setting (10Mbps, HalfDuplex, no AutoNeg.) */
 //	SMC_SELECT_BANK(0);
@@ -654,12 +665,36 @@ static int smc_open()
 
 	SMC_SELECT_BANK( 1 );
 
-	for ( i = 0; i < 6; i ++ )
+#ifdef USE_32_BIT
+	for ( i = 0; i < 6; i += 2 ) {
+		word address;
+
+		address = smc_mac_addr[ i + 1 ] << 8 ;
+		address  |= smc_mac_addr[ i ];
+		SMC_outw( address, ADDR0_REG + i );
+	}
+#else
+   for ( i = 0; i < 6; i ++ )
 		SMC_outb( smc_mac_addr[i], ADDR0_REG + i );
+#endif
 
 	return 0;
 }
 
+#ifdef USE_32_BIT
+void
+insl32(r,b,l) 	
+{	
+   int __i ;  
+   dword *__b2;  
+
+	__b2 = (dword *) b;  
+	for (__i = 0; __i < l; __i++) 
+   {  
+		  *(__b2 + __i) = *(dword *)(r+0x10000300);  
+	}  
+}
+#endif
 
 /*-------------------------------------------------------------
  .
@@ -679,6 +714,9 @@ static int smc_rcv()
 	word	status;
 	word	packet_length;
 	int     is_error = 0;
+#ifdef USE_32_BIT
+   dword stat_len;
+#endif
 
 
 	SMC_SELECT_BANK(2);
@@ -694,8 +732,14 @@ static int smc_rcv()
 	SMC_outw( PTR_READ | PTR_RCV | PTR_AUTOINC, PTR_REG );
 
 	/* First two words are status and packet_length */
+#ifdef USE_32_BIT
+   stat_len = SMC_inl(DATA_REG);
+   status = stat_len & 0xffff;
+   packet_length = stat_len >> 16;
+#else
 	status 		= SMC_inw( DATA_REG );
 	packet_length 	= SMC_inw( DATA_REG );
+#endif
 
 	packet_length &= 0x07ff;  /* mask off top bits */
 
@@ -703,7 +747,7 @@ static int smc_rcv()
 
 	if ( !(status & RS_ERRORS ) ){
 		/* Adjust for having already read the first two words */
-		packet_length -= 4;
+		packet_length -= 4; //4;
 
 
 
@@ -719,10 +763,16 @@ static int smc_rcv()
 		   to send the DWORDs or the bytes first, or some
 		   mixture.  A mixture might improve already slow PIO
 		   performance  */
-		SMC_insl( DATA_REG , NetRxPackets, packet_length >> 2 );
+		SMC_insl( DATA_REG , NetRxPackets[0], packet_length >> 2 );
 		/* read the left over bytes */
-		SMC_insb(  DATA_REG, NetRxPackets + (packet_length & 0xFFFFFC),
-			packet_length & 0x3  );
+	   if (packet_length & 3) 
+      {
+         int i;
+		   byte *tail = NetRxPackets[0] + (packet_length & ~3);
+		   dword leftover = SMC_inl(DATA_REG);
+		   for (i=0; i<(packet_length & 3); i++) 
+			   *tail++ = (byte) (leftover >> (8*i)) & 0xff;
+	   }	       
 #else
 		PRINTK3(" Reading %d words and %d byte(s) \n",
 			(packet_length >> 1 ), packet_length & 1 );

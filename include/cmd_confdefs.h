@@ -33,6 +33,7 @@
 #define CFG_CMD_BDI		0x00000001	/* bdinfo			*/
 #define CFG_CMD_LOADS		0x00000002	/* loads			*/
 #define CFG_CMD_LOADB		0x00000004	/* loadb			*/
+#define CFG_CMD_IMI		   0x00000008	/* loadb			*/
 #define CFG_CMD_CACHE		0x00000010	/* icache, dcache		*/
 #define CFG_CMD_FLASH		0x00000020	/* flinfo, erase, protect	*/
 #define CFG_CMD_MEMORY		0x00000040	/* md, mm, nm, mw, cp, cmp,	*/

@@ -135,6 +135,10 @@ void start_armboot(void)
 #ifdef CONFIG_EPXA1DB_MAC_ADDR
     epxa1db_set_mac_addr(&bd);
 #endif
+
+#ifdef BOARD_POST_INIT
+    board_post_init(&bd);
+#endif
     
     /* main_loop() can return to retry autoboot, if so just run it again. */
     for (;;) {

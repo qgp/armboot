@@ -71,13 +71,79 @@ typedef unsigned long int 		dword;
 
 /* Because of bank switching, the LAN91xxx uses only 16 I/O ports */
 
+#define	SMC_IO_EXTENT	16
+
+#ifdef CONFIG_PXA250
+
+#define	SMC_inl(r) 	(*((volatile dword *)(SMC_BASE_ADDRESS+(r))))
+#define	SMC_inw(r) 	(*((volatile word *)(SMC_BASE_ADDRESS+(r))))
+#define SMC_inb(p)	({ \
+	unsigned int __p = (unsigned int)(SMC_BASE_ADDRESS + (p)); \
+	unsigned int __v = *(volatile unsigned short *)((SMC_BASE_ADDRESS + __p) & ~1); \
+	if (__p & 1) __v >>= 8; \
+	else __v &= 0xff; \
+	__v; })
+
+#define	SMC_outl(d,r)	(*((volatile dword *)(SMC_BASE_ADDRESS+(r))) = d)
+#define	SMC_outw(d,r)	(*((volatile word *)(SMC_BASE_ADDRESS+(r))) = d)
+#define	SMC_outb(d,r)	({	word __d = (byte)(d);  \
+				word __w = SMC_inw((r)&~1);  \
+				__w &= ((r)&1) ? 0x00FF : 0xFF00;  \
+				__w |= ((r)&1) ? __d<<8 : __d;  \
+				SMC_outw(__w,(r)&~1);  \
+			})
+
+#define SMC_outsl(r,b,l)	({	int __i; \
+					dword *__b2; \
+					__b2 = (dword *) b; \
+					for (__i = 0; __i < l; __i++) { \
+					    SMC_outl( *(__b2 + __i), r); \
+					} \
+				})
+
+#define SMC_outsw(r,b,l)	({	int __i; \
+					word *__b2; \
+					__b2 = (word *) b; \
+					for (__i = 0; __i < l; __i++) { \
+					    SMC_outw( *(__b2 + __i), r); \
+					} \
+				})
+
+#define SMC_insl(r,b,l) 	({	int __i ;  \
+					dword *__b2;  \
+			    		__b2 = (dword *) b;  \
+			    		for (__i = 0; __i < l; __i++) {  \
+					  *(__b2 + __i) = SMC_inl(r);  \
+					  SMC_inl(0);  \
+					};  \
+				})
+
+#define SMC_insw(r,b,l) 	({	int __i ;  \
+					word *__b2;  \
+			    		__b2 = (word *) b;  \
+			    		for (__i = 0; __i < l; __i++) {  \
+					  *(__b2 + __i) = SMC_inw(r);  \
+					  SMC_inw(0);  \
+					};  \
+				})
+
+#define SMC_insb(r,b,l) 	({	int __i ;  \
+					byte *__b2;  \
+			    		__b2 = (byte *) b;  \
+			    		for (__i = 0; __i < l; __i++) {  \
+					  *(__b2 + __i) = SMC_inb(r);  \
+					  SMC_inb(0);  \
+					};  \
+				})
+
+#else /* if not CONFIG_PXA250 */
+
 /*
  * We have only 16 Bit PCMCIA access on Socket 0
  */
-#define	SMC_IO_EXTENT	16
 
 #define	SMC_inw(r) 	(*((volatile word *)(SMC_BASE_ADDRESS+(r))))
-#define SMC_inb(r)	(((r)&1) ? SMC_inw((r)&~1)>>8 : SMC_inw(r)&0xFF)
+#define  SMC_inb(r)	(((r)&1) ? SMC_inw((r)&~1)>>8 : SMC_inw(r)&0xFF)
 
 #define	SMC_outw(d,r)	(*((volatile word *)(SMC_BASE_ADDRESS+(r))) = d)
 #define	SMC_outb(d,r)	({	word __d = (byte)(d);  \
@@ -109,6 +175,8 @@ typedef unsigned long int 		dword;
 					  SMC_inw(0);  \
 					};  \
 				})
+#endif
+
 #endif
 
 /*---------------------------------------------------------------
@@ -150,7 +218,7 @@ typedef unsigned long int 		dword;
 #define	TCR_CLEAR	0	/* do NOTHING */
 /* the default settings for the TCR register : */ 
 /* QUESTION: do I want to enable padding of short packets ? */
-#define	TCR_DEFAULT  	TCR_ENABLE 
+#define	TCR_DEFAULT  	TCR_ENABLE
 
 
 // EPH Status Register

@@ -95,6 +95,7 @@ armboot.hex:	armboot
 
 armboot.bin:	armboot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
+		cp armboot.bin /tftpboot/armboot.bin
 
 armboot:	depend subdirs $(OBJS) $(LDSCRIPT)
 		$(LD) $(LDFLAGS) $(LDFLAGS_EXTRA) $(OBJS) $(LIBGCC) $(EXTERN_LIB) -Map armboot.map -o armboot 
@@ -165,6 +166,22 @@ shannon_config	:	unconfig
 	echo "ARCH  = arm"	> config.mk ;	\
 	echo "BOARD = shannon"	>>config.mk ;	\
 	echo "CPU   = sa1100"	>>config.mk ;	\
+	echo "#include <configs/config_$(@:_config=).h>" >config.h
+
+lubbock_config	:	unconfig
+	@echo "Configuring for $(@:_config=) Board..." ; \
+	cd include ; \
+	echo "ARCH  = arm"	> config.mk ;	\
+	echo "BOARD = lubbock"	>>config.mk ;	\
+	echo "CPU   = xscale"	>>config.mk ;	\
+	echo "#include <configs/config_$(@:_config=).h>" >config.h
+
+cradle_config	:	unconfig
+	@echo "Configuring for $(@:_config=) Board..." ; \
+	cd include ; \
+	echo "ARCH  = arm"	> config.mk ;	\
+	echo "BOARD = cradle"	>>config.mk ;	\
+	echo "CPU   = xscale"	>>config.mk ;	\
 	echo "#include <configs/config_$(@:_config=).h>" >config.h
 
 #########################################################################

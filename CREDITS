@@ -39,3 +39,7 @@ D: Support for Samsung ARM920T SMDK2410 eval board
 N: Iain Scott
 E: iscott@altera.com
 D: Initial support for the Altera XA1 development board
+
+N: Kyle Harris
+E: kharris@nexus-tech.net
+D: Support for the Xscale Lubbock and Cradle boards

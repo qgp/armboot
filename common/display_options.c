@@ -42,7 +42,7 @@ static void pretty_print_size(ulong size)
     if (size > 0x100000)
       printf("%ld MB", size / 0x100000);
     else
-      printf("%ld KB\n", size / 0x400);
+      printf("%ld KB", size / 0x400);
 }
 
 void display_dram_config(bd_t *bd)

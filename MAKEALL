@@ -28,7 +28,13 @@ LIST_ARM7="impa7 ep7312"
 
 LIST_ARM9="samsung smdk2410 epxa1db"
 
-LIST_all="${LIST_SA} ${LIST_ARM7} ${LIST_ARM9}"
+#########################################################################
+## Xscale Systems
+#########################################################################
+
+LIST_XSCALE="lubbock cradle"
+
+LIST_all="${LIST_SA} ${LIST_ARM7} ${LIST_ARM9} ${LIST_XSCALE}"
 
 [ $# = 0 ] && set $LIST_all
 

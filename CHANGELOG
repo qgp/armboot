@@ -2,6 +2,9 @@
 Recent changes
 ======================================================================
 
+* Add support for XScale CPUs (cradle, lubock) boards 
+  (Kyle Harris <kharris@nexus-tech.net>)
+
 * Big Patch by Ian Scott <ISCOTT@altera.com>
   - add creation of armboot.hex
   - add Support for the Altera EPXA1 Development Board Excalibur
