@@ -55,8 +55,8 @@ static void write_p15_c1(unsigned long value)
     printf("write %08lx to p15/c1\n", value);
     __asm__ __volatile__(
         "mcr     p15, 0, %0, c1, c0, 0   @ write it back\n"
-	: "=r" (value)
 	:
+	: "r" (value)
 	: "memory");
     read_p15_c1();
 }

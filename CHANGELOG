@@ -2,6 +2,8 @@
 Recent changes
 ======================================================================
 
+* Fix write_p15_c1() for ARM720,ARM920
+
 * Fix to support multilib toolchains (David Müller <d.mueller@elsoft.ch>)
 
 * Added support for ARM9 CPUs (Gary Jennejohn <gj@denx.de>)
