@@ -730,7 +730,7 @@ void ip_to_string (IPaddr_t x, char *s)
 
 void print_IPaddr (IPaddr_t x)
 {
-    char tmp[12];
+    char tmp[16];
 
     ip_to_string(x, tmp);
 

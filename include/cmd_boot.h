@@ -27,6 +27,8 @@
 #ifndef	_CMD_BOOT_H
 #define	_CMD_BOOT_H
 
+void flush_all_caches(void);
+
 #if (CONFIG_COMMANDS & CFG_CMD_BDI)
 #define	CMD_TBL_BDINFO	MK_CMD_TBL_ENTRY(					\
 	"bdinfo",	2,	1,	1,	do_bdinfo,			\

@@ -178,6 +178,8 @@ void boot_linux(cmd_tbl_t *cmdtp,
 
     cleanup_before_linux(bd);
 
+    /* flush caches before invoking (potentially downloaded) external code */
+    flush_all_caches();
     theKernel(0, bd->bi_arch_number);
 }
 

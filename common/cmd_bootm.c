@@ -186,6 +186,8 @@ int do_bootm (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	case IH_TYPE_STANDALONE:
 		appl = (int (*)(cmd_tbl_t *, bd_t *, int, int, char *[]))SWAP32(hdr->ih_ep);
 
+		/* flush caches before invoking (potentially downloaded) code */
+		flush_all_caches();
 		(*appl)(cmdtp, bd, flag, argc-1, &argv[1]);
 		/* just in case we return */
 		if (iflag)

@@ -43,6 +43,25 @@ static int read_record (char *buf, ulong len);
 static int do_echo = 1;
 #endif
 
+void flush_all_caches(void)
+{
+	/*
+	 * flush all caches if they are enabled.
+	 * this must be called prior to invoking
+	 * code that has been copied/loaded.
+	 */
+	if(dcache_status())
+	{
+		dcache_disable();
+		dcache_enable();
+	}
+	if(icache_status())
+	{
+		icache_disable();
+		icache_enable();
+	}
+}
+
 
 #if (CONFIG_COMMANDS & CFG_CMD_BDI)
 int do_bdinfo (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
@@ -81,6 +100,12 @@ int do_go (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 	addr = simple_strtoul(argv[1], NULL, 16);
 
 	printf ("## Starting application at 0x%08lx ...\n", addr);
+
+	/*
+	 * flush and invalidate caches: we might be invoking code
+	 * that has been downloaded just before.
+	 */
+	flush_all_caches();
 
 	/*
 	 * pass address parameter as argv[0] (aka command name),
