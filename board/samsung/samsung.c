@@ -26,6 +26,7 @@
  */
 
 #include "armboot.h"
+#include "s3c2400.h"
 
 /* ------------------------------------------------------------------------- */
 
@@ -37,7 +38,22 @@
 int board_init(bd_t *bd)
 {
     /* memory and cpu-speed are setup before relocation */
-    /* so we do _nothing_ here */
+    /* change the clock to be 50 MHz 1:1:1 */
+    rMPLLCON = 0x5c042;
+    rCLKDIVN = 0;
+    /* set up the I/O ports */
+    rPACON = 0x3ffff;
+    rPBCON=0xaaaaaaaa;
+    rPBUP=0xffff;
+    rPECON=0x0;
+    rPEUP=0x0;
+    /*INPUT INPUT INPUT INPUT TXD[0] INPUT RXD[0] */
+    /*   00,   00,   00,   00,    10,   00,    10 */
+    rPFCON=0x22;
+    rPFUP=0x5;
+    rPGCON=0x0;
+    rPGUP=0x0;
+    rOPENCR=0x0;
 
     /* arch number of SAMSUNG-Board */
     /* I have no idea what this means, so I just picked an unused value */

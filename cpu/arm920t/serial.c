@@ -20,6 +20,11 @@
 
 #include "armboot.h"
 #include "arm920t.h"
+#if defined(CONFIG_S3C2400)
+#include "s3c2400.h"
+#elif defined(CONFIG_S3C2410)
+#include "s3c2410.h"
+#endif
 
 unsigned int br[] = {1562, 780, 390, 194, 32, 15};
 void serial_setbrg(bd_t *bd, int baudrate)
@@ -27,6 +32,7 @@ void serial_setbrg(bd_t *bd, int baudrate)
     int i;
     unsigned int reg = 0;
 
+#if defined(CONFIG_SMDK2400)
     /* this assumes a PCLK of 50 MHz */
     /* value is calculated so : (int)(PCLK/16./baudrate) -1 */
     if (baudrate == 1200)        reg = 2603;
@@ -36,30 +42,45 @@ void serial_setbrg(bd_t *bd, int baudrate)
     else if (baudrate == 57600)  reg = 53;
     else if (baudrate == 115200) reg = 26;
     else hang();
+#elif defined(CONFIG_SMDK2410)
+    /* this assumes a PCLK of 50.7 MHz */
+    /* value is calculated so : (int)(PCLK/16./baudrate) -1 */
+    if (baudrate == 1200)        reg = 2639;
+    else if (baudrate == 9600)   reg = 329;
+    else if (baudrate == 19200)  reg = 164;
+    else if (baudrate == 38400)  reg = 82;
+    else if (baudrate == 57600)  reg = 54;
+    else if (baudrate == 115200) reg = 27;
+    else hang();
+#else
+# error Bord config missing
+#endif
 
 #ifdef CONFIG_SERIAL1
-    rUFCON0=0x0;
-    rUMCON0=0x0;
+    /* FIFO enable, Tx/Rx FIFO clear */
+    rUFCON0 = 0x06;
+    rUMCON0 = 0x0;
     /* Normal,No parity,1 stop,8 bit */
-    rULCON0=0x3;
+    rULCON0 = 0x3;
     /*
      * tx=level,rx=edge,disable timeout int.,enable rx error int.,
      * normal,interrupt or polling
      */
-    rUCON0=0x245;
+    rUCON0 = 0x245;
     rUBRDIV0 = reg;
 
     for(i=0;i<100;i++);
 #elif CONFIG_SERIAL2
-    rUFCON1=0x0;
-    rUMCON1=0x0;
+    /* FIFO enable, Tx/Rx FIFO clear */
+    rUFCON1 = 0x06;
+    rUMCON1 = 0x0;
     /* Normal,No parity,1 stop,8 bit */
-    rULCON1=0x3;
+    rULCON1 = 0x3;
     /*
      * tx=level,rx=edge,disable timeout int.,enable rx error int.,
      * normal,interrupt or polling
      */
-    rUCON1=0x245;
+    rUCON1 = 0x245;
     rUBRDIV1 = reg;
 
     for(i=0;i<100;i++);

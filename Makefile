@@ -176,12 +176,20 @@ samsung_config	:	unconfig
 	echo "CPU   = arm920t"	>>config.mk ;	\
 	echo "#include <configs/config_$(@:_config=).h>" >config.h
 
+smdk2410_config	:	unconfig
+	@echo "Configuring for $(@:_config=) Board..." ; \
+	cd include ; \
+	echo "ARCH  = arm"	> config.mk ;	\
+	echo "BOARD = smdk2410"	>>config.mk ;	\
+	echo "CPU   = arm920t"	>>config.mk ;	\
+	echo "#include <configs/config_$(@:_config=).h>" >config.h
+
 #########################################################################
 
 clean:
 	find . -type f \
 		\( -name 'core' -o -name '*.bak' -o -name '*~' \
-		-o -name '*.o'  -o -name '*.a'  \) -print \
+		-o -name '*.o'  -o -name '*.a' -o -name '.depend' \) -print \
 		| xargs rm -f
 	rm -f examples/hello_world examples/timer
 	rm -f tools/img2srec tools/mkimage tools/envcrc tools/gen_eth_addr

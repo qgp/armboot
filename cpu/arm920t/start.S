@@ -125,11 +125,20 @@ reset:
 	msr	cpsr,r0
 
 /* turn off the watchdog */
-#define pWTCON 0x15300000
+#if defined(CONFIG_S3C2400)
+#define pWTCON		0x15300000
 /* Interupt-Controller base addresses */
-#define INTMR 0x14400008
+#define INTMSK		0x14400008
 /* clock divisor register */
-#define CLKDIVN	0x14800014
+#define CLKDIVN		0x14800014
+#elif defined(CONFIG_S3C2410)
+#define pWTCON		0x53000000
+/* Interupt-Controller base addresses */
+#define INTMSK		0x4A000008
+#define INTSUBMSK	0x4A00001C
+/* clock divisor register */
+#define CLKDIVN		0x4C000014
+#endif
 
 	ldr     r0, =pWTCON
 	mov     r1, #0x0
@@ -139,8 +148,13 @@ reset:
 	 * mask all IRQs by setting all bits in the INTMR - default
 	 */
 	mov	r1, #0xffffffff
-	ldr	r0, =INTMR
+	ldr	r0, =INTMSK
 	str	r1, [r0]
+#if defined(CONFIG_S3C2410)
+	ldr	r1, =0x3ff
+	ldr	r0, =INTSUBMSK
+	str	r1, [r0]
+#endif
 
 	/* FCLK:HCLK:PCLK = 1:2:4 */
 	/* default FCLK is 120 MHz ! */

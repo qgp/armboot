@@ -2,6 +2,8 @@
 Recent changes
 ======================================================================
 
+* Added support for SMDK2410 eval board (David Müller <d.mueller@elsoft.ch>)
+
 * Fix write_p15_c1() for ARM720,ARM920
 
 * Fix to support multilib toolchains (David Müller <d.mueller@elsoft.ch>)

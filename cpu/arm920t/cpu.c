@@ -45,14 +45,18 @@ static unsigned long read_p15_c1(void)
 	: "=r" (value)
 	:
 	: "memory");
+#ifdef MMU_DEBUG
     printf("p15/c1 is = %08lx\n", value);
+#endif
     return value;
 }
 
 /* write to co-processor 15, register #1 (control register) */
 static void write_p15_c1(unsigned long value)
 {
+#ifdef MMU_DEBUG
     printf("write %08lx to p15/c1\n", value);
+#endif
     __asm__ __volatile__(
         "mcr     p15, 0, %0, c1, c0, 0   @ write it back\n"
 	:
@@ -94,22 +98,6 @@ void cpu_init(bd_t *bd)
 #else
     _armboot_real_end = _armboot_end + CONFIG_STACKSIZE;
 #endif
-    /* change the clock to be 50 MHz 1:1:1 */
-    rMPLLCON = 0x5c042;
-    rCLKDIVN = 0;
-    /* set up the I/O ports */
-    rPACON = 0x3ffff;
-    rPBCON=0xaaaaaaaa;
-    rPBUP=0xffff;
-    rPECON=0x0;
-    rPEUP=0x0;
-    //INPUT INPUT INPUT INPUT TXD[0] INPUT RXD[0] 
-    //   00,   00,   00,   00,    10,   00,    10 
-    rPFCON=0x22;
-    rPFUP=0x5;
-    rPGCON=0x0;
-    rPGUP=0x0;
-    rOPENCR=0x0;
 }
 
 void cleanup_before_linux(bd_t *bd)

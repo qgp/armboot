@@ -31,6 +31,12 @@
 
 #include "armboot.h"
 #include "arm920t.h"
+#if defined(CONFIG_S3C2400)
+#include "s3c2400.h"
+#elif defined(CONFIG_S3C2410)
+#include "s3c2410.h"
+#endif
+
 #include "ptregs.h"
 
 extern void reset_cpu(ulong addr);

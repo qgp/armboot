@@ -26,7 +26,7 @@ LIST_ARM7="impa7 ep7312"
 ## ARM9 Systems
 #########################################################################
 
-LIST_ARM9="samsung"
+LIST_ARM9="samsung smdk2410"
 
 LIST_all="${LIST_SA} ${LIST_ARM7} ${LIST_ARM9}"
 
