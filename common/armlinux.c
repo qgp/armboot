@@ -62,6 +62,12 @@ void boot_linux(cmd_tbl_t *cmdtp,
     image_header_t *hdr = &header;
 
     /*
+     * get the kernel entry address *before* we possibly
+     * clobber the header buffer when verifying a ramdisk image
+     */
+    theKernel = (void (*)(int, int))SWAP32(hdr->ih_ep);
+   
+    /*
      * Check if there is an initrd image
      */
     if (argc >= 3) {
@@ -146,7 +152,7 @@ void boot_linux(cmd_tbl_t *cmdtp,
 #endif
     
     if (data) {
-	initrd_start = data;
+	initrd_start = SWAP32(hdr->ih_load);
 	initrd_end   = initrd_start + len;
 	printf ("   Loading Ramdisk to %08lx, end %08lx ... ",
 		initrd_start, initrd_end);
@@ -157,8 +163,6 @@ void boot_linux(cmd_tbl_t *cmdtp,
 	initrd_end = 0;
     }
     
-    theKernel = (void (*)(int, int))SWAP32(hdr->ih_ep);
-   
 #ifdef DEBUG
     printf ("## Transferring control to Linux (at address %08lx) ...\n",
 	    (ulong)theKernel);
