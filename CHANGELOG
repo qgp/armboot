@@ -2,6 +2,8 @@
 Recent changes
 ======================================================================
 
+* Fix tmp string in cmd_net.c (Kyle Harris <kharris@nexus-tech.net>)
+
 * Added FAQ
 
 * Added support for SMDK2410 eval board (David Müller <d.mueller@elsoft.ch>)

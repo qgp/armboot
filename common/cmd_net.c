@@ -63,7 +63,7 @@ int do_dhcp (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 static void netboot_update_env(void)
 {
-    char tmp[12] ;
+    char tmp[16] ;
 
     if (NetOurGatewayIP) {
 	ip_to_string (NetOurGatewayIP, tmp);
