@@ -430,7 +430,15 @@ int gunzip(void *dst, int dstlen, unsigned char *src, int *lenp)
 
 	r = inflateInit2(&s, -MAX_WBITS);
 	if (r != Z_OK) {
-		printf ("Error: inflateInit2() returned %d\n", r);
+		printf ("Error: inflateInit2() returned %d (", r);
+		switch (r) {
+			case Z_ERRNO:		printf("ERRNO");        break;
+			case Z_STREAM_ERROR:	printf("STREAM_ERROR"); break;
+			case Z_DATA_ERROR:	printf("DATA_ERROR");   break;
+			case Z_MEM_ERROR:	printf("MEM_ERROR");    break;
+			case Z_BUF_ERROR:	printf("BUF_ERROR");    break; 
+		}
+		printf(")\n");
 		return (-1);
 	}
 	s.next_in = src + i;
