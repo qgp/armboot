@@ -2,6 +2,10 @@
 Recent Modifications
 ======================================================================
 
+* Patch by Rolf Offermanns <rof@sysgo.de>
+
+  - Added support for flash & stand-alone boot on DNP1110
+
 * Patch by Robert Kaiser <rob@sysgo.de>:
 
   - Changed the various serial_putc()'s to output <CR>-<LF> on 

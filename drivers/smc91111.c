@@ -207,7 +207,7 @@ static int smc_rcv(void);
  ------------------------------------------------------------
 */
 
-static char smc_mac_addr[] = {0x02, 0x80, 0xad, 0x20, 0x31, 0xb8}; 
+static char smc_mac_addr[] = {0xde, 0xad, 0xbe, 0xef, 0xff, 0xff}; 
 
 /*
  * This function must be called before smc_open() if you want to override
@@ -1355,7 +1355,15 @@ static void print_packet( byte * buf, int length )
 #endif
 
 int eth_init(bd_t *bd) {
+	int i;
 	smc_open();
+
+	printf("smc91111 mac addr: ");
+	for (i = 0; i < 6; i++) {
+		printf("%x", smc_mac_addr[i]);
+		if (i != 5) printf(":");
+	}
+	printf("\n");	
 	return 0;
 }
 

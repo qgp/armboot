@@ -31,7 +31,7 @@
  * If we are developing, we might want to start armboot from ram
  * so we MUST NOT initialize critical regs like mem-timing ...
  */
-#define CONFIG_INIT_CRITICAL		/* undef for developing */
+//#define CONFIG_INIT_CRITICAL		/* undef for developing */
 #undef CONFIG_INIT_CRITICAL		/* undef for developing */
 
 /*
@@ -70,14 +70,14 @@
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
 
-#define CONFIG_BOOTDELAY	3
-#define CONFIG_BOOTARGS    	"root=ramfs devfs=mount console=ttySA0,115200"
-#define CONFIG_ETHADDR		02:80:ad:20:31:b8
-#define CONFIG_NETMASK          255.255.0.0
-#define CONFIG_IPADDR		172.22.2.23
-#define CONFIG_SERVERIP		172.22.2.22
-#define CONFIG_BOOTFILE		"elinos-dnp1110"
-#define CONFIG_BOOTCOMMAND	"tftp; bootm"
+#define CONFIG_BOOTDELAY	5
+#define CONFIG_BOOTARGS    	"root=/dev/nfs rw nfsroot=/tftpboot/%s ip=auto devfs=mount"
+//#define CONFIG_ETHADDR		02:80:ad:20:31:b8
+//#define CONFIG_NETMASK          255.255.0.0
+//#define CONFIG_IPADDR		172.22.2.23
+//#define CONFIG_SERVERIP		172.22.2.22
+//#define CONFIG_BOOTFILE		"elinos-dnp1110"
+#define CONFIG_BOOTCOMMAND	"bootp; bootm"
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	230400		/* speed to run kgdb serial port */
@@ -161,7 +161,7 @@ struct bd_info_ext
 #define CFG_FLASH_ERASE_TOUT	(2*CFG_HZ) /* Timeout for Flash Erase */
 #define CFG_FLASH_WRITE_TOUT	(2*CFG_HZ) /* Timeout for Flash Write */
 
-#define CFG_ENV_ADDR		(PHYS_FLASH_1 + 0x1C000)	/* Addr of Environment Sector	*/
-#define CFG_ENV_SIZE		0x4000	/* Total Size of Environment Sector	*/
+#define CFG_ENV_ADDR		(PHYS_FLASH_1 + 0x40000)	/* Addr of Environment Sector	*/
+#define CFG_ENV_SIZE		0x20000	/* Total Size of Environment Sector	*/
 
 #endif	/* __CONFIG_H */

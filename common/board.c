@@ -38,6 +38,11 @@ extern void cs8900_get_enetaddr(uchar *addr);
 extern void epxa1db_set_mac_addr(bd_t* bd);
 #endif
 
+#ifdef CONFIG_DNP1110
+extern void dnp1110_set_mac_addr(bd_t* bd);
+#endif
+
+
 /*
  * Begin and End of memory area for malloc(), and current "brk"
  */
@@ -137,7 +142,6 @@ void start_armboot(void)
  * FIXME: this should probably be rationalised into a standard call for 
  * each board, e.g. enet_mac_init() - but this'll do for now.
  */
-    
 #ifdef CONFIG_DRIVER_CS8900
     if (!getenv(&bd,"ethaddr") ) {
 	cs8900_get_enetaddr(bd.bi_enetaddr);
@@ -147,7 +151,11 @@ void start_armboot(void)
 #ifdef CONFIG_EPXA1DB_MAC_ADDR
     epxa1db_set_mac_addr(&bd);
 #endif
-
+	
+#ifdef CONFIG_DNP1110
+	dnp1110_set_mac_addr(&bd);
+#endif
+	
 #ifdef BOARD_POST_INIT
     board_post_init(&bd);
 #endif

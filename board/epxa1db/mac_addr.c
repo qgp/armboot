@@ -58,7 +58,7 @@ void epxa1db_set_mac_addr(bd_t* bd){
  
 	s = getenv(bd, "ethaddr");
 
-        if (s) {
+    if (s) {
 	    for (i=0; i<6; i++) {
 	        addr[i] = s ? simple_strtoul(s, &e, 16) : 0;
 	        if (s) s = (*e) ? e+1 : e;

@@ -98,9 +98,8 @@ Supported Hardware
 Board              Configuration      Notes
 --------------------------------------------------------------------------
 LART               lart_config        "Linux ARM Radio Terminal"
-SSV DNP1110        dnp1110_config     SSV DilNET PC (no flash support)
-Shannon            shannon_config     Tuxscreen (no support for 
-                                      IrDA keyboard, LCD screen)
+SSV DNP1110        dnp1110_config     SSV DilNET PC
+Shannon            shannon_config     Tuxscreen
 implementa impA7   impa7_config       EP7211 based
 CLEP7312           ep7312_config      Cirrus Logic EP7312 Dev. Board
 S3C2400X           samsung_config     Samsung S3C2400X

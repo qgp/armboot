@@ -180,4 +180,17 @@ int dcache_status(void)
 {
     return (read_p15_c1() & C1_DC) != 0;
 }
-#endif
+#else
+/* I don't know if this is the right solution for
+ . the samsung board.
+ . Otherwise one would have to #ifdef the "flush_all_caches()"
+ . function in common/cmd_boot.c
+ */
+void icache_enable(void) {}
+void icache_disable(void) {}
+int icache_status(void) {}
+void dcache_enable(void) {}
+void dcache_disable(void) {}
+int dcache_status(void) {}
+
+#endif /* USE_920T_MMU */

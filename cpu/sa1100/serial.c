@@ -41,6 +41,9 @@ void serial_setbrg(bd_t *bd, int baudrate)
     else hang();
 
 #ifdef CONFIG_SERIAL1
+    // SA1110 uart function
+    Ser1SDCR0 |= SDCR0_SUS;
+
     // Wait until port is ready ...
     while(Ser1UTSR1 & UTSR1_TBY) {}
 
