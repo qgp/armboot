@@ -1,0 +1,16 @@
+======================================================================
+Modifications for 1.0:
+======================================================================
+
+* ARMboot seems to be stable enough to label it 1.0
+
+  Ports are available for the following platforms:
+  
+  StrongARM  - LART, SSV DNP1110, Shannon (Tuxscreen)
+  ARM720T    - implementaA7, CLEP7312
+
+======================================================================
+Modifications for 0.1:
+======================================================================
+
+* Created from ppcboot :-)

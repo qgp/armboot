@@ -1,0 +1,29 @@
+#
+#  Here is a list of people who have contributed to the ARMboot project. 
+#  If you feel you should be mentioned here, please send a mail to me
+#  to fix this!
+#
+#  Thanks a lot, folks!
+#
+#  Marius Gröger <mag@sysgo.de>
+
+N: Alex Zuepke
+E: azu@sysgo.de
+D: Overall improvements on StrongARM, ARM720TDMI; Support for Tuxscreen;
+   initial PCMCIA support
+W: www.elinos.com
+
+N: Marius Groeger
+E: mgroeger@sysgo.de
+D: Initial support for StrongARM (LART), ARM720TDMI (implementa A7)
+W: www.elinos.com
+
+N: Rolf Offermanns
+E: rof@sysgo.de
+D: Initial support for SSV-DNP1110, SMC91111 driver
+W: www.elinos.com
+
+N: Wolfgang Denk
+E: wd@denx.de
+D: Maintainer of PPCboot
+W: http://www.denx.de
