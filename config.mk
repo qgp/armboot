@@ -80,8 +80,8 @@ CPPFLAGS := $(DBGFLAGS) $(OPTFLAGS) $(RELFLAGS)			\
 CFLAGS   := $(CPPFLAGS) -Wall -Wstrict-prototypes
 AFLAGS   := -D__ASSEMBLY__ $(CPPFLAGS)
 
-LIBGCC   := $(shell $(CC) -print-libgcc-file-name)
-LDFLAGS  += -Bstatic -T $(LDSCRIPT) -Ttext $(TEXT_BASE)
+LIBGCC   := $(shell $(CC) -msoft-float -print-libgcc-file-name)
+LDFLAGS  += -nostdlib -Bstatic -T $(LDSCRIPT) -Ttext $(TEXT_BASE)
 
 # Location of a usable BFD library, where we define "usable" as
 # "built for ${HOST}, supports ${TARGET}".  Sensible values are

@@ -31,6 +31,10 @@ HOSTARCH := $(shell uname -m | \
 	    -e s/arm.*/arm/ \
 	    -e s/sa110/arm/)
 
+CPU = 
+BOARD =
+VENDOR =
+
 ifndef CROSS_COMPILE
 ifeq ($(HOSTARCH),arm)
 CROSS_COMPILE =

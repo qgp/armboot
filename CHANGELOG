@@ -2,6 +2,8 @@
 Recent changes
 ======================================================================
 
+* Fix to support multilib toolchains (David Müller <d.mueller@elsoft.ch>)
+
 * Added support for ARM9 CPUs (Gary Jennejohn <gj@denx.de>)
 
 ======================================================================
