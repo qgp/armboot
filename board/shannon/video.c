@@ -127,7 +127,6 @@ static int lcd_power(int arg)
 static void lcd_backlight_init(void)
 {
     unsigned long mask;
-    int retval = 0;
 
     /*
      * Setup the PPC unit correctly.
@@ -206,8 +205,8 @@ static void video_init_crit(void)
 
 	/* set DMA base address registers */
 	LCCR0 = 0x0001003c;
-	DBAR1 = LCD_LUT_ADDR;
-	DBAR2 = LCD_VIDEO_ADDR+LCD_VIDEO_COLS*LCD_VIDEO_ROWS/2;
+	DBAR1 = (Address)LCD_LUT_ADDR;
+	DBAR2 = (Address)(LCD_VIDEO_ADDR+LCD_VIDEO_COLS*LCD_VIDEO_ROWS/2);
 	LCCR0 = 0x0001003d;
 
 	lcd_backlight_init();
