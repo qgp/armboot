@@ -43,7 +43,7 @@ LIST_all="${LIST_SA} ${LIST_ARM7} ${LIST_ARM9} ${LIST_XSCALE}"
 build_target() {
 	target=$1
 
-	${MAKE} distclean >/dev/null
+	${MAKE} clean >/dev/null
 	${MAKE} ${target}_config
 	${MAKE} all 2>&1 >LOG/$target.MAKELOG | tee LOG/$target.ERR
 	${CROSS_COMPILE:-arm_armv4-}size armboot | tee -a LOG/$target.MAKELOG
