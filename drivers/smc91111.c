@@ -189,7 +189,9 @@ static int smc_close(void);
 /*
  . Configures the PHY through the MII Management interface
 */
+#ifndef CONFIG_SMC91111_EXT_PHY
 static void smc_phy_configure(void);
+#endif
 
 /*
  . This is a separate procedure to handle the receipt of a packet, to
@@ -285,8 +287,10 @@ static void smc_shutdown( void );
    MII Management Interface
 */
 
+#ifndef CONFIG_SMC91111_EXT_PHY
 static word smc_read_phy_register(byte phyreg);
 static void smc_write_phy_register(byte phyreg, word phydata);
+#endif
 
 
 static int poll4int( byte mask, int timeout ) {
@@ -682,8 +686,7 @@ static int smc_open()
 }
 
 #ifdef USE_32_BIT
-void
-insl32(r,b,l) 	
+void insl32(int r, int b, int l) 	
 {	
    int __i ;  
    dword *__b2;  
@@ -768,7 +771,7 @@ static int smc_rcv()
 	   if (packet_length & 3) 
       {
          int i;
-		   byte *tail = NetRxPackets[0] + (packet_length & ~3);
+		   volatile byte *tail = NetRxPackets[0] + (packet_length & ~3);
 		   dword leftover = SMC_inl(DATA_REG);
 		   for (i=0; i<(packet_length & 3); i++) 
 			   *tail++ = (byte) (leftover >> (8*i)) & 0xff;
@@ -934,6 +937,7 @@ static void smc_dump_mii_stream(byte* bits, int size)
 }
 #endif
 
+#ifndef CONFIG_SMC91111_EXT_PHY
 /*------------------------------------------------------------
  . Reads a register from the MII Management serial interface
  .-------------------------------------------------------------*/
@@ -1313,6 +1317,7 @@ static void smc_phy_configure()
   smc_phy_configure_exit:
 
 }
+#endif /* !CONFIG_SMC91111_EXT_PHY */
 
 
 #if SMC_DEBUG > 2
