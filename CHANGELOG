@@ -2,6 +2,8 @@
 Recent changes
 ======================================================================
 
+* Added FAQ
+
 * Added support for SMDK2410 eval board (David Müller <d.mueller@elsoft.ch>)
 
 * Fix write_p15_c1() for ARM720,ARM920
