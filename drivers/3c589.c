@@ -20,6 +20,14 @@
  . along with this program; if not, write to the Free Software
  . Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  .
+ . This code is based on Shusuke Nisiyama's 3c595.c from etherboot
+ .
+ .  Copyright (C) 2000 Shusuke Nisiyama
+ .  Copyright (C) 1993-1994, David Greenman, Martin Renters.
+ .  Copyright (C) 1993-1995, Andres Vega Garcia.
+ .  Copyright (C) 1995, Serge Babkin.
+ .  Copyright (c) 1994 Herb Peyerl <hpeyerl@novatel.ca>
+ .
  ----------------------------------------------------------------------------*/
 
 #include "armboot.h"
@@ -247,10 +255,7 @@ static void el_reset(bd_t *bd)
 			Reset 3Com 595 card
 	*************************************************************/
 	/* QUICK HACK 
-	 * - adjust timing for 3c589
 	 * - enable io for PCMCIA */
-	outw(0x0004, 0xa0000018);
-	udelay(100);
 	outw(0x0041, 0x28010000);
 	udelay(100);
 	
