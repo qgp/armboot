@@ -44,12 +44,22 @@ extern int	kbd_getc(void);
 #	define CONSOLE_TSTC	serial_tstc
 #endif
 
+/* If pagelength is > 1, scrolling will pause every pagelength lines.
+ * Page length can be set through environment.
+ */
+#ifdef CONFIG_PAGELENGTH
+int pagelength = CONFIG_PAGELENGTH;
+#else
+int pagelength = 0;
+#endif
+static int linesout = 0;
+
 
 
 void serial_puts (const char *s)
 {
 	while (*s) {
-		CONSOLE_PUTC (*s++);
+		putc(*s++);
 	}
 }
 
@@ -73,6 +83,7 @@ void serial_printf(const char *fmt, ...)
 int	getc(void)
 {
     /* Send directly to the handler */
+	linesout = 0;
 	return CONSOLE_GETC();
 }
 
@@ -80,12 +91,6 @@ int	tstc(void)
 {
     /* Send directly to the handler */
 	return CONSOLE_TSTC();
-}
-
-void	putc(const char c)
-{
-	/* Send directly to the handler */
-	CONSOLE_PUTC (c);
 }
 
 void	puts(const char *s)
@@ -149,5 +154,27 @@ int had_ctrlc(void)
 void clear_ctrlc(void)
 {
 	ctrlc_was_pressed = 0;
+}
+
+void	putc(const char c)
+{
+	/* Send directly to the handler */
+	CONSOLE_PUTC (c);
+	if(c == '\n') {
+		if(++linesout == pagelength) {
+			char *s = "--MORE--";
+			while(*s) {
+				CONSOLE_PUTC(*s);
+				++s;
+			}
+			if(getc() == 0x03)
+				ctrlc_was_pressed = 1;
+			s = "\b\b\b\b\b\b\b\b";
+			while(*s) {
+				CONSOLE_PUTC(*s);
+				++s;
+			}
+		}
+	}
 }
 

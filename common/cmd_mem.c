@@ -129,7 +129,7 @@ int do_mem_md    (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 		}
 		printf("\n");
 		nbytes -= linebytes;
-	} while (nbytes > 0);
+	} while (nbytes > 0 && !had_ctrlc());
 
 	dp_last_addr = addr;
 	dp_last_length = length;

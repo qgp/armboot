@@ -37,6 +37,8 @@
 #include "net.h"
 #endif
 
+extern int pagelength;
+
 /*
  * Table with supported baudrates (defined in config_xyz.h)
  */
@@ -397,6 +399,11 @@ int _do_setenv (bd_t *bd, int flag, int argc, char *argv[])
 	return 0;
     }
 
+    if (strcmp(argv[1],"pagelength") == 0) {
+	pagelength = simple_strtoul(argv[2], NULL, 10);
+	return 0;
+    }
+
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
     if (strcmp(argv[1],"bootfile") == 0) {
 	copy_filename (BootFile, argv[2], sizeof(BootFile));
@@ -598,8 +605,8 @@ void env_relocate(bd_t *bd)
 	  s = (*e) ? e+1 : e;
     }
 
-    /* IP address */
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
+    /* IP address */
     s = getenv(bd, "ipaddr");
     bd->bi_ip_addr = string_to_ip(s);
 #endif
@@ -608,6 +615,10 @@ void env_relocate(bd_t *bd)
         load_addr = simple_strtoul(s, NULL, 16);
     }
     
+    if ((s = getenv(bd, "pagelength")) != NULL) {
+       pagelength = simple_strtoul(s, NULL, 10);
+    }
+
 #if (CONFIG_COMMANDS & CFG_CMD_NET)
     if ((s = getenv(bd, "bootfile")) != NULL) {    
         copy_filename (BootFile, s, sizeof(BootFile));

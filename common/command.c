@@ -121,7 +121,7 @@ int do_help (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 
 		for (cmdtp=&cmd_tbl[0]; cmdtp->name; cmdtp++) {
 			/* allow user abort */
-			if (ctrlc())
+			if (had_ctrlc() || ctrlc())
 				return 1;
 
 			if (cmdtp->usage == NULL)
@@ -151,6 +151,8 @@ int do_help (cmd_tbl_t *cmdtp, bd_t *bd, int flag, int argc, char *argv[])
 			if (cmdtp->usage)
 				puts (cmdtp->usage);
 #endif	/* CFG_LONGHELP */
+			if(had_ctrlc())
+				break;
 		}
 		else {
 			printf ("Unknown command '%s' - try 'help'"
