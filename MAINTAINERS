@@ -1,0 +1,42 @@
+#########################################################################
+#									#
+# Regular Maintainers for PPCBoot board support:			#
+#									#
+# For any board without permanent maintainer, please contact		#
+#	Marius Gröger <mag@sysgo.de>					#
+# and Cc: the <armboot-users@lists.sourceforge.net> mailing list.	#
+#									#
+#########################################################################
+# Maintainer Name, Email Address					#
+#	Board			CPU					#
+#########################################################################
+
+Marius Gröger <mag@sysgo.de>
+
+	impa7			ARM720T (EP7211)
+	ep7312			ARM720T (EP7312)
+
+Alex Züpke <azu@sysgo.de>
+
+	lart			SA1100
+	dnp1110			SA1110
+
+Rolf Offermanns <rof@sysgo.de>
+
+	shannon			SA1100
+
+Gary Jennejohn <gj@denx.de>
+
+        samsung                 ARM920T
+
+David Müller <d.mueller@elsoft.ch>
+
+        smdk2410                ARM920T
+
+Iain Scott <i.scott@altera.com>
+
+        epxa1db                 ARM922T (EPXA1)
+
+#########################################################################
+# End of MAINTAINERS list						#
+#########################################################################

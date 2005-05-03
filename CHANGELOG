@@ -1,0 +1,69 @@
+======================================================================
+Modifications for 1.1.0
+======================================================================
+
+* Add support for XScale CPUs (cradle, lubock) boards 
+  (Kyle Harris <kharris@nexus-tech.net>)
+
+* Big Patch by Ian Scott <ISCOTT@altera.com>
+  - add creation of armboot.hex
+  - add Support for the Altera EPXA1 Development Board Excalibur
+  - add smc_set_mac_addr() capability to SMC91111 driver
+  - call epxa1db_set_mac_addr() from board.c (should be revised into
+    something more generic)
+
+* Fix endianess when loading uncompressed images (Ian Scott
+  <iscott@altera.com>)
+ 
+* Add support for the Altera XA1 Excalibur Development board
+  (Ian Scott <iscott@altera.com>)
+
+* Fix tmp string in cmd_net.c (Kyle Harris <kharris@nexus-tech.net>)
+
+* Added FAQ
+
+* Added support for SMDK2410 eval board (David Müller <d.mueller@elsoft.ch>)
+
+* Fix write_p15_c1() for ARM720,ARM920
+
+* Fix to support multilib toolchains (David Müller <d.mueller@elsoft.ch>)
+
+* Added support for ARM9 CPUs (Gary Jennejohn <gj@denx.de>)
+
+======================================================================
+Modifications for 1.0.2:
+======================================================================
+
+* Allow compilation without kernel headers
+
+* Add README
+
+======================================================================
+Modifications for 1.0.1:
+======================================================================
+
+* Cleanup (remove some obsolete files and CVS keys
+
+* Remove flashasm.S for DNP1110 - DNP doesn't require data puzzling.
+  Flash still not working on DNP
+
+* Add Support for JFFS2 boot
+
+* Import PPCboot: Change command functions to have a return value
+
+======================================================================
+Modifications for 1.0:
+======================================================================
+
+* ARMboot seems to be stable enough to label it 1.0
+
+  Ports are available for the following platforms:
+  
+  StrongARM  - LART, SSV DNP1110, Shannon (Tuxscreen)
+  ARM720T    - implementaA7, CLEP7312
+
+======================================================================
+Modifications for 0.1:
+======================================================================
+
+* Created from ppcboot :-)

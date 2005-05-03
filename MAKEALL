@@ -1,0 +1,69 @@
+#!/bin/sh
+
+if [ -n "${CROSS_COMPILE}" ] ; then
+	MAKE="make CROSS_COMPILE=${CROSS_COMPILE}"
+else
+	MAKE=make
+fi
+
+[ -d LOG ] || mkdir LOG || exit 1
+
+LIST=""
+
+#########################################################################
+## StrongARM Systems
+#########################################################################
+
+LIST_SA="lart shannon dnp1110"
+
+#########################################################################
+## ARM7 Systems
+#########################################################################
+
+LIST_ARM7="impa7 ep7312"
+
+#########################################################################
+## ARM9 Systems
+#########################################################################
+
+LIST_ARM9="samsung smdk2410 epxa1db"
+
+#########################################################################
+## Xscale Systems
+#########################################################################
+
+LIST_XSCALE="lubbock cradle"
+
+LIST_all="${LIST_SA} ${LIST_ARM7} ${LIST_ARM9} ${LIST_XSCALE}"
+
+[ $# = 0 ] && set $LIST_all
+
+#-----------------------------------------------------------------------
+
+build_target() {
+	target=$1
+
+	${MAKE} distclean >/dev/null
+	${MAKE} ${target}_config
+	${MAKE} all 2>&1 >LOG/$target.MAKELOG | tee LOG/$target.ERR
+	${CROSS_COMPILE:-arm_armv4-}size armboot | tee -a LOG/$target.MAKELOG
+	test -n "$KEEP_BINARY" && cp armboot.bin LOG/$target.bin
+	test -n "$KEEP_ELF" && cp armboot LOG/$target.elf
+}
+
+#-----------------------------------------------------------------------
+
+
+for arg in $@
+do
+	case "$arg" in
+	SA|ARM7)
+			for target in `eval echo '$LIST_'${arg}`
+			do
+				build_target ${target}
+			done
+			;;
+	*)		build_target ${arg}
+			;;
+	esac
+done

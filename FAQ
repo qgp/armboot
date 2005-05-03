@@ -1,0 +1,77 @@
+
+QUESTIONS
+
+1. I have built a vmlinux image but I can boot it.
+
+2: The mkimage tool, ARMboot's tftp command, and the bootm command require
+   certain load and entry addresses. I'm confused which ones to chose.
+
+
+ANSWERS
+
+
+
+1. I have built a vmlinux image but I can boot it.
+--------------------------------------------------
+
+ARMboot is designed to boot Images as created by the mkimage tool, that
+comes with ARMboot and is automatically built, too. You cannot directly load
+the vmlinux image, as it expects a number of prerequisits such as special
+register contents etc.
+
+
+
+2. The mkimage tool, ARMboot's tftp command, and the bootm command require
+   certain load and entry addresses. I'm confused which ones to chose.
+--------------------------------------------------------------------------
+
+Well, there are 3 different addresses:
+
+1. Kernel Load Address. This is the address, where the kernel was linked
+   to when you built the vmlinux and can be found in arch/arm/Makefile.
+   The default for it is:
+   
+   ifeq ($(CONFIG_CPU_32),y)
+   PROCESSOR    = armv
+   TEXTADDR     = 0xC0008000
+   LDSCRIPT     = arch/arm/vmlinux-armv.lds.in
+   endif
+   
+   Provide this as "-a" parameter to mkimage.
+
+2. Kernel Entry Point. This is the address, where ARMboot jumps to to
+   enter the Kernel. It usually is the same as the kernel load address.
+
+   Provide this as "-e" parameter to mkimage.
+
+3. The Network Download Address. This is where you download the mkimage
+   File. This address MUST BE different to the Kernel Load Address, and
+   should be sufficiently far away to allow ARMboot to relocate the 
+   image to the final Kernel Load Address. Loading to the 5th MB
+   within the RAM is usually a good idea, eg. if the RAM begins at
+   0xc0000000, you can do this:
+   
+   LART # tftp c0400000 linux.img
+   ARP broadcast 1
+   eth addr: 00:02:03:04:05:06
+   TFTP from server 192.168.1.1; our IP address is 192.168.1.2
+   Filename 'image.img'.
+   Load address: 0xc0400000
+   Loading: 
+   ##################################################################done
+   Bytes transferred = 567252 (8a7d4 hex)
+   LART # bootm c0400000
+      Image Name:   Linux 2.4.18
+      Created:      Mon Jun 24 12:00:01 2002
+      Image Type:   ARM Linux Kernel Image (gzip compressed)
+      Data Size:    567188 Bytes = 553 kB = 0 MB
+      Load Address: 0xc0008000
+      Entry Point:  0xc0008000
+      Verifying Checksum ... OK
+      Loading Kernel Image ... OK	 
+
+   Starting kernel ...
+   Linux version 2.4.18 (mag@mag) (gcc version 2.95.3 20010315 (release)) #4 Mon Jun 17 20:35:32 CST 2002
+   ...
+
+===========================================================================
