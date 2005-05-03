@@ -106,6 +106,8 @@ CLEP7312           ep7312_config      Cirrus Logic EP7312 Dev. Board
 S3C2400X           samsung_config     Samsung S3C2400X
 SMDK2410X          smdk2410_config    Samsung SMDK2410X Eval Board
 EPXA1DB            epxa1db_config     Altera EPXA1 Development Board
+KIP-DCS            kipdcs_config      DCS-board, KIP
+
 
 Testing of ARMBoot Modifications, Ports to New Hardware, etc.:
 ==============================================================

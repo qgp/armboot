@@ -95,7 +95,6 @@ armboot.hex:	armboot
 
 armboot.bin:	armboot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
-		cp armboot.bin /tftpboot/armboot.bin
 
 armboot:	depend subdirs $(OBJS) $(LDSCRIPT)
 		$(LD) $(LDFLAGS) $(LDFLAGS_EXTRA) $(OBJS) $(LIBGCC) $(EXTERN_LIB) -Map armboot.map -o armboot 
@@ -217,6 +216,16 @@ epxa1db_config	:	unconfig
 	echo "#include <configs/config_$(@:_config=).h>" >config.h
 	@ln -sf ../../board/$(@:_config=)/quartus/excalibur.h include/epxa/excalibur.h 
 	@echo "** See the README in board/epxa1db for build instructions **"
+
+kipdcs_config	:	unconfig
+	@echo "Configuring for $(@:_config=) Board..." ; \
+	cd include ; \
+	echo "ARCH  = arm"	> config.mk ;	\
+	echo "BOARD = kipdcs"	>>config.mk ;	\
+	echo "CPU   = epxa"	>>config.mk ;	\
+	echo "#include <configs/config_$(@:_config=).h>" >config.h
+	@ln -sf ../../board/$(@:_config=)/quartus/excalibur.h include/epxa/excalibur.h 
+	@echo "** See the README in board/kipdcs for build instructions **"
 
 #########################################################################
 
