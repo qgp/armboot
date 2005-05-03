@@ -38,7 +38,7 @@ ifndef CROSS_COMPILE
 ifeq ($(HOSTARCH),arm)
 CROSS_COMPILE =
 else
-CROSS_COMPILE = arm-linux-
+CROSS_COMPILE = /usr/local/arm/2.95.3/bin/arm-linux-
 endif
 endif
 

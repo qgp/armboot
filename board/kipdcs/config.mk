@@ -25,7 +25,8 @@
 #
 
 ifndef QUARTUS_ROOTDIR
-QUARTUS_ROOTDIR = $(TOPDIR)/tools/quartus
+#QUARTUS_ROOTDIR = $(TOPDIR)/tools/quartus
+QUARTUS_ROOTDIR = /cad/products/altera/quartus40
 endif
 
 CFLAGS += -g
