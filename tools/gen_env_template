@@ -1,6 +1,10 @@
-bootargs=root=/dev/mtdblock3 mem=32M rootfstype=jffs2 console=ttyUA0,57600 easynet_mac=EA:54:5C:5B:XX:XX
-bootcmd=bootm 40040000
+bootargs=root=/dev/mtdblock3 mem=32M rootfstype=jffs2 console=ttyUA0,57600 easynet_mac=40:EA:54:00:XX:XX
+bootcmd=bootm 40050000
 bootdelay=3
 baudrate=57600
-nfs=setenv bootargs root=/dev/nfs mem=32M console=ttyUA0,57600 nfsroot=10.0.0.1:/tftpboot/dcsrootfs,rsize=1024,wsize=1024,nolock,vers=2 ip=10.0.0.10:10.0.0.1:10.0.0.1:255.255.255.0:dcs:eth0:off easynet_mac=EA:54:00:05:00:04 ; bootm 40040000
-nfsfh=setenv bootargs root=/dev/nfs mem=32M console=ttyUA0,57600 nfsroot=139.6.18.69:/tftpboot/dcsrootfs,rsize=1024,wsize=1024,nolock,vers=2 ip=139.6.18.51:139.6.18.69:139.6.18.1:255.255.255.0:dcs:eth0:off easynet_mac=EA:54:00:05:03:e7 ; bootm 40040000
+bootfile=kipdcs/bin_image/kernel_start_0x50000.bin
+ipaddr=10.0.0.10
+serverip=10.0.0.1
+tftp=setenv bootargs root=/dev/nfs mem=32M console=ttyUA0,57600 nfsroot=10.0.0.1:/tftpboot/kipdcs/dcsrootfs,rsize=1024,wsize=1024,nolock,vers=2 ip=10.0.0.10:10.0.0.1:10.0.0.1:255.255.255.0:dcs:eth0:off easynet_mac=40:EA:54:00:XX:XX ; tftpboot ; bootm a00000
+nfs=setenv bootargs root=/dev/nfs mem=32M console=ttyUA0,57600 nfsroot=10.0.0.1:/tftpboot/kipdcs/dcsrootfs,rsize=1024,wsize=1024,nolock,vers=2 ip=10.0.0.10:10.0.0.1:10.0.0.1:255.255.255.0:dcs:eth0:off easynet_mac=40:EA:54:00:XX:XX ;  bootm 40050000
+nfsfh=setenv bootargs root=/dev/nfs mem=32M console=ttyUA0,57600 nfsroot=139.6.18.69:/tftpboot/dcsrootfs,rsize=1024,wsize=1024,nolock,vers=2 ip=139.6.18.51:139.6.18.69:139.6.18.1:255.255.255.0:dcs:eth0:off easynet_mac=40:EA:54:00:XX:XX ; bootm 40050000
