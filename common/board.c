@@ -38,6 +38,10 @@ extern void cs8900_get_enetaddr(uchar *addr);
 extern void epxa1db_set_mac_addr(bd_t* bd);
 #endif
 
+#ifdef CONFIG_KIPDCS_MAC_ADDR
+extern void kipdcs_set_mac_addr(bd_t* bd);
+#endif
+
 /*
  * Begin and End of memory area for malloc(), and current "brk"
  */
@@ -135,6 +139,11 @@ void start_armboot(void)
 #ifdef CONFIG_EPXA1DB_MAC_ADDR
     epxa1db_set_mac_addr(&bd);
 #endif
+
+#ifdef CONFIG_KIPDCS_MAC_ADDR
+    kipdcs_set_mac_addr(&bd);
+#endif
+
 
 #ifdef BOARD_POST_INIT
     board_post_init(&bd);
