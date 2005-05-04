@@ -26,7 +26,7 @@ include $(TOPDIR)/config.mk
 
 LIB	= libdrivers.a
 
-OBJS	= cs8900.o smc91111.o 3c589.o
+OBJS	= cs8900.o smc91111.o 3c589.o easynet.o
 
 all:	.depend $(START) $(LIB)
 
