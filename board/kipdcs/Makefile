@@ -43,7 +43,7 @@ MAKEPROGFILE := $(QUARTUS_ROOTDIR)/bin/makeprogfile
 
 LIB	= lib$(BOARD).a
 
-OBJS	:= kipdcs.o flash.o env.o flash_amd.o
+OBJS	:= kipdcs.o flash.o env.o mac_addr.o flash_amd.o
 
 EXC_CFG := excalibur.o 
 
