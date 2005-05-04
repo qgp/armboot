@@ -65,6 +65,8 @@ SUBDIRS	= tools \
 	  net \
 	  disk
 
+MKIMDIR = tools
+
 #########################################################################
 # armboot objects....order is important (i.e. start must be first)
 
@@ -91,7 +93,7 @@ armboot.srec:	armboot
 		$(OBJCOPY) ${OBJCFLAGS} -O srec $< $@
 
 armboot.hex:	armboot
-		$(OBJCOPY) ${OBJCFLAGS} -O ihex $< $@
+		srec_cat armboot.srec -o armboot.hex -intel
 
 armboot.bin:	armboot
 		$(OBJCOPY) ${OBJCFLAGS} -O binary $< $@
@@ -101,6 +103,9 @@ armboot:	depend subdirs $(OBJS) $(LDSCRIPT)
 
 subdirs:
 		@for dir in $(SUBDIRS) ; do $(MAKE) -C $$dir || exit 1 ; done
+
+mkim:
+		@for dir in $(MKIMDIR) ; do $(MAKE) -C $$dir || exit 1 ; done
 
 depend dep:
 		@for dir in $(SUBDIRS) ; do $(MAKE) -C $$dir .depend ; done
@@ -238,6 +243,7 @@ clean:
 	rm -f tools/img2srec tools/mkimage tools/envcrc tools/gen_eth_addr
 	rm -f tools/easylogo/easylogo
 	rm -f tools/gdb/astest tools/gdb/gdbcont tools/gdb/gdbsend
+	rm -f tools/gen_env
 
 clobber:	clean
 	rm -f $(OBJS) *.bak tags TAGS
