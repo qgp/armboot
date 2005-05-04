@@ -35,6 +35,12 @@
 #define CONFIG_NO_IDE
 #define CONFIG_NO_PCMCIA
 
+/*
+ * Hardware drivers
+ */
+
+#define CONFIG_DRIVER_EASYNET
+#define CONFIG_KIPDCS_MAC_ADDR
 
 /*
  * select serial console configuration
@@ -46,8 +52,8 @@
 
 #define CONFIG_BAUDRATE		57600
 
-/* use default configuration without network support */
-#define CONFIG_COMMANDS		CONFIG_CMD_DFL & ~CFG_CMD_NET
+/* use default configuration with network support */
+#define CONFIG_COMMANDS		CONFIG_CMD_DFL
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
 #include <cmd_confdefs.h>
@@ -140,7 +146,7 @@ struct bd_info_ext
  */
 //#define CFG_MAX_FLASH_BANKS	2	/* max number of memory banks		*/
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks		*/
-#define CFG_MAX_FLASH_SECT	(63+8)	/* max number of sectors on one chip	*/
+#define CFG_MAX_FLASH_SECT	(127+8)	/* max number of sectors on one chip	*/
 
 /* timeout values are in ticks */
 #define CFG_FLASH_ERASE_TOUT	(2*EXC_AHB2_CLK_FREQUENCY) /* Timeout for Flash Erase */
@@ -152,7 +158,7 @@ struct bd_info_ext
  */
 
 #define CFG_ENV_SIZE            0x10000
-#define CFG_ENV_ADDR		(EXC_EBI_BLOCK0_BASE + 0x40000 - CFG_ENV_SIZE) /* Addr of 
+#define CFG_ENV_ADDR		(EXC_EBI_BLOCK0_BASE + 0x50000 - CFG_ENV_SIZE) /* Addr of 
 Environment Sector	*/
 
 #endif	/* __CONFIG_H */
