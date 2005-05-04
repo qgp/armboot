@@ -4,7 +4,7 @@
    MODULE: ARM-Based Excalibur
    PROJECT: excalibur
    ============================================================
-   File Name: H:\tilsner\cad\DCS\armboot2\excalibur.h
+   File Name: /tk/quartus/quartus_dcs/dcs152_kip_epxa1_jtag_rs485/ARM_Stripe.h
    Megafunction Name(s): ARM-Based Excalibur
    ============================================================
 
@@ -44,7 +44,7 @@
 
 /* EBI Block(s) */
 #define	EXC_EBI_BLOCK0_BASE (0x40000000)
-#define	EXC_EBI_BLOCK0_SIZE (0x00400000)
+#define	EXC_EBI_BLOCK0_SIZE (0x00800000)
 #define	EXC_EBI_BLOCK0_WIDTH (16)
 #define	EXC_EBI_BLOCK0_NON_CACHEABLE
 
@@ -67,9 +67,6 @@
 /* PLD Block(s) */
 #define	EXC_PLD_BLOCK0_BASE (0x80000000)
 #define	EXC_PLD_BLOCK0_SIZE (0x80000000)
-#define	EXC_PLD_BLOCK0_CACHEABLE
-#define	EXC_PLD_BLOCK1_BASE (0x60000000)
-#define	EXC_PLD_BLOCK1_SIZE (0x10000000)
-#define	EXC_PLD_BLOCK1_NON_CACHEABLE
+#define	EXC_PLD_BLOCK0_NON_CACHEABLE
 
 #endif
