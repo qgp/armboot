@@ -2,8 +2,8 @@ device excalibur
 {
     family = excalibur_arm; 
     type = epxa1; 
-    quartus_version = "Version 2.1 Build 166 07/08/2002 SJ Full Version"; 
-    module excalibur
+    quartus_version = "Version 4.0 Build 214 3/25/2004 Service Pack 1 SJ Full Version"; 
+    module ARM_Stripe
     {
         type = excalibur_stripe; 
         hold_processor = false; 
@@ -43,9 +43,9 @@ device excalibur
             desired_ahb1_clock_frequency = 160000000; 
             desired_sdram_clock_frequency = 120000000; 
             pll_ahb_bypass = false; 
-            pll_ahb_m = 16; 
+            pll_ahb_m = 8; 
             pll_ahb_n = 1; 
-            pll_ahb_k = 2; 
+            pll_ahb_k = 1; 
             ahb1_divide = 2; 
             ahb2_divide = 4; 
             pll_sdram_bypass = false; 
@@ -91,7 +91,7 @@ device excalibur
             enabled = true; 
             data_width = 16; 
             type = SDR; 
-            device_name = Custom; 
+            device_name = "Micron MT48LC16M16A2"; 
             active_to_read_or_write_delay = 15; 
             active_to_precharge_command = 45; 
             active_banka_to_bankb_command = 15; 
@@ -135,7 +135,7 @@ device excalibur
             {
                 address_base = 0x40000000; 
                 enabled = true; 
-                address_size = 0x400000; 
+                address_size = 0x800000; 
                 prefetch = false; 
                 synchronous = true; 
                 byte_enable = false; 
