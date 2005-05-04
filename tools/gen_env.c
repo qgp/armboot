@@ -5,7 +5,7 @@
 /* template file could look like this: */
 
 /* bootargs=root=/dev/mtdblock/0 mem=32M rootfstype=jffs2 console=ttyUA0,57600 easynet_mac=EA:54:5C:5B:XX:XX */
-/* bootcmd=bootm 40040000 */
+/* bootcmd=bootm 40050000 */
 /* bootdelay=3 */
 /* baudrate=57600 */
 
@@ -45,6 +45,7 @@ int main (int argc, char **argv) {
   int i;
   int pos=0;
   int not_found=0;
+  int hits=0;
   unsigned long crc;
   const int size=CFG_ENV_SIZE - sizeof(ulong);
   char buf[size];
@@ -54,10 +55,10 @@ int main (int argc, char **argv) {
   char outfile[256];
   int writefile=0;
   unsigned int boardnumber;
-  const char searchstring[]=" easynet_mac=EA:54:5C:5B:XX:XX";
+  const char searchstring[]=" easynet_mac=40:EA:54:00:XX:XX";
   const int XXposition=25; // hardcoded Position of the first X of XX:XX
 
-  memset(buf,0,size);
+  memset(buf,255,size);
 
 
   if (argc < 3) { // Minimum 2 Args
@@ -106,17 +107,31 @@ int main (int argc, char **argv) {
 
   not_found=1;
   i=0;
-  while ( (not_found) && (i<pos) ) { // look for magic text 'searchstring'
-    not_found=memcmp(buf+i,searchstring,strlen(searchstring));
-    i++;
+  while(i<pos) {
+    while ( (not_found) && (i<pos) ) { // look for magic text 'searchstring'
+      not_found=memcmp(buf+i,searchstring,strlen(searchstring));
+      if (not_found==0) hits++;
+      i++;
+    }
+    i--;
+    // Fill in last two Octets of MAC Address
+    if (!not_found) {
+      char buffi[6];
+      sprintf(buffi,"%02X:%02X",((boardnumber >> 8) & 0xff), boardnumber & 0xff);
+      memcpy(buf+i+XXposition,buffi,5);
+      //      sprintf(buf+i+XXposition,"%02X:%02X",((boardnumber >> 8) & 0xff), boardnumber & 0xff);
+    }
+    i+=2;not_found=1;
+    
   }
-  if (i==pos) {
-    printf("Did not found the magic text \"%s\" in template file %s\n",searchstring,filename);
+
+  if (!hits) {
+    printf("Did not find the magic text \"%s\" in template file %s\n",searchstring,filename);
     return -1;
-  }
-  i--;
-  // Fill in last two Octets of MAC Address
-  sprintf(buf+i+XXposition,"%02X:%02X",((boardnumber >> 8) & 0xff), boardnumber & 0xff);
+  } 
+  if (writefile) printf("Replaced %d occurences\n",hits);
+
+
 
   if (writefile) {  for (i=0;i<pos+1;i++) if (buf[i]==0) printf("\n"); else printf("%c",buf[i]);}
 
