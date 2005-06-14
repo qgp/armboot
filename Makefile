@@ -232,6 +232,16 @@ kipdcs_config	:	unconfig
 	@ln -sf ../../board/$(@:_config=)/quartus/excalibur.h include/epxa/excalibur.h 
 	@echo "** See the README in board/kipdcs for build instructions **"
 
+kipcharm_config	:	unconfig
+	@echo "Configuring for $(@:_config=) Board..." ; \
+	cd include ; \
+	echo "ARCH  = arm"	> config.mk ;	\
+	echo "BOARD = kip-charm"	>>config.mk ;	\
+	echo "CPU   = epxa"	>>config.mk ;	\
+	echo "#include <configs/config_$(@:_config=).h>" >config.h
+	@ln -sf ../../board/$(@:_config=)/quartus/excalibur.h include/epxa/excalibur.h 
+	@echo "** See the README in board/kipdcs for build instructions **"
+
 #########################################################################
 
 clean:
