@@ -1,0 +1,3 @@
+[Web SPR Info]
+Version=2.1
+Product=Quartus II

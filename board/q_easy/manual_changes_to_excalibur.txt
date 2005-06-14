@@ -1,0 +1,11 @@
+Line 6: 'module ARM_stripe' -> 'module excalibur'
+
+not tested solutions:
+       a) change name in SOPC-Builder
+       b) change Makefile arm-boot (EXC_CFG)
+       c) sed 's/module ARM_stripe/module excalibur/'
+
+Makefile to append PLD-Config (-nc extremly important!)
+
+$(EXC_CFG): quartus/excalibur.sbd
+	$(MAKEPROGFILE) -q -nc -b $@ $< quartus/epxa1db.sbi

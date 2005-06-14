@@ -1,0 +1,82 @@
+
+Copyright (c) 2000-2002 Altera Corporation, San Jose, California, USA.  
+All rights reserved.
+
+Overview
+========
+
+This README details Altera EPXA1 Development Board specific features of ARMboot. General 
+ARMboot information can be found in the README file in the top level install directory.
+
+ARMboot for the epxa1db has been integrated into the Quartus toolflow so that the Altera 
+Excalibur Mega-Wizard can be used to configure the Excalibur device. This provides a 
+simple GUI based method for configuration of the device parameters (e.g. the physical 
+memory map) to match the application requirements.
+
+This use of the Mega-Wizard is intended to ease porting of ARMboot to other boards which 
+use Excalibur devices, and to ease porting between different members of the Excalibur 
+family.
+
+The Quartus project used for ARMboot can be found in quartus/excalibur.quartus. Details of 
+how to modify this project can be found in the online Quartus help. Alternatively you can 
+contact Altera support at: support@altera.com.
+
+Installing Quartus
+==================
+
+In order to build ARMboot for the EPXA1 Development Board, you must install the Quartus 
+tools. The environment variable 'QUARTUS_ROOTDIR' should be set to be the Quartus install 
+directory.
+
+The minimum requirement is that you install the makeprogfile utility, which is used to parse 
+the Mega-Wizard output:
+
+$QUARTUS_ROOTDIR/bin/makeprogfile
+
+and the Excalibur boot library:
+
+$QUARTUS_ROOTDIR/libraries/software/boot/libboot_xa_ads.a
+
+Building ARMboot for the EPXA1 Development Board
+================================================
+
+The following steps should be taken to configure and build ARMboot for the EPXA1 Development 
+Board:
+
+1. Configure
+
+    sh# make epxa1db_config
+    rm -f include/config.h include/config.mk
+    Configuring for epxa1db Board...
+    ** See the README in board/epxa1db for build instructions **
+
+2. Build
+
+    sh# make all
+
+Further information can be found in the generic ARMboot README.
+
+Running ARMboot
+===============
+
+Having built ARMboot, the generated file, 'armboot.hex', can be programmed into the on board 
+flash using the Altera flash programmer:
+
+    sh# exc_flash_programmer -g armboot.hex
+
+Serial output is available through serial connector 'P2', with: baud rate 115200, 8 
+bits, 1 stop bit, no parity.
+
+
+
+
+
+
+
+        
+ 
+
+
+
+
+
