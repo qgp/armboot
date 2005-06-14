@@ -36,7 +36,7 @@ SECTIONS
 	{
 	  cpu/epxa/start.o	(.init)
           *(.init)
-	  board/kipdcs/excalibur.o
+	  board/kipcharm/excalibur.o
 	  *(.text)
         }
         . = ALIGN(4);

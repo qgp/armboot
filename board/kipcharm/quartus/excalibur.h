@@ -4,7 +4,7 @@
    MODULE: ARM-Based Excalibur
    PROJECT: excalibur
    ============================================================
-   File Name: /tk/quartus/quartus_dcs/dcs152_kip_epxa1_jtag_rs485/ARM_Stripe.h
+   File Name: h:\data\excalibur\excalibur.h
    Megafunction Name(s): ARM-Based Excalibur
    ============================================================
 
@@ -18,10 +18,10 @@
 #define EXC_DEFINE_PROCESSOR_LITTLE_ENDIAN
 #define EXC_DEFINE_BOOT_FROM_FLASH
 
-#define	EXC_INPUT_CLK_FREQUENCY (40000000)
+#define	EXC_INPUT_CLK_FREQUENCY (25000000)
 #define	EXC_AHB1_CLK_FREQUENCY (160000000)
 #define	EXC_AHB2_CLK_FREQUENCY (80000000)
-#define	EXC_SDRAM_CLK_FREQUENCY (120000000)
+#define	EXC_SDRAM_CLK_FREQUENCY (35341652)
 
 /* Registers Block */
 #define	EXC_REGISTERS_BASE (0x7fffc000)
@@ -44,13 +44,21 @@
 
 /* EBI Block(s) */
 #define	EXC_EBI_BLOCK0_BASE (0x40000000)
-#define	EXC_EBI_BLOCK0_SIZE (0x00800000)
+#define	EXC_EBI_BLOCK0_SIZE (0x00400000)
 #define	EXC_EBI_BLOCK0_WIDTH (16)
 #define	EXC_EBI_BLOCK0_NON_CACHEABLE
+#define	EXC_EBI_BLOCK1_BASE (0x40400000)
+#define	EXC_EBI_BLOCK1_SIZE (0x00400000)
+#define	EXC_EBI_BLOCK1_WIDTH (16)
+#define	EXC_EBI_BLOCK1_NON_CACHEABLE
+#define	EXC_EBI_BLOCK3_BASE (0x40c00000)
+#define	EXC_EBI_BLOCK3_SIZE (0x00400000)
+#define	EXC_EBI_BLOCK3_WIDTH (16)
+#define	EXC_EBI_BLOCK3_NON_CACHEABLE
 
 /* SDRAM Block(s) */
 #define	EXC_SDRAM_BLOCK0_BASE (0x00000000)
-#define	EXC_SDRAM_BLOCK0_SIZE (0x02000000)
+#define	EXC_SDRAM_BLOCK0_SIZE (0x01000000)
 #define	EXC_SDRAM_BLOCK0_WIDTH (16)
 
 /* Single Port SRAM Block(s) */
@@ -67,6 +75,9 @@
 /* PLD Block(s) */
 #define	EXC_PLD_BLOCK0_BASE (0x80000000)
 #define	EXC_PLD_BLOCK0_SIZE (0x80000000)
-#define	EXC_PLD_BLOCK0_NON_CACHEABLE
+#define	EXC_PLD_BLOCK0_CACHEABLE
+#define	EXC_PLD_BLOCK1_BASE (0x60000000)
+#define	EXC_PLD_BLOCK1_SIZE (0x10000000)
+#define	EXC_PLD_BLOCK1_NON_CACHEABLE
 
 #endif

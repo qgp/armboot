@@ -240,7 +240,7 @@ kipcharm_config	:	unconfig
 	echo "CPU   = epxa"	>>config.mk ;	\
 	echo "#include <configs/config_$(@:_config=).h>" >config.h
 	@ln -sf ../../board/$(@:_config=)/quartus/excalibur.h include/epxa/excalibur.h 
-	@echo "** See the README in board/kipdcs for build instructions **"
+	@echo "** See the README in board/kipcharm for build instructions **"
 
 #########################################################################
 

@@ -39,7 +39,8 @@
  * Hardware drivers
  */
 
-
+#define CONFIG_DRIVER_SMC91111
+#define CONFIG_SMC91111_BASE (EXC_EBI_BLOCK3_BASE + 0x300)
 #define CONFIG_KIPCHARM_MAC_ADDR
 
 /*
