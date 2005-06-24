@@ -53,8 +53,7 @@ $(LIB):	$(OBJS)
 	$(AR) crv $@ $^
 
 $(EXC_CFG): quartus/excalibur.sbd
-	echo "$(QUARTUS_ROOTDIR)"
-	$(MAKEPROGFILE) -q -nc -b $@ $< quartus/kipdcs.sbi
+	$(MAKEPROGFILE) -q -nc -b $@ $< quartus/epxa1db.sbi
 
 
 clean:
