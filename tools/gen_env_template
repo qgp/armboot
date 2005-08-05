@@ -1,4 +1,4 @@
-bootargs=root=/dev/mtdblock3 mem=32M rootfstype=jffs2 console=ttyUA0,57600 easynet_mac=40:EA:54:00:XX:XX
+bootargs=root=/dev/mtdblock3 mem=32M rootfstype=jffs2 console=ttyUA0,57600 panic=5 easynet_mac=40:EA:54:00:XX:XX
 bootcmd=bootm 40050000
 bootdelay=3
 baudrate=57600
