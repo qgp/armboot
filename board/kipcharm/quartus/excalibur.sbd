@@ -2,8 +2,8 @@ device excalibur
 {
     family = excalibur_arm; 
     type = epxa1; 
-    quartus_version = "Version 2.1 Internal Build 151B 06/12/2002 SJ Full Version"; 
-    module excalibur
+    quartus_version = "Version 4.0 Build 190 1/28/2004 SJ Full Version"; 
+    module ARM_Stripe
     {
         type = excalibur_stripe; 
         hold_processor = false; 
@@ -28,9 +28,9 @@ device excalibur
         {
             use_pld_to_stripe_bridge = true; 
             use_stripe_to_pld_bridge = true; 
-            use_pld_to_stripe_interrupts = false; 
-            use_stripe_to_pld_interrupts = true; 
-            use_debug_extensions = true; 
+            use_pld_to_stripe_interrupts = true; 
+            use_stripe_to_pld_interrupts = false; 
+            use_debug_extensions = false; 
             use_trace_extensions = false; 
             use_gpio_port = false; 
             gpio_port_width = 4; 
@@ -39,18 +39,18 @@ device excalibur
 
         parameters clocks
         {
-            input_clock_frequency = 25000000; 
-            desired_ahb1_clock_frequency = 160000000; 
-            desired_sdram_clock_frequency = 133000000; 
+            input_clock_frequency = 40000000; 
+            desired_ahb1_clock_frequency = 100000000; 
+            desired_sdram_clock_frequency = 100000000; 
             pll_ahb_bypass = false; 
-            pll_ahb_m = 128; 
-            pll_ahb_n = 5; 
-            pll_ahb_k = 2; 
+            pll_ahb_m = 15; 
+            pll_ahb_n = 1; 
+            pll_ahb_k = 3; 
             ahb1_divide = 2; 
             ahb2_divide = 4; 
             pll_sdram_bypass = false; 
-            pll_sdram_m = 234; 
-            pll_sdram_n = 11; 
+            pll_sdram_m = 10; 
+            pll_sdram_n = 1; 
             pll_sdram_k = 2; 
         }
 
@@ -60,15 +60,15 @@ device excalibur
             combined_address_range = 0x2000; 
             combined_mode = false; 
             combined_outputs_registered = false; 
-            mode[0] = no_ports; 
-            data_width[0] = 0; 
-            address_range[0] = 0x0; 
-            outputs_registered[0] = false; 
+            mode[0] = dual_port; 
+            data_width[0] = 16; 
+            address_range[0] = 0x2000; 
+            outputs_registered[0] = true; 
             region region[0]
             {
-                address_base = 0x20040000; 
-                enabled = true; 
-                address_size = 0x4000; 
+                address_base = 0x30000000; 
+                enabled = false; 
+                address_size = 0x0; 
             }
 
             mode[1] = no_ports; 
@@ -91,30 +91,30 @@ device excalibur
             enabled = true; 
             data_width = 16; 
             type = SDR; 
-            device_name = Custom; 
+            device_name = "Micron MT48LC16M16A2"; 
             active_to_read_or_write_delay = 15; 
-            active_to_precharge_command = 37; 
-            active_banka_to_bankb_command = 14; 
+            active_to_precharge_command = 45; 
+            active_banka_to_bankb_command = 15; 
             precharge_command_period = 15; 
-            write_recovery_time = 17; 
+            write_recovery_time = 15; 
             active_to_active_command_period = 60; 
-            refresh_period = 710; 
-            auto_refresh_command_period = 66; 
+            refresh_period = 7500; 
+            auto_refresh_command_period = 60; 
             burst_length = 8; 
             row_address_bits = 13; 
             column_address_bits = 9; 
             bank_address_bits = 2; 
-            cas_latency = 3.000000; 
+            cas_latency = 2.000000; 
             region region[0]
             {
                 address_base = 0x0; 
                 enabled = true; 
-                address_size = 0x1000000; 
+                address_size = 0x2000000; 
             }
 
             region region[1]
             {
-                address_base = 0x11000000; 
+                address_base = 0x2000000; 
                 enabled = false; 
                 address_size = 0x0; 
             }
@@ -126,8 +126,8 @@ device excalibur
             input_pin_standard = lvttl_3v3; 
             output_pin_standard = slow_slew; 
             enabled = true; 
-            clock_divide = 16; 
-            timeout_enable = false; 
+            clock_divide = 8; 
+            timeout_enable = true; 
             timeout_clock_cycles = 1; 
             external_clock_enable = true; 
             split_read = false; 
@@ -135,11 +135,11 @@ device excalibur
             {
                 address_base = 0x40000000; 
                 enabled = true; 
-                address_size = 0x400000; 
+                address_size = 0x800000; 
                 prefetch = false; 
                 synchronous = true; 
                 byte_enable = false; 
-                wait_cycles = 10; 
+                wait_cycles = 8; 
                 data_width = 16; 
                 chip_select_polarity = low; 
             }
@@ -147,12 +147,12 @@ device excalibur
             region region[1]
             {
                 address_base = 0x40400000; 
-                enabled = true; 
-                address_size = 0x400000; 
+                enabled = false; 
+                address_size = 0x0; 
                 prefetch = false; 
                 synchronous = true; 
                 byte_enable = false; 
-                wait_cycles = 10; 
+                wait_cycles = 8; 
                 data_width = 16; 
                 chip_select_polarity = low; 
             }
@@ -174,11 +174,11 @@ device excalibur
             {
                 address_base = 0x40C00000; 
                 enabled = true; 
-                address_size = 0x400000; 
+                address_size = 0x40000; 
                 prefetch = false; 
                 synchronous = true; 
                 byte_enable = true; 
-                wait_cycles = 15; 
+                wait_cycles = 14; 
                 data_width = 16; 
                 chip_select_polarity = low; 
             }
@@ -201,7 +201,7 @@ device excalibur
 
         region sram[1]
         {
-            address_base = 0x20020000; 
+            address_base = 0x20040000; 
             enabled = true; 
             address_size = 0x4000; 
         }
@@ -210,31 +210,31 @@ device excalibur
         {
             address_base = 0x80000000; 
             enabled = true; 
-            address_size = 0x80000000; 
-            prefetch = true; 
+            address_size = 0x20000; 
+            prefetch = false; 
         }
 
         region pld[1]
         {
-            address_base = 0x60000000; 
+            address_base = 0x81000000; 
             enabled = true; 
-            address_size = 0x10000000; 
+            address_size = 0x40000; 
             prefetch = false; 
         }
 
         region pld[2]
         {
-            address_base = 0x0; 
-            enabled = false; 
-            address_size = 0x0; 
+            address_base = 0x82000000; 
+            enabled = true; 
+            address_size = 0x20000; 
             prefetch = false; 
         }
 
         region pld[3]
         {
-            address_base = 0x0; 
-            enabled = false; 
-            address_size = 0x0; 
+            address_base = 0x83000000; 
+            enabled = true; 
+            address_size = 0x40000; 
             prefetch = false; 
         }
 

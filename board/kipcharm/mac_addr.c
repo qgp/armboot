@@ -1,80 +1,89 @@
-/* Set the Mac Address for the CIA2/CHARM Board. It is read out of the kernel command line */
-/* or here named bootargs. Missing parameter will lead to a fallback MAC addr       */
+/*
+ * Copyright (c) 2000-2002 Altera Corporation, San Jose, California, USA.  
+ * All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to 
+ * deal in the Software without restriction, including without limitation the 
+ * rights to use, copy, modify, merge, publish, distribute, sublicense, and/or
+ * sell copies of the Software, and to permit persons to whom the Software is 
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in 
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR 
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, 
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER 
+ * DEALINGS IN THE SOFTWARE.
+ *
+ * This agreement shall be governed in all respects by the laws of the State 
+ * of California and by the laws of the United States of America.
+ */
+
 #include "armboot.h"
 #include "command.h"
 #include "net.h"
 #include "epxa/excalibur.h"
+#include "../drivers/smc91111.h"
 
-const unsigned char default_mac_address[6]={0x40, 0xC1, 0xA0, 0x02, 0x00, 0x00}; 
+extern char flash_read_user(int bank, int offset);
+	
+/*
+ * epxa1db_set_mac_addr is called prior to the open function of the SMC network
+ * driver. It is used to obtain the mac address. If the environment variable
+ * 'ipaddr' has a value, that is the address used. Otherwise the 
+ * address is calculated using the contents of flash.
+ * 
+ */
 
-/* This sets a default MAC Address */
-static void set_default_mac(unsigned char *mac) {
-  memcpy(mac, default_mac_address, 6);
-}
+void epxa1db_set_mac_addr(bd_t* bd){
+	
+	static const char vendor_id[2]={0x07,0xed};
+	
+	char addr[6];
+	char buf[18];
 
-/* function searches for parameter charm_mac in string *ba and if it is */
-/* in the form of charm_mac=00:11:e:FA:33:2 it writes these values in a */
-/* the character string *mac. mac must be allocated. returns 0 on success */
-static int charm_mac(char *ba, unsigned char *mac) {
-  char *strp;
-  unsigned int readval=0;
-  const char pa[]="charm_mac";
-  int i;
-  i=strlen(ba)-strlen(pa)-12; // start at the end - 11 chars
-  if (i<0) goto undo_read_ins;
-  while( (strncmp(&ba[i],pa,strlen(pa))) && i) i--;
-  if (i==0) goto undo_read_ins;;
-  //  printf("Found %s here: %d = %s\n",pa,i,&ba[i]);
-  //  printf("MAC: %s\n",&ba[i+strlen(pa)+1]);
+	char* s;
+	int i;
+	char* e;
 
-  strp=&ba[i+strlen(pa)+1];
+        /* 
+         * if the mac address is defined in the environment, use that,
+         * otherwise derive it from the contents of flash.
+         */
+ 
+	s = getenv(bd, "ethaddr");
 
-  for (i=0; i<6; i++) {
+        if (s) {
+	    for (i=0; i<6; i++) {
+	        addr[i] = s ? simple_strtoul(s, &e, 16) : 0;
+	        if (s) s = (*e) ? e+1 : e;
+ 	    }
+	} 
+        else{ 
 
-    readval=simple_strtoul(strp,NULL,16);
-    if (readval > 255) {
-      printf ("Error reading Element %d of MAC\n",i+1);
-      goto undo_read_ins;
-    }
-    mac[i]=(unsigned char) readval;
-    if (i != 5) {
-      strp++;
-      if (strp[0] == '\0') { printf ("MAC too short\n"); goto undo_read_ins;}
-      if (strp[0] != ':') strp++;      
-      if (strp[0] == '\0') { printf ("MAC too short\n"); goto undo_read_ins;}
-      if (strp[0] != ':')  { printf ("MAC Element %d too long\n",i+1); goto undo_read_ins;}
-      strp++; 
-    }
-  }
-  return 0;
- undo_read_ins:
-  set_default_mac(mac);
-  return -1;
-}
+	    /* calculate the value using the flash contents */
 
-/////////////////////////////////////
-void kipcharm_set_mac_addr(bd_t* bd){
+	    addr[5] = (char) flash_read_user(1, 0);
+	    addr[4] = (char) flash_read_user(1, 1); 
+	    addr[3] = 0;
+	    addr[2] = vendor_id[1];
+	    addr[1] = vendor_id[0];
+	    addr[0] = 0;
 
+	    /* update the environment */
 
-  char addr[6];
-  char buf[18];
-  char* s;
-
-
-  set_default_mac(addr); 
-  // look for the charm_mac string in kernel cmdline
-  s = getenv(bd, "bootargs");
-  if (s) {
-    if (charm_mac(s,addr) != 0) { // no or wrong mac in bootargs
-      printf ("Add the parameter charm_mac=xx:xx:xx:xx:xx:xx to bootargs!\n");
-  }
-  } else { // no bootargs !? #$@ 
-    printf ("Add the parameter charm_mac=xx:xx:xx:xx:xx:xx to bootargs!\n");
-  }
-
-  sprintf(buf,"%02X:%02X:%02X:%02X:%02X:%02X", addr[0], addr[1], addr[2], addr[3],
+	    sprintf(buf,"%x:%x:%x:%x:%x:%x", addr[0], addr[1], addr[2], addr[3],
                                                    addr[4], addr[5]);
-  setenv (bd, "ethaddr", buf);
+	    setenv (bd, "ethaddr", buf);
+        }
+
+	//	smc_set_mac_addr(addr); 
+
 }
 
 

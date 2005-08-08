@@ -27,7 +27,7 @@
 ulong myflush(void);
 
 
-#define FLASH_BANK_SIZE 0x800000	/* 8 MB */
+#define FLASH_BANK_SIZE EXC_EBI_BLOCK0_SIZE 	/* 4-32 MB */
 #define MAIN_SECT_SIZE  0x10000
 #define PARAM_SECT_SIZE 0x1000
 

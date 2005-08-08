@@ -53,7 +53,10 @@ int board_init(bd_t *bd)
 int dram_init(bd_t *bd)
 {
     bd->bi_dram[0].start = EXC_SDRAM_BLOCK0_BASE;
-    bd->bi_dram[0].size  = EXC_SDRAM_BLOCK0_SIZE;
+    bd->bi_dram[0].size  = EXC_SDRAM_BLOCK0_SIZE; 
+    
+    /*  bd->bi_dram[1].start = EXC_SDRAM_BLOCK0_BASE;
+	bd->bi_dram[1].size  = EXC_SDRAM_BLOCK0_SIZE;*/
     return EXC_SDRAM_BLOCK0_SIZE;
 }
 
