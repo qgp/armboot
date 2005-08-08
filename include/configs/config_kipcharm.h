@@ -1,9 +1,30 @@
 /*
+ * Copyright (c) 2000-2002 Altera Corporation, San Jose, California, USA.  
+ * All rights reserved.
  *
- * Configuation settings for the KIP CIA2/CHARM Board.
+ * (C) Copyright 2002
+ * Sysgo Real-Time Solutions, GmbH <www.elinos.com>
+ * Alex Zuepke <azu@sysgo.de>
  *
- * (Based on the settings for the epxa1db board)
+ * Configuation settings for the EPXA1 Development Board.
  *
+ * See file CREDITS for list of people who contributed to this
+ * project.
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License as
+ * published by the Free Software Foundation; either version 2 of
+ * the License, or (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
+ * MA 02111-1307 USA
  */
 
 #ifndef __CONFIG_H
@@ -24,6 +45,7 @@
  * (easy to change)
  */
 #define CONFIG_ARM922		1	/* This is an ARM922 CPU	*/
+#define CONFIG_EPXA1DB		1	/* epxa1 developemnt board      */
 
 #undef CONFIG_USE_IRQ			/* we don't need IRQ/FIQ stuff */
 
@@ -39,9 +61,10 @@
  * Hardware drivers
  */
 
+
 #define CONFIG_DRIVER_SMC91111
 #define CONFIG_SMC91111_BASE (EXC_EBI_BLOCK3_BASE + 0x300)
-#define CONFIG_KIPCHARM_MAC_ADDR
+#define CONFIG_EPXA1DB_MAC_ADDR
 
 /*
  * select serial console configuration
@@ -53,7 +76,6 @@
 
 #define CONFIG_BAUDRATE		38400
 
-/* use default configuration with network support */
 #define CONFIG_COMMANDS		CONFIG_CMD_DFL
 
 /* this must be included AFTER the definition of CONFIG_COMMANDS (if any) */
@@ -63,13 +85,13 @@
 
 //#define CONFIG_BOOTARGS    	"root=/dev/mtdblock/0 mem=32M rootfstype=jffs2 console=ttyUA0,57600 ip=139.6.18.59:139.6.18.51:139.6.18.1:255.255.255.0:epxa1db:eth0:off"
 //#define CONFIG_BOOTARGS    	"root=/dev/nfs mem=32M console=ttyUA0,57600 nfsroot=10.0.0.1:/tftpboot/dcsrootfs ip=10.0.0.10:10.0.0.1:10.0.0.1:255.255.255.0:dcs:eth0:off"
-#define CONFIG_BOOTARGS    	"root=/dev/mtdblock/0 mem=32M rootfstype=jffs2 console=ttyUA0,38400"
+#define CONFIG_BOOTARGS    	"root=/dev/mtdblock3 mem=30M rootfstype=jffs2 console=ttyUA0,38400"
 #define CONFIG_NETMASK          255.255.255.0
 #define CONFIG_IPADDR		137.57.134.44
 #define CONFIG_SERVERIP		137.57.134.151
 #define CONFIG_BOOTFILE		"vmlinux.exe"
 /* #define CONFIG_BOOTCOMMAND	"tftp;bootm" */
-#define CONFIG_BOOTCOMMAND	"bootm 40040000"
+#define CONFIG_BOOTCOMMAND	"bootm 40050000"
 
 #if (CONFIG_COMMANDS & CFG_CMD_KGDB)
 #define CONFIG_KGDB_BAUDRATE	230400		/* speed to run kgdb serial port */
@@ -81,7 +103,7 @@
  */
 
 #define	CFG_LONGHELP				/* undef to save memory		*/
-#define	CFG_PROMPT		"cia2 # "	/* Monitor Command Prompt	*/
+#define	CFG_PROMPT		"charm # "	/* Monitor Command Prompt	*/
 #define	CFG_CBSIZE		256		/* Console I/O Buffer Size	*/
 #define	CFG_PBSIZE (CFG_CBSIZE+sizeof(CFG_PROMPT)+16) /* Print Buffer Size */
 #define	CFG_MAXARGS		16		/* max number of command args	*/
@@ -147,6 +169,7 @@ struct bd_info_ext
  */
 //#define CFG_MAX_FLASH_BANKS	2	/* max number of memory banks		*/
 #define CFG_MAX_FLASH_BANKS	1	/* max number of memory banks		*/
+//#define CFG_MAX_FLASH_SECT	(63+8)	/* max number of sectors on one chip	*/
 #define CFG_MAX_FLASH_SECT	(127+8)	/* max number of sectors on one chip	*/
 
 /* timeout values are in ticks */
@@ -159,7 +182,7 @@ struct bd_info_ext
  */
 
 #define CFG_ENV_SIZE            0x10000
-#define CFG_ENV_ADDR		(EXC_EBI_BLOCK0_BASE + 0x40000 - CFG_ENV_SIZE) /* Addr of 
+#define CFG_ENV_ADDR		(EXC_EBI_BLOCK0_BASE + 0x50000 - CFG_ENV_SIZE) /* Addr of 
 Environment Sector	*/
 
 #endif	/* __CONFIG_H */

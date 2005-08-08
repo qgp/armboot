@@ -25,8 +25,7 @@
 #
 
 ifndef QUARTUS_ROOTDIR
-#QUARTUS_ROOTDIR = $(TOPDIR)/tools/quartus
-QUARTUS_ROOTDIR = /usr/quartus40
+QUARTUS_ROOTDIR = $(TOPDIR)/tools/quartus
 endif
 
 CFLAGS += -g
