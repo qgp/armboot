@@ -23,7 +23,7 @@
 
 include $(TOPDIR)/config.mk
 
-BINS	= img2srec mkimage envcrc gen_eth_addr gen_env
+BINS	= img2srec mkimage envcrc gen_eth_addr gen_env gen_charm_env
 
 OBJS	= img2srec.o mkimage.o crc32.o envcrc.o gen_eth_addr.o
 
@@ -44,6 +44,9 @@ envcrc:		envcrc.o crc32.o environment.o
 		$(CC) $(CFLAGS) -o $@ $^
 
 gen_env:	gen_env.o crc32.o environment.o
+		$(CC) $(CFLAGS) -o $@ $^
+
+gen_charm_env:	gen_charm_env.o crc32.o environment.o
 		$(CC) $(CFLAGS) -o $@ $^
 
 environment.S:	../common/environment.S
