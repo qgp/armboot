@@ -55,7 +55,7 @@ int main (int argc, char **argv) {
   char outfile[256];
   int writefile=0;
   unsigned int boardnumber;
-  const char searchstring[]=" easynet_mac=40:EA:54:00:XX:XX";
+  const char searchstring[]=" easynet_mac=02:EA:54:00:XX:XX";
   const int XXposition=25; // hardcoded Position of the first X of XX:XX
 
   memset(buf,255,size);
