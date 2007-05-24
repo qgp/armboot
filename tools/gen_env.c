@@ -4,7 +4,7 @@
 
 /* template file could look like this: */
 
-/* bootargs=root=/dev/mtdblock/0 mem=32M rootfstype=jffs2 console=ttyUA0,57600 easynet_mac=EA:54:5C:5B:XX:XX */
+/* bootargs=root=/dev/mtdblock/0 mem=32M rootfstype=jffs2 console=ttyUA0,57600 easynet_mac=02:EA:54:00:XX:XX */
 /* bootcmd=bootm 40050000 */
 /* bootdelay=3 */
 /* baudrate=57600 */
