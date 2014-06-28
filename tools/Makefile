@@ -32,7 +32,7 @@ TOOLSUBDIRS =
 #
 # Use native tools and options
 #
-CPPFLAGS   = -Wall -I../include -I.. -DTEXT_BASE=$(TEXT_BASE)
+CPPFLAGS   = -Wall -I../include -I.. -DTEXT_BASE=$(TEXT_BASE) -m32
 CFLAGS     = $(CPPFLAGS) -O -DHOST_TOOLS
 AFLAGS	   = -D__ASSEMBLY__ $(CPPFLAGS)
 CC	   = $(HOSTCC)
