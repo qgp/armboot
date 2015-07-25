@@ -35,8 +35,8 @@ SECTIONS
 	.text      :
 	{
 	  cpu/epxa/start.o	(.init)
+	  cpu/epxa/setup.o	(.init)
           *(.init)
-	  board/kipdcs/excalibur.o
 	  *(.text)
         }
         . = ALIGN(4);

@@ -26,38 +26,17 @@
 
 include $(TOPDIR)/config.mk
 
-# If a full installation of Quartus isn't available, use the tools 
-# supplied with armboot.
-
-# .../tools/quartus is missing. So we have to use makeprogfile
-# from the QUARTUS installation.
-# QUARTUS_ROOTDIR is already defined in config.mk
-# H.T.
-
-#ifndef QUARTUS_ROOTDIR
-#QUARTUS_ROOTDIR = /cad/products/altera/quartus40
-#endif
-
-
-MAKEPROGFILE := $(QUARTUS_ROOTDIR)/bin/makeprogfile
-
 LIB	= lib$(BOARD).a
 
 OBJS	:= kipdcs.o flash.o env.o mac_addr.o flash_amd.o
 
-EXC_CFG := excalibur.o 
-
-all: $(LIB) $(EXC_CFG)
+all: $(LIB)
 
 $(LIB):	$(OBJS)
 	$(AR) crv $@ $^
 
-$(EXC_CFG): quartus/excalibur.sbd
-	$(MAKEPROGFILE) -q -nc -b $@ $< quartus/epxa1db.sbi
-
-
 clean:
-	rm -f $(EXC_CFG) $(OBJS)
+	rm -f $(OBJS)
 
 distclean:	clean
 	rm -f $(LIB) core *.bak .depend

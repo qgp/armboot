@@ -102,10 +102,6 @@ reset:
 	b	___altera_user_start
 #endif
 
-/* Force the inclusion of the boot data in the image */ 
-	
-        .word  ___altera_user_entry
-
 	.text	
 
 _TEXT_BASE:

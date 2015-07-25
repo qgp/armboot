@@ -33,7 +33,5 @@ CFLAGS += -g
 AFLAGS += -g
 TEXT_BASE = 0x00000
 
-EXTERN_LIB += $(QUARTUS_ROOTDIR)/libraries/software/boot/libboot_xa_ads.a
-
 LDFLAGS_EXTRA += -p
 

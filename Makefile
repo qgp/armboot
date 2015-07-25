@@ -253,7 +253,7 @@ clean:
 	rm -f tools/img2srec tools/mkimage tools/envcrc tools/gen_eth_addr
 	rm -f tools/easylogo/easylogo
 	rm -f tools/gdb/astest tools/gdb/gdbcont tools/gdb/gdbsend
-	rm -f tools/gen_env
+	rm -f tools/gen_env tools/gen_charm_env
 
 clobber:	clean
 	rm -f $(OBJS) *.bak tags TAGS

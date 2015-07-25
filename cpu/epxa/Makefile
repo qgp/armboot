@@ -28,9 +28,9 @@ include $(TOPDIR)/config.mk
 
 LIB	= lib$(CPU).a
 
-START	= start.o
+START	= start.o setup.o
 OBJS	= serial.o interrupts.o cpu.o
-	  
+
 all:	.depend $(START) $(LIB)
 
 $(LIB):	$(OBJS)
