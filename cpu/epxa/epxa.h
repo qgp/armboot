@@ -32,3 +32,14 @@
 #define MMAP_DPSRAM0_ADDR     (0x7fffc0a0)
 #define MMAP_DPSRAM0_VALUE    (0x20000681)
 #define MMAP_DPSRAM0_BASE     (0x20000000)
+
+/* this is generic */
+#define CLK_PLL1_NCNT (0x7fffc300)
+#define CLK_PLL1_MCNT (0x7fffc304)
+#define CLK_PLL1_KCNT (0x7fffc308)
+#define CLK_PLL1_CTRL (0x7fffc30c)
+#define CLK_PLL2_NCNT (0x7fffc310)
+#define CLK_PLL2_MCNT (0x7fffc314)
+#define CLK_PLL2_KCNT (0x7fffc318)
+#define CLK_PLL2_CTRL (0x7fffc31c)
+#define CLK_DERIVE    (0x7fffc320)
