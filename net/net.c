@@ -558,6 +558,7 @@ NetReceive(volatile uchar * pkt, int len)
 #ifdef ET_DEBUG
 		printf("Got unknown protocol %04x\n",x);
 #endif
+		;
 	}
 }
 
@@ -603,13 +604,14 @@ NetCksumOk(uchar * ptr, int len)
 
 
 unsigned
-NetCksum(uchar * ptr, int len)
+NetCksum(uchar * _ptr, int len)
 {
 	ulong	xsum;
+	ushort *ptr = (ushort*) _ptr;
 
 	xsum = 0;
 	while (len-- > 0)
-		xsum += *((ushort *)ptr)++;
+		xsum += *ptr++;
 	xsum = (xsum & 0xffff) + (xsum >> 16);
 	xsum = (xsum & 0xffff) + (xsum >> 16);
 	return (xsum & 0xffff);

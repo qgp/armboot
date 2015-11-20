@@ -24,10 +24,9 @@
 # of California and by the laws of the United States of America.
 #
 
-PLATFORM_RELFLAGS += -fno-strict-aliasing  -fno-common \
-	-mshort-load-bytes -msoft-float
+PLATFORM_RELFLAGS += -fno-strict-aliasing  -fno-common -msoft-float
 
-PLATFORM_CPPFLAGS += -mapcs-32 -march=armv4
+PLATFORM_CPPFLAGS += -march=armv4
 
 
 

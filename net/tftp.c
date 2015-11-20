@@ -76,7 +76,8 @@ TftpSend (void)
 
 	case STATE_RRQ:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_RRQ);
+		*((ushort *)pkt) = SWAP16c(TFTP_RRQ);
+		pkt += sizeof(*pkt);
 		strcpy ((char *)pkt, tftp_filename);
 		pkt += strlen(tftp_filename) + 1;
 		strcpy ((char *)pkt, "octet");
@@ -86,15 +87,19 @@ TftpSend (void)
 
 	case STATE_DATA:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_ACK);
-		*((ushort *)pkt)++ = SWAP16(TftpBlock);
+		*((ushort *)pkt) = SWAP16c(TFTP_ACK);
+		pkt += sizeof(*pkt);
+		*((ushort *)pkt) = SWAP16(TftpBlock);
+		pkt += sizeof(*pkt);
 		len = pkt - xp;
 		break;
 
 	case STATE_TOO_LARGE:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_ERROR);
-		*((ushort *)pkt)++ = SWAP16(3);
+		*((ushort *)pkt) = SWAP16c(TFTP_ERROR);
+		pkt += sizeof(*pkt);
+		*((ushort *)pkt) = SWAP16(3);
+		pkt += sizeof(*pkt);
 		strcpy ((char *)pkt, "File too large");
 		pkt += 14 /*strlen("File too large")*/ + 1;
 		len = pkt - xp;
@@ -102,8 +107,10 @@ TftpSend (void)
 
 	case STATE_BAD_MAGIC:
 		xp = pkt;
-		*((ushort *)pkt)++ = SWAP16c(TFTP_ERROR);
-		*((ushort *)pkt)++ = SWAP16(2);
+		*((ushort *)pkt) = SWAP16c(TFTP_ERROR);
+		pkt += sizeof(*pkt);
+		*((ushort *)pkt) = SWAP16(2);
+		pkt += sizeof(*pkt);
 		strcpy ((char *)pkt, "File has bad magic");
 		pkt += 18 /*strlen("File has bad magic")*/ + 1;
 		len = pkt - xp;
@@ -134,7 +141,8 @@ TftpHandler (uchar * pkt, unsigned dest, unsigned src, unsigned len)
 	len -= 2;
 
     	/* warning: don't use increment (++) in SWAP() macros!! */
-        proto = *((ushort *)pkt)++;
+        proto = *((ushort *)pkt);
+	pkt += sizeof(*pkt);
     	proto = SWAP16(proto);
 	switch (proto) {
 
